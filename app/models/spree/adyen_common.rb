@@ -72,7 +72,7 @@ module Spree
         response
       end
 
-      def credit(credit_cents, source, response_code, gateway_options)
+      def credit(credit_cents, response_code, gateway_options)
         amount = { currency: gateway_options[:currency], value: credit_cents }
         response = provider.refund_payment response_code, amount
 
