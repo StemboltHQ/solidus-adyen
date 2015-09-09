@@ -42,7 +42,8 @@ module Spree
           name: "Adyen",
           preferred_merchant_account: "Test",
           preferred_api_username: "Test",
-          preferred_api_password: "Test"
+          preferred_api_password: "Test",
+          environment: "test"
         )
       end
 
