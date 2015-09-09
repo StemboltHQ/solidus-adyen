@@ -1,14 +1,15 @@
-source 'https://rubygems.org'
+source "http://rubygems.org"
 
-gem 'spree', github: 'spree/spree'
-gem 'coffee-rails', '~> 4.0.0'
-gem 'sass-rails', '~> 4.0.0'
+gemspec
 
 gem 'adyen', github: 'huoxito/adyen', branch: 'enhanced'
-gem 'pry-rails'
 
-gem 'vcr'
-gem 'webmock'
+group :test, :development do
+  gem 'pry-rails'
+  gem 'spree', '~> 2.4.0'
+end
 
-# Specify your gem's dependencies in spree-adyen.gemspec
-gemspec
+group :test do
+  gem 'vcr'
+  gem 'webmock'
+end

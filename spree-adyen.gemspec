@@ -27,6 +27,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'sass-rails', '~> 4.0.2'
   spec.add_development_dependency 'sqlite3'
 
-  spec.add_runtime_dependency "adyen", "~> 1.4.0"
-  spec.add_runtime_dependency "spree_core", ">= 2.4.0.beta"
+  spec.add_runtime_dependency 'adyen', "~> 1.4.0"
+  spec.add_runtime_dependency "spree_core", "~> 2.4.0"
 end
