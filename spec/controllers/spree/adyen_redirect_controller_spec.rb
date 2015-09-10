@@ -4,44 +4,45 @@ module Spree
   describe AdyenRedirectController do
     let(:order) { create(:order_with_line_items, state: "payment") }
 
-
     context "Adyen HPP Gateway" do
       def params
-        { "merchantReference"=>"R183301255",
-          "skinCode"=>"Nonenone",
-          "shopperLocale"=>"en_GB",
-          "paymentMethod"=>"visa",
-          "authResult"=>"AUTHORISED",
-          "pspReference"=>"8813824003752247",
-          "merchantSig"=>"erewrwerewrewrwer" }
+        { merchantReference: "R183301255",
+          skinCode: "Nonenone",
+          shopperLocale: "en_GB",
+          paymentMethod: "visa",
+          authResult: "AUTHORISED",
+          pspReference:  psp_reference,
+          merchantSig: "erewrwerewrewrwer" }
       end
 
       subject { spree_get :confirm, params }
 
+      let(:psp_reference) { "8813824003752247" }
       let(:payment_method) { Gateway::AdyenHPP.create(name: "Adyen") }
 
       before do
-        expect(controller).to receive(:current_order).and_return order
         expect(controller).to receive(:check_signature)
-        expect(controller).to receive(:payment_method).and_return payment_method
+        expect(controller).to receive(:current_order).
+          and_return order
+        expect(controller).to receive(:payment_method).
+          and_return payment_method
       end
 
-      it "creates payment" do
-        expect{ subject }.to change { Payment.count }.by(1)
+      it "creates a payment for the order" do
+        expect{ subject }.to change { order.payments.count }.from(0).to(1)
       end
 
-      it "sets payment attributes properly" do
+      it "sets the payment attributes with the response" do
         subject
-
-        payment = Payment.last
-
-        expect(payment.amount.to_f).to eq order.total.to_f
-        expect(payment.payment_method).to eq payment_method
-        expect(payment.response_code).to eq params['pspReference']
+        expect(order.payments.last).to have_attributes(
+          amount: order.total,
+          payment_method: payment_method,
+          response_code: psp_reference)
       end
 
       it "redirects to order complete page" do
-        expect(subject).to redirect_to spree.order_path(order, :token => order.guest_token)
+        expect(subject).to redirect_to spree.order_path(
+          order, token: order.guest_token)
       end
     end
 
