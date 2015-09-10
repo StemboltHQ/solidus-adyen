@@ -4,6 +4,7 @@ module Spree
   describe AdyenRedirectController do
     let(:order) { create(:order_with_line_items, state: "payment") }
 
+
     context "Adyen HPP Gateway" do
       def params
         { "merchantReference"=>"R183301255",
@@ -15,6 +16,8 @@ module Spree
           "merchantSig"=>"erewrwerewrewrwer" }
       end
 
+      subject { spree_get :confirm, params }
+
       let(:payment_method) { Gateway::AdyenHPP.create(name: "Adyen") }
 
       before do
@@ -23,14 +26,13 @@ module Spree
         expect(controller).to receive(:payment_method).and_return payment_method
       end
 
-      it "create payment" do
-        expect {
-          spree_get :confirm, params
-        }.to change { Payment.count }.by(1)
+      it "creates payment" do
+        expect{ subject }.to change { Payment.count }.by(1)
       end
 
       it "sets payment attributes properly" do
-        spree_get :confirm, params
+        subject
+
         payment = Payment.last
 
         expect(payment.amount.to_f).to eq order.total.to_f
@@ -39,8 +41,7 @@ module Spree
       end
 
       it "redirects to order complete page" do
-        spree_get :confirm, params
-        expect(response).to redirect_to spree.order_path(order, :token => order.guest_token)
+        expect(subject).to redirect_to spree.order_path(order, :token => order.guest_token)
       end
 
       pending "test check signature filter"
