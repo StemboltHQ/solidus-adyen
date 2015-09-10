@@ -4,7 +4,7 @@ require 'spree/testing_support/order_walkthrough'
 module Spree
   describe Order do
     context 'with an associated user' do
-      let(:order) { OrderWalkthrough.up_to(:payment) }
+      let(:order) { OrderWalkthrough.up_to(:delivery) }
       let(:credit_card) { create(:credit_card) }
 
       let(:gateway) { Gateway::AdyenPaymentEncrypted.create!(name: "Adyen") }
