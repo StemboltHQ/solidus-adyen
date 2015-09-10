@@ -1,6 +1,8 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
+require 'spree'
+
 begin
   require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 rescue LoadError
@@ -8,7 +10,6 @@ rescue LoadError
 end
 
 require 'vcr'
-require 'spree'
 require 'rspec/rails'
 require 'ffaker'
 require 'rspec/active_model/mocks'
