@@ -43,9 +43,6 @@ module Spree
       it "redirects to order complete page" do
         expect(subject).to redirect_to spree.order_path(order, :token => order.guest_token)
       end
-
-      pending "test check signature filter"
-      pending "grab payment method by parameter (possibly merchantReturnData passed via session payment params)"
     end
 
     context "Adyen 3-D redirect" do
