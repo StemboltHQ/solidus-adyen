@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'webmock'
   spec.add_development_dependency "factory_girl"
   spec.add_development_dependency 'vcr'
+  spec.add_development_dependency 'simplecov'
 
   spec.add_development_dependency 'awesome_print'
   spec.add_development_dependency 'pry-rails'
