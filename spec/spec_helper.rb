@@ -7,6 +7,8 @@ rescue LoadError
   puts "Could not load dummy application. Please ensure you have run `bundle exec rake test_app`"
 end
 
+require 'vcr'
+require 'spree'
 require 'rspec/rails'
 require 'ffaker'
 require 'rspec/active_model/mocks'
