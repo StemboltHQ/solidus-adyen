@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe AdyenNotification do
-  it { is_expected.to have_one :next }
-  it { is_expected.to belong_to :prev }
+  it { is_expected.to have_one(:next).inverse_of(:prev) }
+  it { is_expected.to belong_to(:prev).inverse_of(:next) }
 
   describe "#log" do
     let(:psp_reference) { "8513823667306210" }

@@ -19,12 +19,14 @@ class AdyenNotification < ActiveRecord::Base
   belongs_to :prev,
     class_name: self,
     foreign_key: :original_reference,
-    primary_key: :psp_reference
+    primary_key: :psp_reference,
+    inverse_of: :next
 
   has_one :next,
     class_name: self,
     foreign_key: :original_reference,
-    primary_key: :psp_reference
+    primary_key: :psp_reference,
+    inverse_of: :prev
 
   # A notification should always include an event_code
   validates_presence_of :event_code
