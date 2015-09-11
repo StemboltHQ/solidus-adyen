@@ -16,6 +16,15 @@
 #      @invoice.set_paid!
 #    end
 class AdyenNotification < ActiveRecord::Base
+  belongs_to :prev,
+    class_name: self,
+    foreign_key: :original_reference,
+    primary_key: :psp_reference
+
+  has_one :next,
+    class_name: self,
+    foreign_key: :original_reference,
+    primary_key: :psp_reference
 
   # A notification should always include an event_code
   validates_presence_of :event_code
@@ -81,5 +90,9 @@ class AdyenNotification < ActiveRecord::Base
         payment.invalidate!
       end
     end
+  end
+
+  def most_recent
+    self.next ?  self.next.most_recent : self
   end
 end

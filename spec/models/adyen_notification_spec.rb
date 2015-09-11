@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 RSpec.describe AdyenNotification do
+  it { is_expected.to have_one :next }
+  it { is_expected.to belong_to :prev }
+
   describe "#log" do
     let(:psp_reference) { "8513823667306210" }
     let!(:payment) { create(:payment, response_code: psp_reference) }
@@ -40,6 +43,17 @@ RSpec.describe AdyenNotification do
         notification.handle!
         expect(payment.reload).not_to be_invalid
       end
+    end
+  end
+
+  describe ".most_recent" do
+    let(:auth)    { create :adyen_notification, :auth }
+    let(:capture) { create :adyen_notification, :capture, prev: auth }
+    let(:refund)  { create :adyen_notification, :refund, prev: capture }
+    let!(:notifications) { [auth, capture, refund] }
+
+    it "returns the most recent notification in the message chain" do
+      expect(notifications).to all satisfy{ |x| x.most_recent == refund }
     end
   end
 end
