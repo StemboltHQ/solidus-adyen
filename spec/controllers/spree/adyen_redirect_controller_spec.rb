@@ -71,7 +71,7 @@ module Spree
 
         it "redirects user if no recurring detail is returned" do
           spree_get :authorise3d, params, { adyen_gateway_name: gateway.class.name, adyen_gateway_id: gateway.id }
-          expect(response).to redirect_to redirect_to spree.checkout_state_path(order.state)
+          expect(response).to redirect_to spree.checkout_state_path(order.state)
         end
 
         it "payment need to be in processing state so it's not authorised twice" do
@@ -108,7 +108,7 @@ module Spree
         it "redirects user to confirm step" do
           VCR.use_cassette("3D-Secure-authorise-redirect-controller") do
             spree_get :authorise3d, params, { adyen_gateway_name: gateway.class.name, adyen_gateway_id: gateway.id }
-            expect(response).to redirect_to redirect_to spree.checkout_state_path("confirm")
+            expect(response).to redirect_to spree.checkout_state_path("confirm")
           end
         end
 
