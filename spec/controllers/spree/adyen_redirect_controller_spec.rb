@@ -6,46 +6,44 @@ module Spree
     let(:order) { create(:order_with_line_items, state: "payment") }
 
     describe "GET confirm" do
-      context "Adyen HPP Gateway" do
-        subject { spree_get :confirm, params }
+      subject { spree_get :confirm, params }
 
-        let(:params) do
-          { merchantReference: "R183301255",
-            skinCode: "Nonenone",
-            shopperLocale: "en_GB",
-            paymentMethod: "visa",
-            authResult: "AUTHORISED",
-            pspReference:  psp_reference,
-            merchantSig: "erewrwerewrewrwer" }
-        end
+      let(:params) do
+        { merchantReference: "R183301255",
+          skinCode: "Nonenone",
+          shopperLocale: "en_GB",
+          paymentMethod: "visa",
+          authResult: "AUTHORISED",
+          pspReference:  psp_reference,
+          merchantSig: "erewrwerewrewrwer" }
+      end
 
-        let(:psp_reference) { "8813824003752247" }
-        let(:payment_method) { Gateway::AdyenHPP.create(name: "Adyen") }
+      let(:psp_reference) { "8813824003752247" }
+      let(:payment_method) { Gateway::AdyenHPP.create(name: "Adyen") }
 
-        before do
-          expect(controller).to receive(:check_signature)
-          expect(controller).to receive(:current_order).
-            and_return order
-          expect(controller).to receive(:payment_method).
-            and_return payment_method
-        end
+      before do
+        expect(controller).to receive(:check_signature)
+        expect(controller).to receive(:current_order).
+          and_return order
+        expect(controller).to receive(:payment_method).
+          and_return payment_method
+      end
 
-        it "creates a payment for the order" do
-          expect{ subject }.to change { order.payments.count }.from(0).to(1)
-        end
+      it "creates a payment for the order" do
+        expect{ subject }.to change { order.payments.count }.from(0).to(1)
+      end
 
-        it "sets the payment attributes with the response" do
-          subject
-          expect(order.payments.last).to have_attributes(
-            amount: order.total,
-            payment_method: payment_method,
-            response_code: psp_reference)
-        end
+      it "sets the payment attributes with the response" do
+        subject
+        expect(order.payments.last).to have_attributes(
+          amount: order.total,
+          payment_method: payment_method,
+          response_code: psp_reference)
+      end
 
-        it "redirects to order complete page" do
-          expect(subject).to redirect_to spree.order_path(
-            order, token: order.guest_token)
-        end
+      it "redirects to order complete page" do
+        expect(subject).to redirect_to spree.order_path(
+          order, token: order.guest_token)
       end
     end
 
