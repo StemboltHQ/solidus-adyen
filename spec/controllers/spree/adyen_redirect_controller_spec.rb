@@ -37,12 +37,28 @@ module Spree
       end
 
       describe "created payment" do
+        subject { order.payments.last }
+        before { action }
+
         it "has attributes from the request" do
-          subject
-          expect(order.payments.last).to have_attributes(
+          is_expected.to have_attributes(
             amount: order.total,
             payment_method: payment_method,
             response_code: psp_reference)
+        end
+
+        it "creates a source for the payment" do
+          expect(subject.source).
+            to be_an_instance_of(Adyen::HppSource).
+            and(have_attributes(
+              merchant_reference: order.number,
+              skin_code: "Nonenone",
+              shopper_locale: "en_GB",
+              payment_method: "visa",
+              auth_result: auth_result,
+              psp_reference:  psp_reference,
+              merchant_sig: "erewrwerewrewrwer"
+            ))
         end
       end
 

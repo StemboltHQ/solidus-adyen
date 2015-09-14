@@ -22,11 +22,13 @@ module Spree
       # cant set payment to complete here due to a validation
       # in order transition from payment to complete (it requires at
       # least one pending payment)
-      payment = order.payments.create!(
+      order.payments.create!(
         amount: order.total,
         payment_method: payment_method,
         response_code: params[:pspReference]
-      )
+      ) do |p|
+        p.source = Adyen::HppSource.create!(source_params(params))
+      end
 
       order.next
 
@@ -118,6 +120,18 @@ module Spree
     # it back here to make sure we find the right payment method
     def payment_method
       @payment_method ||= Gateway::AdyenHPP.last # find(params[:merchantReturnData])
+    end
+
+    def source_params params
+      params.permit(
+        :authResult,
+        :pspReference,
+        :merchantReference,
+        :skinCode,
+        :merchantSig,
+        :paymentMethod,
+        :shopperLocale,
+        :merchantReturnData)
     end
   end
 end
