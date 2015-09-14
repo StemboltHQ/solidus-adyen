@@ -7,7 +7,13 @@ module Spree
     # This is the entry point after an Adyen HPP payment is completed
     def confirm
       order = current_order
-
+      #  TODO This is not technically correct
+      #  if the result is pending we might get a response later in the
+      #  callback saying the order is ready to be captured. It's probably
+      #  safe(?)
+      #  From the docs:
+      #  When authResult equals PENDING, ERROR or CANCELLED, the pspReference
+      #  may not yet be known; therefore, it may be empty or not included.
       unless authorized?
         flash.notice = Spree.t(:payment_processing_failed)
         redirect_to checkout_state_path(order.state) and return

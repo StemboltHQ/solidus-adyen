@@ -8,12 +8,13 @@ module Spree
     describe "GET confirm" do
       subject { spree_get :confirm, params }
 
+      let(:auth_result) { "AUTHORISED" }
       let(:params) do
         { merchantReference: "R183301255",
           skinCode: "Nonenone",
           shopperLocale: "en_GB",
           paymentMethod: "visa",
-          authResult: "AUTHORISED",
+          authResult: auth_result,
           pspReference:  psp_reference,
           merchantSig: "erewrwerewrewrwer" }
       end
@@ -22,10 +23,10 @@ module Spree
       let(:payment_method) { Gateway::AdyenHPP.create(name: "Adyen") }
 
       before do
-        expect(controller).to receive(:check_signature)
-        expect(controller).to receive(:current_order).
+        allow(controller).to receive(:check_signature)
+        allow(controller).to receive(:current_order).
           and_return order
-        expect(controller).to receive(:payment_method).
+        allow(controller).to receive(:payment_method).
           and_return payment_method
       end
 
@@ -44,6 +45,17 @@ module Spree
       it "redirects to order complete page" do
         expect(subject).to redirect_to spree.order_path(
           order, token: order.guest_token)
+      end
+
+      context "when the payment is not authorised" do
+        let(:auth_result) { "ERROR" }
+        it { is_expected.to redirect_to spree.checkout_state_path("payment") }
+
+        it "sets the flash" do
+          subject
+          expect(flash[:notice]).to eq 'Payment could not be processed, please'\
+            ' check the details you entered'
+        end
       end
     end
 
