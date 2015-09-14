@@ -24,8 +24,8 @@ module Spree
       end
 
       let(:psp_reference) { "8813824003752247" }
-      let(:payment_method) { Gateway::AdyenHPP.create(name: "Adyen",
-                                                     environment: 'test') }
+      let(:payment_method) { Gateway::AdyenHPP.create(
+        name: "Adyen", environment: 'test') }
 
       before do
         allow(controller).to receive(:check_signature)
@@ -35,6 +35,19 @@ module Spree
 
       it "creates a payment for the current order" do
         expect{ subject }.to change { order.payments.count }.from(0).to(1)
+      end
+
+      it "redirects to order complete page" do
+        expect(subject).to redirect_to spree.order_path(
+          order, token: order.guest_token)
+      end
+
+      describe "the order" do
+        subject { order }
+        before { action }
+        it "is in the completed state" do
+          is_expected.to be_completed
+        end
       end
 
       describe "created payment" do
@@ -63,19 +76,23 @@ module Spree
         end
       end
 
-      it "redirects to order complete page" do
-        expect(subject).to redirect_to spree.order_path(
-          order, token: order.guest_token)
-      end
-
       context "when the payment is not authorised" do
         let(:auth_result) { "ERROR" }
+
         it { is_expected.to redirect_to spree.checkout_state_path("payment") }
 
         it "sets the flash" do
           subject
           expect(flash[:notice]).to eq 'Payment could not be processed, please'\
             ' check the details you entered'
+        end
+
+        describe 'the order' do
+          subject { order }
+          before { action }
+          it 'is in the payment state' do
+            is_expected.to be_payment
+          end
         end
       end
     end
