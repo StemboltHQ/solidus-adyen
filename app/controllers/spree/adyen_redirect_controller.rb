@@ -1,9 +1,10 @@
 module Spree
   class AdyenRedirectController < StoreController
-    before_filter :check_signature, :only => :confirm
+    before_filter :check_signature, only: :confirm
 
     skip_before_filter :verify_authenticity_token
 
+    # This is the entry point after an Adyen HPP payment is completed
     def confirm
       order = current_order
 
@@ -16,16 +17,16 @@ module Spree
       # in order transition from payment to complete (it requires at
       # least one pending payment)
       payment = order.payments.create!(
-        :amount => order.total,
-        :payment_method => payment_method,
-        :response_code => params[:pspReference]
+        amount: order.total,
+        payment_method: payment_method,
+        response_code: params[:pspReference]
       )
 
       order.next
 
       if order.complete?
         flash.notice = Spree.t(:order_processed_successfully)
-        redirect_to order_path(order, :token => order.guest_token)
+        redirect_to order_path(order, token: order.guest_token)
       else
         redirect_to checkout_state_path(order.state)
       end
@@ -45,9 +46,9 @@ module Spree
 
         if response3d.success?
           payment = order.payments.create!(
-            :amount => order.total,
-            :payment_method => gateway,
-            :response_code => response3d.psp_reference
+            amount: order.total,
+            payment_method: gateway,
+            response_code: response3d.psp_reference
           )
 
           list = gateway.provider.list_recurring_details(order.user_id.present? ? order.user_id : order.email)
@@ -78,7 +79,7 @@ module Spree
 
           if order.complete?
             flash.notice = Spree.t(:order_processed_successfully)
-            redirect_to order_path(order, :token => order.guest_token)
+            redirect_to order_path(order, token: order.guest_token)
           else
             if order.errors.any?
               flash.notice = order.errors.full_messages.inspect
@@ -97,21 +98,20 @@ module Spree
 
     private
 
-      def authorized?
-        params[:authResult] == "AUTHORISED"
-      end
+    def authorized?
+      params[:authResult] == "AUTHORISED"
+    end
 
-      def check_signature
-        unless ::Adyen::Form.redirect_signature_check(params, payment_method.shared_secret)
-          raise "Payment Method not found."
-        end
+    def check_signature
+      unless ::Adyen::Form.redirect_signature_check(params, payment_method.shared_secret)
+        raise "Payment Method not found."
       end
+    end
 
-      # TODO find a way to send the payment method id to Adyen servers and get
-      # it back here to make sure we find the right payment method
-      def payment_method
-        @payment_method ||= Gateway::AdyenHPP.last # find(params[:merchantReturnData])
-      end
-
+    # TODO find a way to send the payment method id to Adyen servers and get
+    # it back here to make sure we find the right payment method
+    def payment_method
+      @payment_method ||= Gateway::AdyenHPP.last # find(params[:merchantReturnData])
+    end
   end
 end
