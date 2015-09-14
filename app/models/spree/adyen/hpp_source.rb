@@ -14,4 +14,6 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
   alias_attribute :paymentMethod, :payment_method
   alias_attribute :shopperLocale, :shopper_locale
   alias_attribute :merchantReturnData, :merchant_return_data
+
+  has_one :payment, class_name: 'Spree::Payment', as: :source
 end
