@@ -5,6 +5,10 @@ module Spree
   RSpec.describe AdyenRedirectController do
     let(:order) { create(:order_with_line_items, state: "payment") }
 
+    before do
+      allow(controller).to receive(:current_order).and_return order
+    end
+
     describe "GET confirm" do
       subject { spree_get :confirm, params }
 
@@ -24,8 +28,6 @@ module Spree
 
       before do
         allow(controller).to receive(:check_signature)
-        allow(controller).to receive(:current_order).
-          and_return order
         allow(controller).to receive(:payment_method).
           and_return payment_method
       end
@@ -76,8 +78,6 @@ module Spree
 
         let!(:gateway) { Gateway::AdyenPaymentEncrypted.create!(name: "Adyen") }
         before do
-          expect(controller).to receive(:current_order).and_return order
-
           expect(Gateway::AdyenPaymentEncrypted).to receive(:find).
             and_return gateway
 
@@ -132,8 +132,6 @@ module Spree
 
         before do
           order.user_id = 1
-          controller.stub(current_order: order)
-
           ActionController::TestRequest.any_instance.stub(:ip).
             and_return("127.0.0.1")
 
