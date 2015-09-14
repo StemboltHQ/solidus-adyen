@@ -24,7 +24,8 @@ module Spree
       end
 
       let(:psp_reference) { "8813824003752247" }
-      let(:payment_method) { Gateway::AdyenHPP.create(name: "Adyen") }
+      let(:payment_method) { Gateway::AdyenHPP.create(name: "Adyen",
+                                                     environment: 'test') }
 
       before do
         allow(controller).to receive(:check_signature)
