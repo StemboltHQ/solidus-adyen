@@ -9,20 +9,21 @@ module Spree
         @request.env["HTTP_AUTHORIZATION"] = "Basic " + Base64::encode64("username:password")
       end
 
-      def params
+      let(:order) { create :order }
+      let(:params) do
         { "pspReference" => "8513823667306210",
-          "eventDate"=>"2013-10-21T14:45:45.93Z",
-          "merchantAccountCode"=>"Test",
-          "reason"=>"41061:1111:6/2016",
+          "eventDate" => "2013-10-21T14:45:45.93Z",
+          "merchantAccountCode" => "Test",
+          "reason" => "41061:1111:6/2016",
           "originalReference" => "",
-          "value"=>"6999",
-          "eventCode"=>"AUTHORISATION",
-          "merchantReference"=>"R354361834-A3JC8TNJ",
-          "operations"=>"CANCEL,CAPTURE,REFUND",
-          "success"=>"true",
-          "paymentMethod"=>"visa",
-          "currency"=>"USD",
-          "live"=>"false" }
+          "value" => "6999",
+          "eventCode" => "AUTHORISATION",
+          "merchantReference" => order.id,
+          "operations" => "CANCEL,CAPTURE,REFUND",
+          "success" => "true",
+          "paymentMethod" => "visa",
+          "currency" => "USD",
+          "live" => "false" }
       end
 
       it "logs notitification" do

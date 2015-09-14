@@ -28,6 +28,10 @@ class AdyenNotification < ActiveRecord::Base
     primary_key: :psp_reference,
     inverse_of: :prev
 
+  belongs_to :order,
+    class_name: Spree::Order,
+    foreign_key: :merchant_reference
+
   # A notification should always include an event_code
   validates_presence_of :event_code
 
