@@ -13,6 +13,9 @@ module Spree
     # Spree usually grabs these from a Credit Card object but when using
     # Adyen Hosted Payment Pages where we wouldn't keep # the credit card object
     # as that entered outside of the store forms
+    def actions
+      %w{capture void credit}
+    end
 
     # Indicates whether its possible to void the payment.
     def can_void?(payment)
