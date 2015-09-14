@@ -12,7 +12,7 @@ RSpec.describe AdyenNotification do
     let(:params) do
       { "pspReference" => psp_reference,
         success: success,
-        "merchantReference"=> order.id,
+        "merchantReference"=> order.number,
         "eventDate"=>"2013-10-21T14:45:45.93Z",
         "merchantAccountCode"=>"Test",
         "reason"=>"41061:1111:6/2016",
@@ -52,14 +52,14 @@ RSpec.describe AdyenNotification do
     let(:order)   { create :order }
     let!(:notifications) { [auth, capture, refund] }
     let(:auth) {
-      create :adyen_notification, :auth, merchant_reference: order.id }
+      create :adyen_notification, :auth, merchant_reference: order.number }
 
     let(:capture) {
-      create :adyen_notification, :capture, merchant_reference: order.id,
+      create :adyen_notification, :capture, merchant_reference: order.number,
       prev: auth }
 
     let(:refund) {
-      create :adyen_notification, :refund, merchant_reference: order.id,
+      create :adyen_notification, :refund, merchant_reference: order.number,
 
       prev: capture }
 

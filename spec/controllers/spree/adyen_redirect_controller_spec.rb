@@ -10,11 +10,11 @@ module Spree
     end
 
     describe "GET confirm" do
-      subject { spree_get :confirm, params }
+      subject(:action) { spree_get :confirm, params }
 
       let(:auth_result) { "AUTHORISED" }
       let(:params) do
-        { merchantReference: "R183301255",
+        { merchantReference: order.number,
           skinCode: "Nonenone",
           shopperLocale: "en_GB",
           paymentMethod: "visa",

@@ -30,6 +30,7 @@ class AdyenNotification < ActiveRecord::Base
 
   belongs_to :order,
     class_name: Spree::Order,
+    primary_key: :number,
     foreign_key: :merchant_reference
 
   # A notification should always include an event_code

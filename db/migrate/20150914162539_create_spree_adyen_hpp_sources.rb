@@ -18,7 +18,10 @@ class CreateSpreeAdyenHppSources < ActiveRecord::Migration
     add_index :spree_adyen_hpp_sources, :psp_reference, unique: true
 
     if Rails.version >= "4.2"
-      add_foreign_key :spree_adyen_hpp_sources, :spree_orders, column: :merchant_reference
+      add_foreign_key :spree_adyen_hpp_sources,
+        :spree_orders,
+        column: :merchant_reference,
+        primary_key: :number
     else
       # order_id doesn't appear to have a uniqueness constraint.
       add_index :spree_adyen_hpp_sources, :merchant_reference
