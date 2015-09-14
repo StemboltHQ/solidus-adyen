@@ -6,10 +6,6 @@ module Spree
     preference :skin_code, :string
     preference :shared_secret, :string
 
-    def source_required?
-      false
-    end
-
     def auto_capture?
       false
     end
@@ -17,9 +13,6 @@ module Spree
     # Spree usually grabs these from a Credit Card object but when using
     # Adyen Hosted Payment Pages where we wouldn't keep # the credit card object
     # as that entered outside of the store forms
-    def actions
-      %w{capture void credit}
-    end
 
     # Indicates whether its possible to void the payment.
     def can_void?(payment)
@@ -41,6 +34,10 @@ module Spree
 
     def skin_code
       ENV['ADYEN_SKIN_CODE'] || preferred_skin_code
+    end
+
+    def authorize(amount, source, gateway_options)
+      ActiveMerchant::Billing::Response.new(true, 'successful hpp payment')
     end
 
     # According to Spree Processing class API the response object should respond
