@@ -32,16 +32,18 @@ module Spree
           and_return payment_method
       end
 
-      it "creates a payment for the order" do
+      it "creates a payment for the current order" do
         expect{ subject }.to change { order.payments.count }.from(0).to(1)
       end
 
-      it "sets the payment attributes with the response" do
-        subject
-        expect(order.payments.last).to have_attributes(
-          amount: order.total,
-          payment_method: payment_method,
-          response_code: psp_reference)
+      describe "created payment" do
+        it "has attributes from the request" do
+          subject
+          expect(order.payments.last).to have_attributes(
+            amount: order.total,
+            payment_method: payment_method,
+            response_code: psp_reference)
+        end
       end
 
       it "redirects to order complete page" do
