@@ -38,14 +38,21 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
   end
 
   def can_capture?
-    AdyenNotification.most_recent(notifications).authorisation?
+    last_message_was { |x| x.authorisation? }
   end
 
   def can_void?
-    AdyenNotification.most_recent(notifications).authorisation?
+    last_message_was { |x| x.authorisation? }
   end
 
   def can_refund?
-    AdyenNotification.most_recent(notifications).capture?
+    last_message_was { |x| x.capture? }
+  end
+
+  private
+  def last_message_was &block
+    AdyenNotification.
+      most_recent(notifications).
+      try!(&block) || false
   end
 end

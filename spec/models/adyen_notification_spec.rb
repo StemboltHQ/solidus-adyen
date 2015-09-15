@@ -59,5 +59,10 @@ RSpec.describe AdyenNotification do
     it "returns the most recent notification in the message chain" do
       is_expected.to eq refund
     end
+
+    context "when notifications is an empty array" do
+      let(:notifications) { [] }
+      it { is_expected.to eq nil }
+    end
   end
 end
