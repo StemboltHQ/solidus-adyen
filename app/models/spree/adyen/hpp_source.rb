@@ -4,6 +4,9 @@
 #
 # Attributes defined are dervived from the docs:
 # https://docs.adyen.com/display/TD/HPP+payment+response
+#
+# Information about when certain action are valid:
+# https://docs.adyen.com/display/TD/HPP+modifications
 class Spree::Adyen::HppSource < ActiveRecord::Base
   # support updates from capital-cased responses, which is what adyen gives us
   alias_attribute :authResult, :auth_result
@@ -15,5 +18,34 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
   alias_attribute :shopperLocale, :shopper_locale
   alias_attribute :merchantReturnData, :merchant_return_data
 
+  belongs_to :order, class_name: 'Spree::Order',
+    primary_key: :number,
+    foreign_key: :merchant_reference
+
   has_one :payment, class_name: 'Spree::Payment', as: :source
+
+  # OPTIMIZE this is inefficient and does N queries + 1
+  has_many :notifications,
+    -> { includes :prev, :next },
+    class_name: 'AdyenNotification',
+    foreign_key: :merchant_reference,
+    primary_key: :merchant_reference
+
+  # these should really just be informed by the auth response, but it's likely
+  # this will always be the case - it will error if it doesn't succeed
+  def actions
+    [:capture, :void, :refund]
+  end
+
+  def can_capture?
+    AdyenNotification.most_recent(notifications).authorisation?
+  end
+
+  def can_void?
+    AdyenNotification.most_recent(notifications).authorisation?
+  end
+
+  def can_refund?
+    AdyenNotification.most_recent(notifications).capture?
+  end
 end

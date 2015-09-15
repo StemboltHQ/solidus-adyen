@@ -99,6 +99,10 @@ class AdyenNotification < ActiveRecord::Base
     end
   end
 
+  def self.most_recent collection
+    collection.find{ |x| x.original_reference == nil }.most_recent
+  end
+
   def most_recent
     self.next ?  self.next.most_recent : self
   end

@@ -1,8 +1,7 @@
 # https://docs.adyen.com/display/TD/Notification+fields
 FactoryGirl.define do
-  factory :adyen_notification do
+  factory :adyen_notification, aliases: [:notification] do
      live false
-     #event_code "AUTHORISATION"
      psp_reference { SecureRandom.hex }
      original_reference nil
      merchant_reference "R000000000"

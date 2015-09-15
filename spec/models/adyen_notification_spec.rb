@@ -48,23 +48,16 @@ RSpec.describe AdyenNotification do
     end
   end
 
-  describe ".most_recent" do
-    let(:order)   { create :order }
+  describe "#most_recent" do
+    subject { described_class.most_recent notifications }
+    let(:order) { create :order }
     let!(:notifications) { [auth, capture, refund] }
-    let(:auth) {
-      create :adyen_notification, :auth, merchant_reference: order.number }
-
-    let(:capture) {
-      create :adyen_notification, :capture, merchant_reference: order.number,
-      prev: auth }
-
-    let(:refund) {
-      create :adyen_notification, :refund, merchant_reference: order.number,
-
-      prev: capture }
+    let(:auth) { create :notification, :auth, order: order}
+    let(:capture) { create :notification, :capture, order: order, prev: auth }
+    let(:refund) { create :notification, :refund, order: order, prev: capture }
 
     it "returns the most recent notification in the message chain" do
-      expect(notifications).to all satisfy{ |x| x.most_recent == refund }
+      is_expected.to eq refund
     end
   end
 end
