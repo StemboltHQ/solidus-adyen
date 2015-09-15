@@ -101,7 +101,7 @@ class AdyenNotification < ActiveRecord::Base
 
   def self.most_recent collection
     collection.
-      find{ |x| x.original_reference == nil }.
+      find{ |x| x.authorisation? }.
       try!{ |x| x.most_recent }
   end
 

@@ -50,8 +50,12 @@ RSpec.describe AdyenNotification do
 
   describe "#most_recent" do
     subject { described_class.most_recent notifications }
+
     let(:order) { create :order }
-    let!(:notifications) { [auth, capture, refund] }
+    let!(:notifications) { [refund_failed, auth, capture, refund] }
+    let(:refund_failed) { create :notification,  order: order,
+                 event_code: "REFUND_FAILED", operations: "" }
+
     let(:auth) { create :notification, :auth, order: order}
     let(:capture) { create :notification, :capture, order: order, prev: auth }
     let(:refund) { create :notification, :refund, order: order, prev: capture }
