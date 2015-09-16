@@ -23,23 +23,23 @@ RSpec.describe Spree::Adyen::HppSource do
     end
 
     context "no response from adyen yet" do
-      it { expect(subject.can_capture?).to be false }
-      it { expect(subject.can_void?).to be false }
-      it { expect(subject.can_refund?).to be false }
+      it { expect(subject.can_capture?(payment)).to be false }
+      it { expect(subject.can_void?(payment)).to be false }
+      it { expect(subject.can_credit?(payment)).to be false }
     end
 
     context "auth" do
       include_context "an auth notification was received"
-      it { expect(subject.can_capture?).to be true }
-      it { expect(subject.can_void?).to be true }
-      it { expect(subject.can_refund?).to be false }
+      it { expect(subject.can_capture?(payment)).to be true }
+      it { expect(subject.can_void?(payment)).to be true }
+      it { expect(subject.can_credit?(payment)).to be false }
     end
 
     context "capture" do
       include_context "a capture notification was received"
-      it { expect(subject.can_capture?).to be false }
-      it { expect(subject.can_void?).to be false }
-      it { expect(subject.can_refund?).to be true }
+      it { expect(subject.can_capture?(payment)).to be false }
+      it { expect(subject.can_void?(payment)).to be false }
+      it { expect(subject.can_credit?(payment)).to be true }
     end
 
     context "refund" do

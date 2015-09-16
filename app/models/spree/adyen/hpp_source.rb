@@ -37,15 +37,15 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     ['capture', 'void', 'credit']
   end
 
-  def can_capture?
+  def can_capture? payment
     last_message_was { |x| x.authorisation? }
   end
 
-  def can_void?
+  def can_void? payment
     last_message_was { |x| x.authorisation? }
   end
 
-  def can_refund?
+  def can_credit? payment
     last_message_was { |x| x.capture? }
   end
 
