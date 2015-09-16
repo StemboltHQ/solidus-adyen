@@ -34,7 +34,7 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
   # these should really just be informed by the auth response, but it's likely
   # this will always be the case - it will error if it doesn't succeed
   def actions
-    [:capture, :void, :refund]
+    ['capture', 'void', 'credit']
   end
 
   def can_capture?
