@@ -42,7 +42,7 @@ module Spree
         response = provider.capture_payment(response_code, value)
 
         if response.success?
-          def response.authorization; psp_reference; end
+          def response.authorization; nil; end
           def response.avs_result; {}; end
           def response.cvv_result; {}; end
         else

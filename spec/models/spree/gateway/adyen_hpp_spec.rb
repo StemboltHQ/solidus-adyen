@@ -18,7 +18,7 @@ module Spree
           subject.stub_chain(:provider, capture_payment: response)
 
           result = subject.capture(30000, "huhu")
-          expect(result.authorization).to eq "huhu"
+          expect(result.authorization).to be nil
           expect(result.avs_result).to eq({})
           expect(result.cvv_result).to eq({})
         end
