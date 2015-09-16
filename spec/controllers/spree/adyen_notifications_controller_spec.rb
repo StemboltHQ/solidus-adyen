@@ -12,7 +12,7 @@ module Spree
         "originalReference" => "",
         "value" => "6999",
         "eventCode" => "AUTHORISATION",
-        "merchantReference" => order.id,
+        "merchantReference" => order.number,
         "operations" => "CANCEL,CAPTURE,REFUND",
         "success" => "true",
         "paymentMethod" => "visa",
