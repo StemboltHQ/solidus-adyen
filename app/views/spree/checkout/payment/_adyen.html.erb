@@ -4,17 +4,17 @@
 </p>
 
 <% redirect_params = {
-        :currency_code => Spree::Config.currency,
-        # :merchantReturnData => payment_method.id,
-        :ship_before_date => Date.tomorrow,
-        :session_validity => 10.minutes.from_now,
-        :recurring => false,
-        :merchant_reference => "#{@order.number}",
-        :merchant_account => payment_method.merchant_account,
-        :skin_code => payment_method.skin_code,
-        :shared_secret => payment_method.shared_secret,
-        :payment_amount => (@order.total.to_f * 100).to_int
-  }
+  currency_code: Spree::Config.currency,
+  # :merchantReturnData => payment_method.id,
+  ship_before_date: Date.tomorrow,
+  session_validity: 10.minutes.from_now,
+  recurring: false,
+  merchant_reference: @order.number.to_s,
+  merchant_account: payment_method.merchant_account,
+  skin_code: payment_method.skin_code,
+  shared_secret: payment_method.shared_secret,
+  payment_amount: (@order.total.to_f * 100).to_int
+}
 %>
 
 <%= link_to "Pay with Adyen", ::Adyen::Form.redirect_url(
