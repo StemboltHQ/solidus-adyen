@@ -5,7 +5,7 @@ RSpec.describe Spree::Adyen::HppSource do
   it { is_expected.to have_one(:payment) }
   it { is_expected.to have_many(:notifications) }
 
-  context "most recent notification was" do
+  context "recieved notifications include:" do
     subject { source }
 
     let!(:payment) { create :hpp_payment, source: source, order: order }
@@ -40,9 +40,6 @@ RSpec.describe Spree::Adyen::HppSource do
       it { expect(subject.can_capture?(payment)).to be false }
       it { expect(subject.can_void?(payment)).to be false }
       it { expect(subject.can_credit?(payment)).to be true }
-    end
-
-    context "refund" do
     end
   end
 end

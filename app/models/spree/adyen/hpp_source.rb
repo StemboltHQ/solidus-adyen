@@ -24,9 +24,9 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
 
   has_one :payment, class_name: 'Spree::Payment', as: :source
 
-  # OPTIMIZE this is inefficient and does N queries + 1
+  # FIXME should change this to find the auth notification by order number, then
+  # all notification that have a original ref that matches it's psp
   has_many :notifications,
-    -> { includes :prev, :next },
     class_name: 'AdyenNotification',
     foreign_key: :merchant_reference,
     primary_key: :merchant_reference
@@ -38,21 +38,23 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
   end
 
   def can_capture? payment
-    last_message_was { |x| x.authorisation? }
+    can_void? payment
   end
 
   def can_void? payment
-    last_message_was { |x| x.authorisation? }
+    authorised? && !captured?
   end
 
   def can_credit? payment
-    last_message_was { |x| x.capture? }
+    captured?
   end
 
   private
-  def last_message_was &block
-    AdyenNotification.
-      most_recent(notifications).
-      try!(&block) || false
+  def captured?
+    self.notifications.any? { |x| x.capture? }
+  end
+
+  def authorised?
+    self.notifications.any? { |x| x.authorisation? }
   end
 end
