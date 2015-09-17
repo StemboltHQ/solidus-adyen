@@ -97,7 +97,7 @@ module Spree
       end
     end
 
-    describe "GET authorise3d" do
+    xdescribe "GET authorise3d" do
       let(:env) do
         { "HTTP_USER_AGENT" =>
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:29.0) " +
