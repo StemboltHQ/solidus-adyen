@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe AdyenNotification do
-  it { is_expected.to have_one(:next).inverse_of(:prev) }
+  it { is_expected.to have_many(:next).inverse_of(:prev) }
   it { is_expected.to belong_to(:prev).inverse_of(:next) }
   it { is_expected.to belong_to :order }
 
