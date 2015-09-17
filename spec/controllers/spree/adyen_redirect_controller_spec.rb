@@ -46,7 +46,7 @@ module Spree
         subject { order }
         before { action }
         it "is in the completed state" do
-          is_expected.to be_completed
+          expect(subject.state).to eq 'complete'
         end
       end
 
