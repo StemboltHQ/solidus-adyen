@@ -30,7 +30,7 @@ module Spree
         p.source = Adyen::HppSource.create!(source_params(params))
       end
 
-      order.next
+      order.complete!
 
       if order.complete?
         flash.notice = Spree.t(:order_processed_successfully)
