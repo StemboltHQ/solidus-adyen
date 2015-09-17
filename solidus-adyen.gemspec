@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'spree/adyen/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "spree-adyen"
+  spec.name          = "solidus-adyen"
   spec.version       = Spree::Adyen::VERSION
   spec.authors       = ["Washington Luiz"]
   spec.email         = ["huoxito@gmail.com"]
