@@ -47,26 +47,4 @@ RSpec.describe AdyenNotification do
       end
     end
   end
-
-  describe "#most_recent" do
-    subject { described_class.most_recent notifications }
-
-    let(:order) { create :order }
-    let!(:notifications) { [refund_failed, auth, capture, refund] }
-    let(:refund_failed) { create :notification,  order: order,
-                 event_code: "REFUND_FAILED", operations: "" }
-
-    let(:auth) { create :notification, :auth, order: order}
-    let(:capture) { create :notification, :capture, order: order, prev: auth }
-    let(:refund) { create :notification, :refund, order: order, prev: capture }
-
-    it "returns the most recent notification in the message chain" do
-      is_expected.to eq refund
-    end
-
-    context "when notifications is an empty array" do
-      let(:notifications) { [] }
-      it { is_expected.to eq nil }
-    end
-  end
 end
