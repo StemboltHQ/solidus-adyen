@@ -44,6 +44,7 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.mock_with :rspec
   config.use_transactional_fixtures = true
+  config.example_status_persistence_file_path = './spec/examples.txt'
 
   config.include Spree::TestingSupport::ControllerRequests, type: :controller
   config.include FactoryGirl::Syntax::Methods
