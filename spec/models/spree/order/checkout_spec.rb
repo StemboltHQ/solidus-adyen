@@ -22,7 +22,7 @@ module Spree
         expect(gateway.provider).to receive(:list_recurring_details).and_return(details)
       end
 
-      it "transitions to complete just fine" do
+      pending "transitions to complete just fine" do
         expect(order.state).to eq "payment"
 
         payment = order.payments.create! do |p|
