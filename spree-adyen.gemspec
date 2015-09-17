@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'sqlite3'
 
-  spec.add_development_dependency 'spree', '~> 2.4'
+  spec.add_development_dependency 'solidus', '~> 1.0'
 
   spec.add_development_dependency "rspec-rails"
   spec.add_development_dependency 'rspec-activemodel-mocks'
@@ -36,6 +36,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'awesome_print'
   spec.add_development_dependency 'pry-rails'
 
-  spec.add_runtime_dependency 'adyen', "~> 1.4.0"
-  spec.add_runtime_dependency "spree_core", "~> 2.4.0"
+  spec.add_runtime_dependency 'adyen', "~> 1.4"
+  spec.add_runtime_dependency "solidus_core", "~> 1.0"
 end
