@@ -16,10 +16,11 @@
   payment_amount: (@order.total.to_f * 100).to_int }
   %>
 
-<%= link_to "Pay with Adyen", ::Adyen::Form.redirect_url(redirect_params) %>
+<%# adyen deletes the shared secret so dup it %>
+<%= link_to "Pay with Adyen", ::Adyen::Form.redirect_url(redirect_params.dup) %>
 
 <dl>
-  <% ::Spree::Adyen::Form.payment_methods_from_directory(redirect_params).each do |payment_method| %>
+  <% ::Spree::Adyen::Form.payment_methods_from_directory(redirect_params.dup).each do |payment_method| %>
     <dt>
       <%= payment_method["name"] %>
     </dt>
