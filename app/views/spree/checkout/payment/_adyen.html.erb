@@ -13,14 +13,28 @@
   merchant_account: payment_method.merchant_account,
   skin_code: payment_method.skin_code,
   shared_secret: payment_method.shared_secret,
-  payment_amount: (@order.total.to_f * 100).to_int
-}
+  country_code: @order.billing_address.country.iso3,
+  payment_amount: (@order.total.to_f * 100).to_int }
 %>
 
 <%= link_to "Pay with Adyen", ::Adyen::Form.redirect_url(
-      Rails.env.development? ? redirect_params.merge(:resURL => adyen_confirmation_url) : redirect_params
-  )
+  Rails.env.development? ? redirect_params.merge(:resURL => adyen_confirmation_url) : redirect_params)
 %>
+
+<%= link_to "Pay with Adyen", ::Adyen::Form.redirect_url(
+  Rails.env.development? ? redirect_params.merge(:resURL => adyen_confirmation_url) : redirect_params)
+%>
+
+<dl>
+  <% ::Spree::Adyen::Form.payment_methods_from_directory(redirect_params).each do |payment_method| %>
+    <dt>
+      <%= payment_method["name"] %>
+    </dt>
+    <dd>
+      <%= link_to payment_method["brandCode"], payment_method["url"] %>
+    </dd>
+  <% end %>
+</dl>
 
 <script type="text/javascript">
 $(function() {
