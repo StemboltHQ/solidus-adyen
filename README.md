@@ -100,6 +100,12 @@ with solidus-adyen and post notifications about payments. To do do:
 If all went well then you'll see logging output for Adyen's tests and will
 not see any notification of errors at the top of the page.
 
+For payments through HPP to redirect back to completed page, go to your
+configuration for the skin you're using and set the result urls to
+http://localhost:portnumber/checkout/payment/adyen for the Test Platform, and
+your site with the same path for the live patform. If you don't set this users
+will not be redirected back to your site after payment!
+
 ### Creating and Configuring the AdyenHPP payment method
 Next we will create a payment method that will use Adyen's hosted payment
 pages. Start by creating a new payment method within solidus (found at
