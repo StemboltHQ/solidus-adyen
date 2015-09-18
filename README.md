@@ -1,6 +1,6 @@
-# Spree Adyen Integration
+# Solidus Adyen Integration
 
-Easily integrates Adyen payments into a Spree store. It works as a wrapper
+Easily integrates Adyen payments into a Solidus store. It works as a wrapper
 of the [awesome adyen](https://github.com/wvanbergen/adyen/) gem which contains
 all basic API calls for Adyen payment services.
 
@@ -8,13 +8,11 @@ all basic API calls for Adyen payment services.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'spree-adyen', github: 'freerunningtech/spree-adyen', branch: '2-4-stable'
+gem 'solidus-adyen', github: 'freerunningtech/solidus-adyen', branch: 'master'
 ```
 
-*Make sure you are using version 2.4 of spree.*
-
 Download the gem, install and run migrations provided by this gem. The
-spree-adyen migrations will allow responses from Adyen to be persisted to the
+solidus-adyen migrations will allow responses from Adyen to be persisted to the
 database.
 
 ```bash
@@ -37,7 +35,7 @@ using Adyen Hosted Payments Page solution. In this case the customer will enter
 cc in Adyen website and be redirected back to the store after the payment.
 
 For the AdyenHPP method you'll need to create a skin in your merchant dashboard
-and add the skin_code and shared_secret to the payment method on Spree backend UI.
+and add the skin_code and shared_secret to the payment method on Solidus backend UI.
 
 All subsequent calls, e.g. capture, are done via Adyen SOAP API by both payment
 methods.
@@ -79,7 +77,7 @@ secure as they will be used by Adyen to notify the server that a payment has
 been processed. These will be used in the next step so keep the file open.
 
 Next we will configure our Adyen account so that it will be able to authenticate
-with spree-adyen and post notifications about payments. To do do:
+with solidus-adyen and post notifications about payments. To do do:
 1. [Log in to Adyen](https://ca-test.adyen.com/ca/ca/login.shtml)
 1. Click `Settings` on the left hand nav.
 1. Click the [Server Communication](https://ca-test.adyen.com/ca/ca/config/showthirdparty.shtml)
@@ -87,7 +85,7 @@ with spree-adyen and post notifications about payments. To do do:
 1. In the first table, click `Edit & Test` in the `Action` column.
 1. Within the fielset labeled `Transport`
   + Fill in the field `URL` with `http://myserver.com/adyen/notify` where
-    `http://myserver.com` is either your production site with the spree-adyen
+    `http://myserver.com` is either your production site with the solidus-adyen
     gem installed, or the ip and port combination you have reverse-forwarded
     your development server to.
   + Choose `HTTP POST` for `Method`.
@@ -104,7 +102,7 @@ not see any notification of errors at the top of the page.
 
 ### Creating and Configuring the AdyenHPP payment method
 Next we will create a payment method that will use Adyen's hosted payment
-pages. Start by creating a new payment method within spree (found at
+pages. Start by creating a new payment method within solidus (found at
 http://yourserver/admin/payment_methods/new).
 
 _It is *very* important to note if any of the following values entered have any
@@ -148,7 +146,7 @@ To find your `Skin Code` and `Shared Secret`:
   + The value for `Shared Secret` is the value of text input labeled `HMAC Keys`
 
 To verify that your payment method is configured properly:
-+ Go to your Spree store's homepage
++ Go to your Solidus store's homepage
 + Add an item to cart
 + Click Check out
 + Enter an Address
