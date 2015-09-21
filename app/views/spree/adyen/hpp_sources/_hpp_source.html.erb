@@ -1,0 +1,20 @@
+<% hpp_source_fields = [
+  :auth_result, :psp_reference, :skin_code, :payment_method, :shopper_locale, :created_at] %>
+
+<table>
+  <thead>
+    <% hpp_source_fields.map do |attr| %>
+      <th> <%= Spree::Adyen::HppSource.human_attribute_name attr %> </th>
+    <% end %>
+  </thead>
+  <tbody>
+    <tr>
+      <td> <%= hpp_source.auth_result %> </td>
+      <td> <%= hpp_source.psp_reference %> </td>
+      <td> <%= hpp_source.skin_code %> </td>
+      <td> <%= hpp_source.payment_method %> </td>
+      <td> <%= hpp_source.shopper_locale %> </td>
+      <td> <%= hpp_source.created_at.to_s(:short) %> </td>
+    </tr>
+  </tbody>
+</table>
