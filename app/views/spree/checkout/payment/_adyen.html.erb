@@ -1,20 +1,16 @@
+<% content_for :head do %>
+  <%= javascript_include_tag 'spree/checkout/payment/adyen.js' %>
+<% end %>
+
 <p>
   You'll be redirected to Adyen Hosted Payment Pages. After completing the
   payment form you'll be back to the store.
 </p>
 
-<dl>
-  <% ::Spree::Adyen::Form.payment_methods_from_directory(@order, payment_method).each do |method| %>
-    <dl>
-      <dt>
-        <%= method['brandCode'] %>
-      </dt>
-      <dd>
-        <%= link_to method['name'], ::Spree::Adyen::Form.details_url(@order, payment_method, method).to_s %>
-      </dd>
-    </dl>
-  <% end %>
-</dl>
+<%= content_tag :div, "", id: 'adyen-hpp-details', data: {
+  url: directory_adyen_hpp_path(
+    order_id: @order.id,
+    payment_method_id: payment_method.id) } %>
 
 <script type="text/javascript">
 $(function() {

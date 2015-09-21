@@ -1,0 +1,10 @@
+<dl>
+  <% @brands.each do |brand| %>
+    <dt>
+      <%= brand['brandCode'] %>
+    </dt>
+    <dd>
+      <%= link_to brand['name'], ::Spree::Adyen::Form.details_url(@order, @payment_method, brand).to_s %>
+    </dd>
+  <% end %>
+</dl>
