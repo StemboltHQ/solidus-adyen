@@ -19,20 +19,19 @@ module Spree
         redirect_to checkout_state_path(order.state) and return
       end
 
-      # cant set payment to complete here due to a validation
-      # in order transition from payment to complete (it requires at
-      # least one pending payment)
+      # payment is created in a 'checkout' state so that the payment method
+      # can attempt to auth it. The payment of course is already auth'd and
+      # adyen hpp's authorize implementation just returns a dummy response.
       order.payments.create!(
         amount: order.total,
         payment_method: payment_method,
-        response_code: params[:pspReference]
-      ) do |p|
-        p.source = Adyen::HppSource.create!(source_params(params))
+        response_code: params[:pspReference],
+        state: 'checkout'
+      ) do |payment|
+        payment.source = Adyen::HppSource.create!(source_params(params))
       end
 
-      order.complete!
-
-      if order.complete?
+      if order.complete
         flash.notice = Spree.t(:order_processed_successfully)
         redirect_to order_path(order, token: order.guest_token)
       else

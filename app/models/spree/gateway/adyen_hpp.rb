@@ -23,6 +23,10 @@ module Spree
     end
 
     def authorize(amount, source, gateway_options)
+      # to get around the order checking for processed payments we create payments
+      # in the checkout state and allow the payment method to attempt to auth
+      # them here. We just return a dummy response here because the payment has
+      # already been authorized
       ActiveMerchant::Billing::Response.new(true, 'successful hpp payment')
     end
 
