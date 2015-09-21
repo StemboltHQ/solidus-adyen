@@ -3,30 +3,16 @@
   payment form you'll be back to the store.
 </p>
 
-<% redirect_params = {
-  currency_code: Spree::Config.currency,
-  ship_before_date: Date.tomorrow,
-  session_validity: 10.minutes.from_now,
-  recurring: false,
-  merchant_reference: @order.number.to_s,
-  merchant_account: payment_method.merchant_account,
-  skin_code: payment_method.skin_code,
-  shared_secret: payment_method.shared_secret,
-  country_code: @order.billing_address.country.iso3,
-  payment_amount: (@order.total.to_f * 100).to_int }
-  %>
-
-<%# adyen deletes the shared secret so dup it %>
-<%= link_to "Pay with Adyen", ::Adyen::Form.redirect_url(redirect_params.dup) %>
-
 <dl>
-  <% ::Spree::Adyen::Form.payment_methods_from_directory(redirect_params.dup).each do |payment_method| %>
-    <dt>
-      <%= payment_method["name"] %>
-    </dt>
-    <dd>
-      <%= link_to payment_method["brandCode"], payment_method["url"] %>
-    </dd>
+  <% ::Spree::Adyen::Form.payment_methods_from_directory(@order, payment_method).each do |method| %>
+    <dl>
+      <dt>
+        <%= method['brandCode'] %>
+      </dt>
+      <dd>
+        <%= link_to method['name'], ::Spree::Adyen::Form.details_url(@order, payment_method, method).to_s %>
+      </dd>
+    </dl>
   <% end %>
 </dl>
 
