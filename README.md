@@ -163,12 +163,12 @@ To verify that your payment method is configured properly:
 
 ## HPP Directory Lookup
 This gem supports [adyen directory look ups](https://docs.adyen.com/display/TD/Directory+lookup+-+Skip+HPP).
-The [default checkout view](../blob/master/app/views/spree/checkout/payment/_adyen.html.erb#L10-L13)
+The [default checkout view](../master/app/views/spree/checkout/payment/_adyen.html.erb#L10-L13)
 does provide the functionality to asynchronously load the payment methods, but
 if you want to include this feature in your own custom checkout views you can
 follow the instructions below.
 
-Include [spree/checkout/payment/adyen.js](../blob/master/spree/checkout/payment/adyen.js)
+Include [spree/checkout/payment/adyen.js](../master/app/assets/javascripts/spree/checkout/payment/adyen.js)
 on your checkout page. Add an element that has an id of `adyen-hpp-details` and 
 has
 
@@ -186,7 +186,7 @@ This will then make the request to adyen to get a list of payment methods that
 are supported and then render the payment links.
 
 If you just want to style the list of Adyen payment methods, just override the
-[spree/adyen/hpps/directory](../blob/master/app/views/spree/adyen/hpps/directory.html.erb)
+[spree/adyen/hpps/directory](../master/app/views/spree/adyen/hpps/directory.html.erb)
 view. Take a look at the existing version to get an idea of what is available
 in the view.
 
