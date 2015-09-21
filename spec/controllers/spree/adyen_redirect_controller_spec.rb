@@ -97,7 +97,7 @@ module Spree
       end
     end
 
-    xdescribe "GET authorise3d" do
+    describe "GET authorise3d" do
       let(:env) do
         { "HTTP_USER_AGENT" =>
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:29.0) " +
@@ -124,7 +124,7 @@ module Spree
             list_recurring_details: double("RecurringDetails", details: [])
         end
 
-        it "redirects user if no recurring detail is returned" do
+        pending "redirects user if no recurring detail is returned" do
           spree_get :authorise3d, params,
             { adyen_gateway_name: gateway.class.name,
               adyen_gateway_id: gateway.id }
@@ -133,7 +133,7 @@ module Spree
               checkout_state_path(order.state)
         end
 
-        it "payment need to be in processing state so it's not authorised twice" do
+        pending "payment need to be in processing state so it's not authorised twice" do
           details = { card: {
             expiry_date: 1.year.from_now,
             number: "1111" },

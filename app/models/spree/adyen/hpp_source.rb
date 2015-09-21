@@ -31,6 +31,7 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     foreign_key: :merchant_reference,
     primary_key: :merchant_reference
 
+
   # these should really just be informed by the auth response, but it's likely
   # this will always be the case - it will error if it doesn't succeed
   def actions
