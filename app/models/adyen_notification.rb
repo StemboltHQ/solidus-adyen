@@ -81,16 +81,6 @@ class AdyenNotification < ActiveRecord::Base
 
   alias_method :authorization?, :authorisation?
 
-  # Returns true if this notification is an AUTHORISATION notification and
-  # the success status indicates that the authorization was successfull.
-  # @return [true, false] true iff  the notification is an authorization
-  #   and the authorization was successful according to the success field.
-  def successful_authorisation?
-    authorisation? && success?
-  end
-
-  alias_method :successful_authorization?, :successful_authorisation?
-
   # Invalidate payments that doesnt receive a successful notification
   def handle!
     if (authorisation? || capture?) && !success?
