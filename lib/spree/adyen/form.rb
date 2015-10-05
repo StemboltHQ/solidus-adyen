@@ -48,14 +48,14 @@ module Spree::Adyen::Form
 
     # TODO set this in the adyen config
     def default_params
-      { currency_code: Spree::Config.currency,
-        ship_before_date: Date.tomorrow,
+      { ship_before_date: Date.tomorrow,
         session_validity: 10.minutes.from_now,
         recurring: false }
     end
 
     def order_params order
-      { merchant_reference: order.number.to_s,
+      { currency_code: order.currency,
+        merchant_reference: order.number.to_s,
         country_code: order.billing_address.country.iso3,
         payment_amount: (order.total.to_f * 100).to_int }
     end

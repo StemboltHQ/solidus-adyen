@@ -18,7 +18,7 @@ RSpec.describe Spree::Adyen::Form do
 
     let(:expected) do
       redirect_params = {
-        currency_code: Spree::Config.currency,
+        currency_code: order.currency,
         ship_before_date: Date.tomorrow,
         session_validity: 10.minutes.from_now,
         recurring: false,
