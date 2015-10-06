@@ -9,6 +9,9 @@ module Spree::Adyen::Form
       payment_methods(order, payment_method).fetch('paymentMethods')
     end
 
+    def select_url order, payment_method
+      endpoint_url 'select', order, payment_method
+    end
 
     def directory_url order, payment_method
       endpoint_url 'directory', order, payment_method
