@@ -59,45 +59,50 @@ module Spree::Adyen::Form
       Form.url(server, endpoint)
     end
 
-    def form_payment_methods_and_urls(response, order, payment_method)
+    def form_payment_methods_and_urls response, order, payment_method
       payment_methods = []
       response.each do |brand|
         if brand['issuers']
           issuers = []
           brand['issuers'].each do |issuer|
-            issuers << {
-              name: issuer['name'],
-              payment_url: Spree::Adyen::Form.details_url_with_issuer(
-                order,
-                payment_method,
-                brand,
-                issuer
-              ).to_s
-            }
+            issuers << form_issuer(issuer, order, payment_method, brand)
           end
-          payment_methods << {
-            brand_code: brand['brandCode'],
-            name: brand['name'],
-            payment_url: Spree::Adyen::Form.details_url(
-              order,
-              payment_method,
-              brand
-            ).to_s,
-            issuers: issuers
-          }
+          payment_methods << form_payment_method(
+            brand,
+            order,
+            payment_method,
+            issuers
+          )
         else
-          payment_methods << {
-            brand_code: brand['brandCode'],
-            name: brand['name'],
-            payment_url: Spree::Adyen::Form.details_url(
-              order,
-              payment_method,
-              brand
-            ).to_s
-          }
+          payment_methods << form_payment_method(brand, order, payment_method)
         end
       end
       payment_methods
+    end
+
+    def form_issuer issuer, order, payment_method, brand
+      {
+        name: issuer['name'],
+        payment_url: Spree::Adyen::Form.details_url_with_issuer(
+          order,
+          payment_method,
+          brand,
+          issuer
+        ).to_s
+      }
+    end
+
+    def form_payment_method brand, order, payment_method, issuers = nil
+      {
+        brand_code: brand['brandCode'],
+        name: brand['name'],
+        payment_url: Spree::Adyen::Form.details_url(
+          order,
+          payment_method,
+          brand
+        ).to_s,
+        issuers: issuers
+      }
     end
 
     def params order, payment_method
