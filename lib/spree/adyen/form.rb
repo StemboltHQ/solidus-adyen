@@ -60,24 +60,12 @@ module Spree::Adyen::Form
     end
 
     def form_payment_methods_and_urls response, order, payment_method
-      payment_methods = []
-      response.each do |brand|
-        if brand['issuers']
-          issuers = []
-          brand['issuers'].each do |issuer|
-            issuers << form_issuer(issuer, order, payment_method, brand)
-          end
-          payment_methods << form_payment_method(
-            brand,
-            order,
-            payment_method,
-            issuers
-          )
-        else
-          payment_methods << form_payment_method(brand, order, payment_method)
+      response.map do |brand|
+        issuers = brand['issuers'].map do |issuer|
+          form_issue(issuer, order, payment_method, brand)
         end
+        form_payment_method(brand, order, payment_method, brand, issuers)
       end
-      payment_methods
     end
 
     def form_issuer issuer, order, payment_method, brand
@@ -92,7 +80,7 @@ module Spree::Adyen::Form
       }
     end
 
-    def form_payment_method brand, order, payment_method, issuers = nil
+    def form_payment_method brand, order, payment_method, issuers
       {
         brand_code: brand['brandCode'],
         name: brand['name'],
