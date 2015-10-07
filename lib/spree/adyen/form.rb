@@ -51,8 +51,7 @@ module Spree::Adyen::Form
 
     # TODO set this in the adyen config
     def default_params
-      { ship_before_date: Date.tomorrow,
-        session_validity: 10.minutes.from_now,
+      { session_validity: 10.minutes.from_now,
         recurring: false }
     end
 
@@ -66,7 +65,8 @@ module Spree::Adyen::Form
     def payment_method_params payment_method
       { merchant_account: payment_method.merchant_account,
         skin_code: payment_method.skin_code,
-        shared_secret: payment_method.shared_secret }
+        shared_secret: payment_method.shared_secret,
+        ship_before_date: payment_method.ship_before_date }
     end
   end
 end
