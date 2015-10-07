@@ -61,10 +61,10 @@ module Spree::Adyen::Form
 
     def form_payment_methods_and_urls response, order, payment_method
       response.map do |brand|
-        issuers = brand['issuers'].map do |issuer|
-          form_issue(issuer, order, payment_method, brand)
+        issuers = brand.fetch('issuers', []).map do |issuer|
+          form_issuer(issuer, order, payment_method, brand)
         end
-        form_payment_method(brand, order, payment_method, brand, issuers)
+        form_payment_method(brand, order, payment_method, issuers)
       end
     end
 
