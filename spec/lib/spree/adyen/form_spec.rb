@@ -13,13 +13,14 @@ RSpec.describe Spree::Adyen::Form do
        api_password: "password",
        merchant_account: "account",
        skin_code: "XXXXXX",
-       shared_secret: "1234567890"}
+       shared_secret: "1234567890",
+       days_to_ship: 3}
     }
 
     let(:expected) do
       redirect_params = {
         currency_code: order.currency,
-        ship_before_date: Date.tomorrow,
+        ship_before_date: 3.days.from_now,
         session_validity: 10.minutes.from_now,
         recurring: false,
         merchant_reference: order.number.to_s,

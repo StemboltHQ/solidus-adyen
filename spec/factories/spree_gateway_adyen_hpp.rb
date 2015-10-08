@@ -6,6 +6,7 @@ FactoryGirl.define do
     preferences(
       skin_code: 'XXXXX',
       shared_secret: '1234',
-      merchant_account: 'XXXX')
+      merchant_account: 'XXXX',
+      days_to_ship: 3)
   end
 end
