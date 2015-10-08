@@ -5,6 +5,10 @@ module Spree
 
     def directory
       @brands = Adyen::Form.payment_methods_from_directory @order, @payment_method
+      respond_to do |format|
+        format.html
+        format.json { render json: @brands }
+      end
     end
   end
 end
