@@ -26,7 +26,7 @@ RSpec.describe Spree::Adyen::Form do
         merchant_account: payment_method.merchant_account,
         skin_code: payment_method.skin_code,
         shared_secret: payment_method.shared_secret,
-        country_code: order.billing_address.country.iso3,
+        country_code: order.billing_address.country.iso,
         payment_amount: (order.total.to_f * 100).to_int }
 
        ::Adyen::Form.redirect_url(redirect_params)
