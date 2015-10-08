@@ -48,7 +48,7 @@ module Spree::Adyen::Form
       url = ::Spree::Adyen::Form.directory_url(order, payment_method)
 
       form_payment_methods_and_urls(
-        JSON.parse(::Net::HTTP.get(url)).fetch('paymentMethods'),
+        JSON.parse(::Net::HTTP.get(url)),
         order,
         payment_method
       )
@@ -60,7 +60,7 @@ module Spree::Adyen::Form
     end
 
     def form_payment_methods_and_urls response, order, payment_method
-      response.map do |brand|
+      response.fetch('paymentMethods').map do |brand|
         issuers = brand.fetch('issuers', []).map do |issuer|
           form_issuer(issuer, order, payment_method, brand)
         end
