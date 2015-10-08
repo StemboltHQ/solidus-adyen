@@ -165,35 +165,39 @@ RSpec.describe Spree::Adyen::Form do
   end
 
   describe "details_url" do
-    let(:directory_entry) { { "name" => "PayPal", "brandCode" => "paypal" } }
+    let(:brand_code) { "paypal" }
     subject { 
-      described_class.details_url(order, payment_method, directory_entry) 
+      described_class.details_url(order, payment_method, brand_code) 
     }
 
     it "calls endpoint url with the expected params" do
       expect(described_class).to receive(:endpoint_url).
-        with("details", order, payment_method, { "brandCode" => "paypal" })
+        with("details", order, payment_method, { brandCode: "paypal" })
       subject
     end
   end
 
   describe "details_url_with_issuer" do
-    let(:issuer) { { "name" => "isser01", "issuerId" => "1654" } }
-    let(:directory_entry) {
-      {
-        "name" => "PayPal",
-        "brandCode" => "paypal",
-        "issuers" => [issuer]
-      }
-    }
+    let(:issuer_id) { "1654" }
+    let(:brand_code) { "paypal" }
     
     subject { 
-      described_class.details_url_with_issuer(order, payment_method, directory_entry, issuer) 
+      described_class.details_url_with_issuer(
+        order,
+        payment_method,
+        brand_code,
+        issuer_id
+      ) 
     }
 
     it "calls endpoint url with the expected params" do
       expect(described_class).to receive(:endpoint_url).
-        with("details", order, payment_method, { brandCode: "paypal", issuerId: "1654" })
+        with(
+          "details",
+          order,
+          payment_method,
+          { brandCode: "paypal", issuerId: "1654" }
+        )
       subject
     end
   end

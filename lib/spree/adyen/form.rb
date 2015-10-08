@@ -17,19 +17,19 @@ module Spree::Adyen::Form
       endpoint_url 'directory', order, payment_method
     end
 
-    def details_url order, payment_method, directory_entry
+    def details_url order, payment_method, brand_code
       endpoint_url(
-        'details', order, payment_method, directory_entry.slice('brandCode'))
+        'details', order, payment_method, { brandCode: brand_code })
     end
 
-    def details_url_with_issuer order, payment_method, directory_entry, issuer
+    def details_url_with_issuer order, payment_method, brand_code, issuer_id
       endpoint_url(
         'details',
         order,
         payment_method,
         {
-          brandCode: directory_entry['brandCode'],
-          issuerId: issuer['issuerId']
+          brandCode: brand_code,
+          issuerId: issuer_id
         }
       )
     end
@@ -87,7 +87,7 @@ module Spree::Adyen::Form
         payment_url: Spree::Adyen::Form.details_url(
           order,
           payment_method,
-          brand
+          brand['brandCode']
         ).to_s,
         issuers: issuers
       }
