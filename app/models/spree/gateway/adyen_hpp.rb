@@ -5,7 +5,7 @@ module Spree
 
     preference :skin_code, :string
     preference :shared_secret, :string
-    preference :days_to_ship, :integer
+    preference :days_to_ship, :integer, default: 1
 
     def auto_capture?
       false
@@ -24,8 +24,7 @@ module Spree
     end
 
     def ship_before_date
-      days_to_ship = (ENV['ADYEN_DAYS_TO_SHIP'] || preferred_days_to_ship).to_i
-      days_to_ship.days.from_now
+      preferred_days_to_ship.days.from_now
     end
 
     def authorize(amount, source, gateway_options)
