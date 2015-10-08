@@ -74,8 +74,8 @@ module Spree::Adyen::Form
         payment_url: Spree::Adyen::Form.details_url_with_issuer(
           order,
           payment_method,
-          brand,
-          issuer
+          brand['brandCode'],
+          issuer['issuerId']
         ).to_s
       }
     end
