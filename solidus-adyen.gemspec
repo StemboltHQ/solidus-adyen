@@ -33,10 +33,8 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "rspec-rails"
   spec.add_development_dependency 'rspec-activemodel-mocks'
-  spec.add_development_dependency 'webmock'
   spec.add_development_dependency "factory_girl"
   spec.add_development_dependency "shoulda-matchers"
-  spec.add_development_dependency 'vcr'
   spec.add_development_dependency 'simplecov'
 
   spec.add_development_dependency 'awesome_print'
