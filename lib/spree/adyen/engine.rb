@@ -7,6 +7,10 @@ module Spree
 
       config.autoload_paths += Dir["#{config.root}/lib/**/"]
 
+      config.generators do |g|
+        g.test_framework :rspec
+      end
+
       initializer "spree.solidus-adyen.payment_methods", :after => "spree.register.payment_methods" do |app|
         app.config.spree.payment_methods << Gateway::AdyenPayment
         app.config.spree.payment_methods << Gateway::AdyenHPP
