@@ -5,6 +5,8 @@ module Spree
 
       isolate_namespace Spree::Adyen
 
+      config.autoload_paths += Dir["#{config.root}/lib/**/"]
+
       initializer "spree.solidus-adyen.payment_methods", :after => "spree.register.payment_methods" do |app|
         app.config.spree.payment_methods << Gateway::AdyenPayment
         app.config.spree.payment_methods << Gateway::AdyenHPP
