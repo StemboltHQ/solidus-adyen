@@ -2,6 +2,28 @@ require 'spec_helper'
 
 module Spree
   describe Gateway::AdyenHPP do
+    describe ".capture" do
+      let(:response) do
+        instance_double(
+          ::Adyen::API::PaymentService::CaptureResponse,
+          success?: true,
+          params:
+          { psp_reference: "1234",
+            response: "[capture-received]"
+          }
+        )
+      end
+
+      it "makes an api call" do
+        expect(subject.provider_class).
+          to receive(:capture_payment).
+          and_return(response)
+
+        expect(subject.capture(2000, "1234", currency: "CAD")).
+          to be_a ::ActiveMerchant::Billing::Response
+      end
+    end
+
     context "comply with spree payment/processing api" do
       context "void" do
         it "makes response.authorization returns the psp reference" do
@@ -9,18 +31,6 @@ module Spree
           subject.stub_chain(:provider, cancel_payment: response)
 
           expect(subject.void("huhu").authorization).to eq "huhu"
-        end
-      end
-
-      context "capture" do
-        it "makes response.authorization returns the psp reference" do
-          response = double('Response', success?: true, psp_reference: "huhu")
-          subject.stub_chain(:provider, capture_payment: response)
-
-          result = subject.capture(30000, "huhu")
-          expect(result.authorization).to be nil
-          expect(result.avs_result).to eq({})
-          expect(result.cvv_result).to eq({})
         end
       end
     end
