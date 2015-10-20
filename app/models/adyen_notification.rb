@@ -41,10 +41,6 @@ class AdyenNotification < ActiveRecord::Base
   # A notification should always include a psp_reference
   validates_presence_of :psp_reference
 
-  # A notification should be unique using the composed key of
-  # [:psp_reference, :event_code, :success]
-  validates_uniqueness_of :success, :scope => [:psp_reference, :event_code]
-
   # Make sure we don't end up with an original_reference with an empty string
   before_validation { |notification| notification.original_reference = nil if notification.original_reference.blank? }
 

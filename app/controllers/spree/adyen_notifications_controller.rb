@@ -23,12 +23,8 @@ module Spree
 
       notification = AdyenNotification.log(params)
       notification.handle!
-    rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
-      # Validation failed, because of the duplicate check.
-      # So ignore this notification, it is already stored and handled.
-    ensure
       # Always return that we have accepted the notification
-      render :text => '[accepted]'
+      render text: '[accepted]'
     end
 
     protected
