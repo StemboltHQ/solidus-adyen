@@ -5,6 +5,22 @@ module Spree
     before_filter :authenticate
 
     def notify
+      response =
+        ::ActiveMerchant::Billing::Response.new(
+          params["success"] == "true",
+          JSON.pretty_generate(params),
+          {},
+          {}
+        )
+
+      psp_reference =
+        params["originalReference"].presence || params["pspReference"]
+
+      Spree::Adyen::HppSource.find_by(psp_reference: psp_reference).
+        try{ payment }.
+        try{ log_entries }.
+        try{ create!(details: YAML.dump(response)) }
+
       notification = AdyenNotification.log(params)
       notification.handle!
     rescue ActiveRecord::RecordNotUnique, ActiveRecord::RecordInvalid
