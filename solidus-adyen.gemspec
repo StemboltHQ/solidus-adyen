@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'sqlite3'
 
-  spec.add_development_dependency "rspec-rails"
+  spec.add_development_dependency "rspec-rails", "~> 3.3"
   spec.add_development_dependency 'rspec-activemodel-mocks'
   spec.add_development_dependency "factory_girl"
   spec.add_development_dependency "shoulda-matchers"
