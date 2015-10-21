@@ -120,7 +120,7 @@ module Spree
           expect(gateway).to receive(:authorise3d).
             and_return double("Response", success?: true, psp_reference: 1)
 
-          gateway.stub_chain :provider,
+          allow(gateway).to receive_message_chain :provider,
             list_recurring_details: double("RecurringDetails", details: [])
         end
 
@@ -139,7 +139,7 @@ module Spree
             number: "1111" },
             recurring_detail_reference: "123432423" }
 
-          gateway.stub_chain :provider,
+          allow(gateway).to receive_message_chain :provider,
             list_recurring_details: double("RecurringDetails",
                                            details: [details])
 
@@ -168,11 +168,11 @@ module Spree
 
         before do
           order.user_id = 1
-          ActionController::TestRequest.any_instance.stub(:ip).
+          allow_any_instance_of(ActionController::TestRequest).to receive(:ip).
             and_return("127.0.0.1")
 
-          ActionController::TestRequest.any_instance.
-            stub_chain(:headers, env: env)
+          allow_any_instance_of(ActionController::TestRequest).
+            to receive_message_chain(:headers, env: env)
         end
 
         it "redirects user to confirm step" do
