@@ -1,11 +1,31 @@
 module Spree
   # Gateway for Adyen Hosted Payment Pages solution
   class Gateway::AdyenHPP < Gateway
-    include AdyenCommon
-
     preference :skin_code, :string
     preference :shared_secret, :string
     preference :days_to_ship, :integer, default: 1
+    preference :api_username, :string
+    preference :api_password, :string
+    preference :merchant_account, :string
+
+    def merchant_account
+      ENV['ADYEN_MERCHANT_ACCOUNT'] || preferred_merchant_account
+    end
+
+    def provider_class
+      ::Adyen::API
+    end
+
+    def provider
+      ::Adyen.configuration.api_username =
+        (ENV['ADYEN_API_USERNAME'] || preferred_api_username)
+      ::Adyen.configuration.api_password =
+        (ENV['ADYEN_API_PASSWORD'] || preferred_api_password)
+      ::Adyen.configuration.default_api_params[:merchant_account] =
+        merchant_account
+
+      provider_class
+    end
 
     def auto_capture?
       false
@@ -64,5 +84,21 @@ module Spree
       response
     end
 
+    def credit(credit_cents, transaction_id, gateway_options = {})
+      currency = gateway_options[:currency]
+      currency ||= gateway_options[:originator].payment.currency
+      amount = { currency: currency, value: credit_cents }
+      response = provider.refund_payment transaction_id, amount
+
+      if response.success?
+        def response.authorization; psp_reference; end
+      else
+        def response.to_s
+          refusal_reason
+        end
+      end
+
+      response
+    end
   end
 end
