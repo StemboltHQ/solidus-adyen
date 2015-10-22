@@ -19,7 +19,7 @@ FactoryGirl.define do
 
      trait :auth do
        event_code "AUTHORISATION"
-       operations "CANCEL CAPTURE REFUND"
+       operations "CANCEL,CAPTURE,REFUND"
        reason "31893:0002:8/2018"
      end
 
