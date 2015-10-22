@@ -50,7 +50,7 @@ class AdyenNotification < ActiveRecord::Base
   # @return [Adyen::Notification] The initiated and persisted notification instance.
   # @raise This method will raise an exception if the notification cannot be stored.
   # @see Adyen::Notification::HttpPost.log
-  def self.log(params)
+  def self.build(params)
     converted_params = {}
 
     # Assign explicit each attribute from CamelCase notation to notification
@@ -60,7 +60,6 @@ class AdyenNotification < ActiveRecord::Base
         setter = "#{key.to_s.underscore}="
         notification.send(setter, value) if notification.respond_to?(setter)
       end
-      notification.save!
     end
   end
 
