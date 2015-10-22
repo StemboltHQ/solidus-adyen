@@ -23,6 +23,16 @@ FactoryGirl.define do
        reason "31893:0002:8/2018"
      end
 
+     trait :bank_auth do
+       auth
+       operations "REFUND"
+     end
+
+     trait :ideal_auth do
+       bank_auth
+       payment_method "ideal"
+     end
+
      trait :capture do
        event_code "CAPTURE"
      end

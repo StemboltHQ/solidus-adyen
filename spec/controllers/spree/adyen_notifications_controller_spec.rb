@@ -5,7 +5,7 @@ describe Spree::AdyenNotificationsController do
 
   let(:order) { create :order }
   let(:params) do
-    { "pspReference" => "8513823667306210",
+    { "pspReference" => reference,
       "eventDate" => "2013-10-21T14:45:45.93Z",
       "merchantAccountCode" => "Test",
       "reason" => "41061:1111:6/2016",
@@ -19,6 +19,9 @@ describe Spree::AdyenNotificationsController do
       "currency" => "USD",
       "live" => "false" }
   end
+
+  let!(:payment) { create :payment, response_code: reference }
+  let(:reference) { "8513823667306210" }
 
   before do
     ENV["ADYEN_NOTIFY_USER"] = "username"
@@ -39,10 +42,23 @@ describe Spree::AdyenNotificationsController do
     context "request authenticated" do
       before { bypass_auth }
 
-      include_examples "success"
+      shared_examples "logs the notification" do
+        include_examples "success"
+        it "creates a notification" do
+          expect{ subject }.to change { AdyenNotification.count }.from(0).to(1)
+        end
+      end
 
-      it "creates a notification" do
-        expect{ subject }.to change { AdyenNotification.count }.from(0).to(1)
+      include_examples "logs the notification"
+
+      it "marks the notification as processed" do
+        subject
+        expect(AdyenNotification.last).to be_processed
+      end
+
+      context "when the system can't find a matching payment" do
+        let(:payment) { nil }
+        include_examples "logs the notification"
       end
     end
 

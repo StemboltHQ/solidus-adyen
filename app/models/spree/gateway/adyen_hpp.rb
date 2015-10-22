@@ -27,10 +27,6 @@ module Spree
       provider_class
     end
 
-    def auto_capture?
-      false
-    end
-
     def method_type
       "adyen"
     end

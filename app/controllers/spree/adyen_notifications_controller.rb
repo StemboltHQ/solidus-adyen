@@ -10,26 +10,25 @@ class Spree::AdyenNotificationsController < Spree::StoreController
       accept and return
     end
 
-    notification.save!
-    notification.handle!
+    # if a failure occurs we don't want to send anything, it wil be
+    # interpretted as a success.
+    AdyenNotification.transaction do
+      payment =
+        Spree::Adyen::NotificationProcessing.find_payment(notification)
 
-    response =
-      ::ActiveMerchant::Billing::Response.new(
-        params["success"] == "true",
-        JSON.pretty_generate(params),
-        {},
-        {}
-      )
+      # only process the notification if there is a matching payment
+      # there's a number of reasons why there may not be a matching payment
+      # such as test notifications, reports etc, we just log them and then
+      # accept
+      if payment
+        Spree::Adyen::NotificationProcessing.process notification, payment
+        notification.processed = true
+      end
 
-    psp_reference =
-      params["originalReference"].presence || params["pspReference"]
+      notification.save!
+    end
 
-    Spree::Adyen::HppSource.find_by(psp_reference: psp_reference).
-      try{ payment }.
-      try{ log_entries }.
-      try{ create!(details: YAML.dump(response)) }
-
-    # Always return that we have accepted the notification
+    # accept after processing has completed
     accept
   end
 
