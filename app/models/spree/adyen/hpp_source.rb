@@ -30,32 +30,4 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     class_name: 'AdyenNotification',
     foreign_key: :merchant_reference,
     primary_key: :merchant_reference
-
-
-  # these should really just be informed by the auth response, but it's likely
-  # this will always be the case - it will error if it doesn't succeed
-  def actions
-    ['capture', 'void', 'credit']
-  end
-
-  def can_capture? payment
-    can_void? payment
-  end
-
-  def can_void? payment
-    authorised? && !captured?
-  end
-
-  def can_credit? payment
-    captured?
-  end
-
-  private
-  def captured?
-    self.notifications.any? { |x| x.capture? }
-  end
-
-  def authorised?
-    self.notifications.any? { |x| x.authorisation? }
-  end
 end
