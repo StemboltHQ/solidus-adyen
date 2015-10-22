@@ -51,11 +51,6 @@ describe Spree::AdyenNotificationsController do
 
       include_examples "logs the notification"
 
-      it "marks the notification as processed" do
-        subject
-        expect(AdyenNotification.last).to be_processed
-      end
-
       context "when the system can't find a matching payment" do
         let(:payment) { nil }
         include_examples "logs the notification"

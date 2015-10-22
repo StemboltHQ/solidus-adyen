@@ -40,5 +40,9 @@ FactoryGirl.define do
      trait :refund do
        event_code "REFUND"
      end
+
+     trait :pending do
+       event_code "PENDING"
+     end
   end
 end

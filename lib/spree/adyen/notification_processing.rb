@@ -34,8 +34,19 @@ module Spree::Adyen::NotificationProcessing
       elsif normal_event? notification
         handle_normal_event notification, payment
 
+      else
+        # the notification was not handled by any clause and should be logged
+        # as unprocessed, this is typical of any event like a dispute or any
+        # other currently unsupported event. This could potentially let us go
+        # back and correct them retroactively or see what was actually handled
+        # by the system.
+        notification.processed = false
+        return notification
       end
     end
+
+    notification.processed = true
+    return notification
   end
 
   def self.handle_failure notification, payment

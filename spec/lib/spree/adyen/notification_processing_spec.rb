@@ -18,8 +18,6 @@ RSpec.describe Spree::Adyen::NotificationProcessing do
       let!(:notification) do
         create(:notification, :auth, psp_reference: reference)
       end
-
-      include_examples "finds the payment"
     end
 
     context "when it is a modification event" do
@@ -31,8 +29,6 @@ RSpec.describe Spree::Adyen::NotificationProcessing do
           psp_reference: "111111112"
         )
       end
-
-      include_examples "finds the payment"
     end
   end
 
@@ -61,7 +57,26 @@ RSpec.describe Spree::Adyen::NotificationProcessing do
     let(:auto_capture) { false }
     let(:success) { true }
 
+    shared_examples "returns the notification" do
+      it "always returns the notification" do
+        is_expected.to be_a AdyenNotification
+      end
+    end
+
+    shared_examples "processed event" do
+      include_examples "returns the notification"
+
+      it "marks the notification as processed" do
+        expect{ subject }.
+          to change{ notification.processed }.
+          from(false).
+          to(true)
+      end
+    end
+
     shared_examples "completes payment" do
+      include_examples "processed event"
+
       it "updates the captured amount" do
         expect{ subject }.
           to change{ payment.captured_amount }.
@@ -82,6 +97,8 @@ RSpec.describe Spree::Adyen::NotificationProcessing do
     end
 
     shared_examples "fails payment" do
+      include_examples "processed event"
+
       it "marks the payment as a failure" do
         expect{ subject }.
           to change{ payment.state }.
@@ -91,6 +108,8 @@ RSpec.describe Spree::Adyen::NotificationProcessing do
     end
 
     shared_examples "does nothing" do
+      include_examples "processed event"
+
       it "does not change the payment state" do
         expect{ subject }.to_not change{ payment.state }
       end
@@ -137,6 +156,15 @@ RSpec.describe Spree::Adyen::NotificationProcessing do
     context "when event is CAPTURE" do
       let(:event_type) { :capture }
       include_examples "completes payment"
+    end
+
+    context "when the event is an event we don't process" do
+      let(:event_type) { :pending }
+      include_examples "returns the notification"
+
+      it "sets processed to false" do
+        expect(subject.processed).to be false
+      end
     end
   end
 end

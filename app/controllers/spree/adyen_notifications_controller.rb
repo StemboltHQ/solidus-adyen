@@ -22,7 +22,6 @@ class Spree::AdyenNotificationsController < Spree::StoreController
       # accept
       if payment
         Spree::Adyen::NotificationProcessing.process notification, payment
-        notification.processed = true
       end
 
       notification.save!
