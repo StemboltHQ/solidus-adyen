@@ -1,29 +1,29 @@
 module Spree
   class AdyenRedirectController < StoreController
+    PENDING = "PENDING"
+    AUTHORIZED = "AUTHORISED"
+    REFUSED = "REFUSED"
+    CANCELLED = "CANCELLED"
+
     before_filter :check_signature, only: :confirm
 
     skip_before_filter :verify_authenticity_token
 
     # This is the entry point after an Adyen HPP payment is completed
     def confirm
-      order = current_order
-      #  TODO This is not technically correct
-      #  if the result is pending we might get a response later in the
-      #  callback saying the order is ready to be captured. It's probably
-      #  safe(?)
-      #  From the docs:
-      #  When authResult equals PENDING, ERROR or CANCELLED, the pspReference
-      #  may not yet be known; therefore, it may be empty or not included.
-      unless authorized?
+      auth_result = params["authResult"]
+
+      unless [PENDING, AUTHORIZED].include? auth_result
         flash.notice = Spree.t(:payment_processing_failed)
-        redirect_to checkout_state_path(order.state) and return
+        redirect_to checkout_state_path(current_order.state)
+        return
       end
 
       # payment is created in a 'checkout' state so that the payment method
       # can attempt to auth it. The payment of course is already auth'd and
       # adyen hpp's authorize implementation just returns a dummy response.
-      order.payments.create!(
-        amount: order.total,
+      current_order.payments.create!(
+        amount: current_order.total,
         payment_method: payment_method,
         response_code: params[:pspReference],
         state: 'checkout'
@@ -31,19 +31,16 @@ module Spree
         payment.source = Adyen::HppSource.create!(source_params(params))
       end
 
-      if order.complete
-        flash.notice = Spree.t(:order_processed_successfully)
-        redirect_to order_path(order, token: order.guest_token)
+      if current_order.complete
+        flash.notice = Spree.t(:current_order_processed_successfully)
+        redirect_to order_path(current_order, token: current_order.guest_token)
       else
-        redirect_to checkout_state_path(order.state)
+        #TODO void/cancel payment
+        redirect_to checkout_state_path(current_order.state)
       end
     end
 
     private
-
-    def authorized?
-      params[:authResult] == "AUTHORISED"
-    end
 
     def check_signature
       unless ::Adyen::Form.redirect_signature_check(params, payment_method.shared_secret)
