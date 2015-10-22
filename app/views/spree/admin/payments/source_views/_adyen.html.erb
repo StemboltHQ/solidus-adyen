@@ -1,5 +1,16 @@
 <% adyen_notification_fields = [
-  :event_code, :psp_preference, :reason, :processed, :currency, :value, :success, :event_date] %>
+  :event_code,
+  :psp_preference,
+  :reason,
+  :processed,
+  :currency,
+  :value,
+  :operations,
+  :success,
+  :processed,
+  :event_date,
+  :create_at
+] %>
 
 <fieldset data-hook="credit_card">
   <legend align="center">Adyen HPP payment</legend>
@@ -9,13 +20,7 @@
   <fieldset>
     <legend align="center">Adyen Notifications</legend>
     <table>
-      <thead>
-        <% adyen_notification_fields.map do |attr| %>
-          <th> <%= AdyenNotification.human_attribute_name attr %> </th>
-        <% end %>
-      </thead>
-
-      <tbody> <%= render payment.source.notifications %> </tbody>
+      <tbody> <%= render payment.source.notifications.order :event_date %> </tbody>
     </table>
   </fieldset>
 </fieldset>

@@ -1,10 +1,5 @@
 <tr>
-  <td> <%= adyen_notification.event_code %> </td>
-  <td> <%= adyen_notification.psp_reference %> </td>
-  <td> <%= adyen_notification.reason %> </td>
-  <td> <%= adyen_notification.processed %> </td>
-  <td> <%= adyen_notification.currency %> </td>
-  <td> <%= "%0.2f" % [(adyen_notification.value || 0) / 100.0] %> </td>
-  <td> <%= adyen_notification.success %> </td>
-  <td> <%= adyen_notification.event_date.to_s(:short) %> </td>
+  <td>
+    <pre style="font-size: 17px;"><%= JSON.pretty_generate adyen_notification.serializable_hash %></pre>
+  </td>
 </tr>
