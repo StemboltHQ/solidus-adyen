@@ -166,8 +166,8 @@ RSpec.describe Spree::Adyen::Form do
 
   describe "details_url" do
     let(:brand_code) { "paypal" }
-    subject { 
-      described_class.details_url(order, payment_method, brand_code) 
+    subject {
+      described_class.details_url(order, payment_method, brand_code)
     }
 
     it "calls endpoint url with the expected params" do
@@ -180,14 +180,14 @@ RSpec.describe Spree::Adyen::Form do
   describe "details_url_with_issuer" do
     let(:issuer_id) { "1654" }
     let(:brand_code) { "paypal" }
-    
-    subject { 
+
+    subject {
       described_class.details_url_with_issuer(
         order,
         payment_method,
         brand_code,
         issuer_id
-      ) 
+      )
     }
 
     it "calls endpoint url with the expected params" do
