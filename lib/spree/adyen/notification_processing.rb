@@ -68,6 +68,8 @@ module Spree::Adyen::NotificationProcessing
   def self.handle_normal_event notification, payment
     if auto_captured? notification, payment
       complete_payment! notification, payment
+    else
+      payment.adyen_hpp_capture!
     end
   end
 
