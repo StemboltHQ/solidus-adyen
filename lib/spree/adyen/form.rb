@@ -109,7 +109,7 @@ module Spree::Adyen::Form
       { currency_code: order.currency,
         merchant_reference: order.number.to_s,
         country_code: order.billing_address.country.iso,
-        payment_amount: (order.total.to_f * 100).to_int }
+        payment_amount: (order.total * 100).to_int }
     end
 
     def payment_method_params payment_method
