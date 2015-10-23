@@ -41,6 +41,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry-rails'
   spec.add_development_dependency 'better_errors'
   spec.add_development_dependency 'binding_of_caller'
+  spec.add_development_dependency 'pry-stack_explorer'
 
   spec.add_development_dependency 'capybara'
   spec.add_development_dependency 'poltergeist'
