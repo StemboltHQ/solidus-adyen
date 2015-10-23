@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe Spree::Adyen::Form do
-  let(:order) { create :order, total: 99.0 }
+  let(:order) { create :order, total: 39.98 }
   let(:payment_method) { create :hpp_gateway, preferences: preferences }
   let(:preferences){
     {server: "test",
@@ -26,7 +26,7 @@ RSpec.describe Spree::Adyen::Form do
         skin_code: payment_method.skin_code,
         shared_secret: payment_method.shared_secret,
         country_code: order.billing_address.country.iso,
-        payment_amount: (order.total.to_f * 100).to_int }
+        payment_amount: 3998 }
 
        ::Adyen::Form.redirect_url(redirect_params)
     end
