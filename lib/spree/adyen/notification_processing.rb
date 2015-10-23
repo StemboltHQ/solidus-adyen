@@ -21,31 +21,42 @@ module Spree::Adyen::NotificationProcessing
     Spree::Payment.find_by response_code: reference
   end
 
-  def self.process notification, payment
-    # if processing fails all modifications should be rolled back and
-    # we should not acknowledge the notification.
-    Spree::Payment.transaction do
-      if !notification.success?
-        handle_failure notification, payment
+  def self.process notification
+    payment =
+      Spree::Adyen::NotificationProcessing.find_payment(notification)
 
-      elsif modification_event? notification
-        handle_modification_event notification, payment
+    # only process the notification if there is a matching payment
+    # there's a number of reasons why there may not be a matching payment
+    # such as test notifications, reports etc, we just log them and then
+    # accept
+    if payment
+      # if processing fails all modifications should be rolled back and
+      # we should not acknowledge the notification.
+      Spree::Payment.transaction do
+        if !notification.success?
+          handle_failure notification, payment
 
-      elsif normal_event? notification
-        handle_normal_event notification, payment
+        elsif modification_event? notification
+          handle_modification_event notification, payment
 
-      else
-        # the notification was not handled by any clause and should be logged
-        # as unprocessed, this is typical of any event like a dispute or any
-        # other currently unsupported event. This could potentially let us go
-        # back and correct them retroactively or see what was actually handled
-        # by the system.
-        notification.processed = false
-        return notification
+        elsif normal_event? notification
+          handle_normal_event notification, payment
+
+        else
+          # the notification was not handled by any clause and should be logged
+          # as unprocessed, this is typical of any event like a dispute or any
+          # other currently unsupported event. This could potentially let us go
+          # back and correct them retroactively or see what was actually handled
+          # by the system.
+          notification.processed = false
+          return notification
+        end
       end
+
+      notification.processed = true
     end
 
-    notification.processed = true
+    notification.save!
     return notification
   end
 

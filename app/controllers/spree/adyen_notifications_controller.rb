@@ -13,18 +13,7 @@ class Spree::AdyenNotificationsController < Spree::StoreController
     # if a failure occurs we don't want to send anything, it wil be
     # interpretted as a success.
     AdyenNotification.transaction do
-      payment =
-        Spree::Adyen::NotificationProcessing.find_payment(notification)
-
-      # only process the notification if there is a matching payment
-      # there's a number of reasons why there may not be a matching payment
-      # such as test notifications, reports etc, we just log them and then
-      # accept
-      if payment
-        Spree::Adyen::NotificationProcessing.process notification, payment
-      end
-
-      notification.save!
+      Spree::Adyen::NotificationProcessing.process notification
     end
 
     # accept after processing has completed

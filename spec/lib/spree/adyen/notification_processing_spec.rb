@@ -33,7 +33,13 @@ RSpec.describe Spree::Adyen::NotificationProcessing do
   end
 
   describe "#process/2" do
-    subject { described_class.process(notification, payment)}
+    subject { described_class.process(notification)}
+
+    before do
+      allow(Spree::Adyen::NotificationProcessing).to(
+        receive(:find_payment).with(notification).and_return(payment)
+      )
+    end
 
     let!(:payment) do
       create(:payment, state: payment_state, payment_method: hpp_gateway)
