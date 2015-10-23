@@ -1,5 +1,5 @@
 module Spree::Adyen::NotificationProcessing
-  AUTO_CAPTURE_ONLY_METHODS = [ "ideal", "c_cash" ].freeze
+  AUTO_CAPTURE_ONLY_METHODS = [ "ideal", "c_cash", "directEbanking" ].freeze
 
   AUTHORISATION = "AUTHORISATION".freeze
   CANCELLATION = "CANCELLATION".freeze
