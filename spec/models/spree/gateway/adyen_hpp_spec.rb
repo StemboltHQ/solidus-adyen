@@ -3,6 +3,13 @@ require 'spec_helper'
 module Spree
   describe Gateway::AdyenHPP do
     describe ".capture" do
+      subject do
+        gateway.capture(2000, hpp_source, currency: "CAD")
+      end
+
+      let(:hpp_source) { create :hpp_source, psp_reference: "9999" }
+      let(:gateway) { described_class.new }
+
       let(:response) do
         instance_double(
           ::Adyen::API::PaymentService::CaptureResponse,
@@ -14,13 +21,14 @@ module Spree
         )
       end
 
-      it "makes an api call" do
-        expect(subject.provider_class).
+      it "makes an api call the returns the orginal psp ref as an authorization" do
+        expect(gateway.provider_class).
           to receive(:capture_payment).
           and_return(response)
 
-        expect(subject.capture(2000, "1234", currency: "CAD")).
-          to be_a ::ActiveMerchant::Billing::Response
+        expect(subject).to be_a ::ActiveMerchant::Billing::Response
+
+        expect(subject.authorization).to eq "9999"
       end
     end
 
