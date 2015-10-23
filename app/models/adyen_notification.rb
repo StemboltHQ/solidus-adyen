@@ -35,6 +35,10 @@ class AdyenNotification < ActiveRecord::Base
     primary_key: :number,
     foreign_key: :merchant_reference
 
+  scope :processed, -> { where processed: true }
+
+  scope :authorisation, -> { where event_code: "AUTHORISATION" }
+
   # A notification should always include an event_code
   validates_presence_of :event_code
 
@@ -72,6 +76,12 @@ class AdyenNotification < ActiveRecord::Base
 
   def capture?
     event_code == 'CAPTURE'
+  end
+
+  def actions
+    self.operations.
+      split(",").
+      map(&:downcase)
   end
 
   alias_method :authorization?, :authorisation?

@@ -30,4 +30,20 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     class_name: 'AdyenNotification',
     foreign_key: :merchant_reference,
     primary_key: :merchant_reference
+
+
+  def actions
+    if auth_notification
+      auth_notification.
+        actions.
+        map { |action| "adyen_hpp_#{action}" }
+    else
+      []
+    end
+  end
+
+  private
+  def auth_notification
+    self.notifications.processed.authorisation.last
+  end
 end
