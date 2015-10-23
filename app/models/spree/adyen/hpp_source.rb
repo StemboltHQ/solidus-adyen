@@ -31,6 +31,9 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     foreign_key: :merchant_reference,
     primary_key: :merchant_reference
 
+  def can_adyen_hpp_capture? payment
+    payment.uncaptured_amount != 0.0
+  end
 
   def actions
     if auth_notification

@@ -17,4 +17,12 @@ module Spree::Adyen::Payment
 
     record_response(response)
   end
+
+  def adyen_hpp_refund!
+    raise NotImplementedError
+  end
+
+  def adyen_hpp_cancel!
+    raise NotImplementedError
+  end
 end
