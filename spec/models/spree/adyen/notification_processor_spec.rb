@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe Spree::Adyen::NotificationProcessing do
+RSpec.describe Spree::Adyen::NotificationProcessor do
   describe "#find_payment" do
     subject { described_class.find_payment notification }
 
@@ -36,7 +36,7 @@ RSpec.describe Spree::Adyen::NotificationProcessing do
     subject { described_class.process(notification)}
 
     before do
-      allow(Spree::Adyen::NotificationProcessing).to(
+      allow(Spree::Adyen::NotificationProcessor).to(
         receive(:find_payment).with(notification).and_return(payment)
       )
     end

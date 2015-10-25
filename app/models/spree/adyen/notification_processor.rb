@@ -1,4 +1,4 @@
-module Spree::Adyen::NotificationProcessing
+class Spree::Adyen::NotificationProcessor
   AUTO_CAPTURE_ONLY_METHODS = [ "ideal", "c_cash", "directEbanking" ].freeze
 
   AUTHORISATION = "AUTHORISATION".freeze
@@ -23,7 +23,7 @@ module Spree::Adyen::NotificationProcessing
 
   def self.process notification
     payment =
-      Spree::Adyen::NotificationProcessing.find_payment(notification)
+      Spree::Adyen::NotificationProcessor.find_payment(notification)
 
     # only process the notification if there is a matching payment
     # there's a number of reasons why there may not be a matching payment
