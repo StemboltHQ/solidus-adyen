@@ -5,6 +5,28 @@ RSpec.describe AdyenNotification do
   it { is_expected.to belong_to(:prev).inverse_of(:next) }
   it { is_expected.to belong_to :order }
 
+  describe ".payment" do
+    subject { notification.payment }
+
+    let(:ref) { "999999999" }
+    let!(:payment) { create :payment, response_code: ref }
+    let!(:notification) { described_class.new attr => ref }
+
+    shared_examples "finds the payment" do
+      it { is_expected.to eq payment }
+    end
+
+    context "normal notification" do
+      let(:attr) { :original_reference }
+      include_examples "finds the payment"
+    end
+
+    context "modification notification" do
+      let(:attr) { :psp_reference }
+      include_examples "finds the payment"
+    end
+  end
+
   describe "#build" do
     subject { described_class.build params }
 

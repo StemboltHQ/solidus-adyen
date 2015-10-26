@@ -16,6 +16,17 @@
 #      @invoice.set_paid!
 #    end
 class AdyenNotification < ActiveRecord::Base
+  AUTO_CAPTURE_ONLY_METHODS = ["ideal", "c_cash", "directEbanking"].freeze
+
+  AUTHORISATION = "AUTHORISATION".freeze
+  CANCELLATION = "CANCELLATION".freeze
+  REFUND = "REFUND".freeze
+  CANCEL_OR_REFUND = "CANCEL_OR_REFUND".freeze
+  CAPTURE = "CAPTURE".freeze
+  CAPTURE_FAILED = "CAPTURE_FAILED".freeze
+  REFUND_FAILED = "REFUND_FAILED".freeze
+  REFUNDED_REVERSED = "REFUNDED_REVERSED".freeze
+
   belongs_to :prev,
     class_name: self,
     foreign_key: :original_reference,
@@ -67,6 +78,10 @@ class AdyenNotification < ActiveRecord::Base
     end
   end
 
+  def payment
+    Spree::Payment.find_by response_code: original_reference || psp_reference
+  end
+
   # Returns true if this notification is an AUTHORISATION notification
   # @return [true, false] true iff event_code == 'AUTHORISATION'
   # @see Adyen.notification#successful_authorisation?
@@ -82,6 +97,34 @@ class AdyenNotification < ActiveRecord::Base
     self.operations.
       split(",").
       map(&:downcase)
+  end
+
+  # https://docs.adyen.com/display/TD/Notification+fields
+  def modification_event?
+    [ CANCELLATION,
+      REFUND,
+      CANCEL_OR_REFUND,
+      CAPTURE,
+      CAPTURE_FAILED,
+      REFUND_FAILED,
+      REFUNDED_REVERSED
+    ].member? self.event_code
+  end
+
+  def normal_event?
+    AUTHORISATION == self.event_code
+  end
+
+  def bank_transfer?
+    self.payment_method.match(/^bankTransfer/)
+  end
+
+  def auto_captured?
+    payment_method_auto_capture_only? || bank_transfer?
+  end
+
+  def payment_method_auto_capture_only?
+    AUTO_CAPTURE_ONLY_METHODS.member?(self.payment_method)
   end
 
   alias_method :authorization?, :authorisation?

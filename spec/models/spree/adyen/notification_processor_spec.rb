@@ -1,52 +1,15 @@
 require 'spec_helper'
 
 RSpec.describe Spree::Adyen::NotificationProcessor do
-  describe "#find_payment" do
-    subject { described_class.find_payment notification }
-
-    let!(:payment) { create :payment, response_code: reference }
-
-    let(:reference) { "111111111" }
-
-    shared_examples "finds the payment" do
-      it "finds the payment" do
-        is_expected.to eq payment
-      end
-    end
-
-    context "when it is a normal event" do
-      let!(:notification) do
-        create(:notification, :auth, psp_reference: reference)
-      end
-    end
-
-    context "when it is a modification event" do
-      let!(:notification) do
-        create(
-          :notification,
-          :capture,
-          original_reference: reference,
-          psp_reference: "111111112"
-        )
-      end
-    end
-  end
-
-  describe "#process/2" do
-    subject { described_class.process(notification)}
-
-    before do
-      allow(Spree::Adyen::NotificationProcessor).to(
-        receive(:find_payment).with(notification).and_return(payment)
-      )
-    end
+  describe "#process" do
+    subject { described_class.new(notification).process! }
 
     let!(:payment) do
       create(:payment, state: payment_state, payment_method: hpp_gateway)
     end
 
     let!(:hpp_gateway) do
-      create(:hpp_gateway, auto_capture: auto_capture)
+      create(:bogus_hpp_gateway)
     end
 
     let!(:notification) do
@@ -55,12 +18,12 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
         event_type, # these are registered traits, refer to the factory
         success: success,
         value: 2399,
-        currency: "EUR"
+        currency: "EUR",
+        payment: payment
       )
     end
 
     let(:payment_state) { "pending" }
-    let(:auto_capture) { false }
     let(:success) { true }
 
     shared_examples "returns the notification" do
@@ -96,7 +59,7 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
 
       it "completes the payment" do
         expect{ subject }.
-          to change{ payment.state }.
+          to change{ payment.reload.state }.
           from("pending").
           to("completed")
       end
@@ -107,7 +70,7 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
 
       it "marks the payment as a failure" do
         expect{ subject }.
-          to change{ payment.state }.
+          to change{ payment.reload.state }.
           from("pending").
           to("failed")
       end
@@ -140,11 +103,6 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
 
       context "and payment method was ideal" do
         let(:event_type) { :ideal_auth }
-        include_examples "completes payment"
-      end
-
-      context "and auto-capture is enabled" do
-        let(:auto_capture) { true }
         include_examples "completes payment"
       end
 

@@ -17,7 +17,28 @@ FactoryGirl.define do
      created_at DateTime.now
      updated_at DateTime.now
 
+     transient do
+       payment nil
+     end
+
+     trait :normal_event do
+       before(:create) do |record, evaluator|
+         if evaluator.payment
+           record.psp_reference = evaluator.payment.response_code
+         end
+       end
+     end
+
+     trait :modification_event do
+       before(:create) do |record, evaluator|
+         if evaluator.payment
+           record.original_reference = evaluator.payment.response_code
+         end
+       end
+     end
+
      trait :auth do
+       normal_event
        event_code "AUTHORISATION"
        operations "CANCEL,CAPTURE,REFUND"
        reason "31893:0002:8/2018"
@@ -34,14 +55,17 @@ FactoryGirl.define do
      end
 
      trait :capture do
+       modification_event
        event_code "CAPTURE"
      end
 
      trait :refund do
+       modification_event
        event_code "REFUND"
      end
 
      trait :pending do
+       normal_event
        event_code "PENDING"
      end
   end
