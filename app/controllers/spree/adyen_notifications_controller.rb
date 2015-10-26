@@ -10,11 +10,7 @@ class Spree::AdyenNotificationsController < Spree::StoreController
       accept and return
     end
 
-    # if a failure occurs we don't want to send anything, it wil be
-    # interpretted as a success.
-    AdyenNotification.transaction do
-      Spree::Adyen::NotificationProcessor.new(notification).process!
-    end
+    Spree::Adyen::NotificationProcessor.new(notification).process!
 
     # accept after processing has completed
     accept

@@ -11,10 +11,11 @@ class Spree::Adyen::NotificationProcessor
     # there's a number of reasons why there may not be a matching payment
     # such as test notifications, reports etc, we just log them and then
     # accept
-    if payment
-      # if processing fails all modifications should be rolled back and
-      # we should not acknowledge the notification.
-      Spree::Payment.transaction do
+    #
+    # if processing fails all modifications should be rolled back and we should
+    # not acknowledge the notification.
+    Spree::Payment.transaction do
+      if payment
         if !notification.success?
           handle_failure
 
@@ -33,12 +34,13 @@ class Spree::Adyen::NotificationProcessor
           notification.processed = false
           return notification
         end
+
+        notification.processed = true
       end
 
-      notification.processed = true
+      notification.save!
     end
 
-    notification.save!
     return notification
   end
 
