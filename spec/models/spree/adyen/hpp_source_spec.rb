@@ -48,4 +48,23 @@ RSpec.describe Spree::Adyen::HppSource do
       it { is_expected.to be false }
     end
   end
+
+  describe ".authorised?" do
+    subject { described_class.new(auth_result: event).authorised? }
+
+    context "when pending" do
+      let(:event) { "PENDING" }
+      it { is_expected.to be true }
+    end
+
+    context "when authorised" do
+      let(:event) { "AUTHORISED" }
+      it { is_expected.to be true }
+    end
+
+    context "when something else" do
+      let(:event) { "REFUSED" }
+      it { is_expected.to be false }
+    end
+  end
 end

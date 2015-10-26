@@ -58,14 +58,14 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
       end
     end
 
-    context "when the payment is AUTHORIZED" do
+    context "when the payment is AUTHORISED" do
       include_examples "payment is successful"
-      let(:auth_result) { described_class::AUTHORIZED }
+      let(:auth_result) { "AUTHORISED" }
     end
 
     context "when the payment is PENDING" do
       include_examples "payment is successful"
-      let(:auth_result) { described_class::PENDING }
+      let(:auth_result) { "PENDING" }
     end
 
     shared_examples "payment is not successful" do
@@ -81,12 +81,12 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
 
     context "when the payment is CANCELLED" do
       include_examples "payment is not successful"
-      let(:auth_result) { described_class::CANCELLED }
+      let(:auth_result) { "CANCELLED" }
     end
 
     context "when the payment is REFUSED" do
       include_examples "payment is not successful"
-      let(:auth_result) { described_class::REFUSED }
+      let(:auth_result) { "REFUSED" }
     end
   end
 end

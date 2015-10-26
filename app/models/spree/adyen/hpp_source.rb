@@ -8,6 +8,11 @@
 # Information about when certain action are valid:
 # https://docs.adyen.com/display/TD/HPP+modifications
 class Spree::Adyen::HppSource < ActiveRecord::Base
+  PENDING = "PENDING"
+  AUTHORISED = "AUTHORISED"
+  REFUSED = "REFUSED"
+  CANCELLED = "CANCELLED"
+
   # support updates from capital-cased responses, which is what adyen gives us
   alias_attribute :authResult, :auth_result
   alias_attribute :pspReference, :psp_reference
@@ -43,6 +48,12 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     else
       []
     end
+  end
+
+  def authorised?
+    # Many banks return pending, this is considered a valid response and
+    # the order should proceed.
+    [PENDING, AUTHORISED].include? auth_result
   end
 
   private

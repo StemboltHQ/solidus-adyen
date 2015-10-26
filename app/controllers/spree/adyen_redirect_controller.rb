@@ -1,19 +1,14 @@
 module Spree
   class AdyenRedirectController < StoreController
-    PENDING = "PENDING"
-    AUTHORIZED = "AUTHORISED"
-    REFUSED = "REFUSED"
-    CANCELLED = "CANCELLED"
-
     before_filter :check_signature, only: :confirm
 
     skip_before_filter :verify_authenticity_token
 
     # This is the entry point after an Adyen HPP payment is completed
     def confirm
-      auth_result = params["authResult"]
+      source = Adyen::HppSource.new(source_params(params))
 
-      unless [PENDING, AUTHORIZED].include? auth_result
+      unless source.authorised?
         flash.notice = Spree.t(:payment_processing_failed)
         redirect_to checkout_state_path(current_order.state)
         return
@@ -22,14 +17,14 @@ module Spree
       # payment is created in a 'checkout' state so that the payment method
       # can attempt to auth it. The payment of course is already auth'd and
       # adyen hpp's authorize implementation just returns a dummy response.
-      current_order.payments.create!(
-        amount: current_order.total,
-        payment_method: payment_method,
-        response_code: params[:pspReference],
-        state: 'checkout'
-      ) do |payment|
-        payment.source = Adyen::HppSource.create!(source_params(params))
-      end
+      payment =
+        current_order.payments.create!(
+          amount: current_order.total,
+          payment_method: payment_method,
+          source: source,
+          response_code: params[:pspReference],
+          state: "checkout"
+        )
 
       if current_order.complete
         flash.notice = Spree.t(:current_order_processed_successfully)
