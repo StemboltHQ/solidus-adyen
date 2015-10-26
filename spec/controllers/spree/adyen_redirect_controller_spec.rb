@@ -3,7 +3,7 @@ require 'spec_helper'
 # https://docs.adyen.com/display/TD/HPP+payment+response
 RSpec.describe Spree::AdyenRedirectController, type: :controller do
   let(:order) { create(:order_with_line_items, state: "payment") }
-  let(:payment_method) { create :hpp_gateway }
+  let(:payment_method) { create :bogus_hpp_gateway }
 
   before do
     allow(controller).to receive(:current_order).and_return order
