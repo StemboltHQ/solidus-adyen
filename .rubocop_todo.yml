@@ -434,7 +434,7 @@ Style/SpecialGlobalVars:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SupportedStyles.
 Style/StringLiterals:
-  Enabled: false
+  EnforcedStyle: double_quotes
 
 # Offense count: 1
 # Cop supports --auto-correct.
