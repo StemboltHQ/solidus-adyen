@@ -33,7 +33,7 @@ module Spree
 
       if current_order.complete
         flash.notice = Spree.t(:current_order_processed_successfully)
-        redirect_to order_path(current_order, token: current_order.guest_token)
+        redirect_to order_path(current_order)
       else
         #TODO void/cancel payment
         redirect_to checkout_state_path(current_order.state)

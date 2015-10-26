@@ -37,7 +37,7 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
 
       it "redirects to the order complete page" do
         is_expected.to have_http_status(:redirect).
-          and redirect_to order_path(order, token: order.guest_token)
+          and redirect_to order_path(order)
       end
 
       it "creates a pending payment" do
