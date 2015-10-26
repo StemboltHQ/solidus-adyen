@@ -47,6 +47,7 @@ class AdyenNotification < ActiveRecord::Base
     foreign_key: :merchant_reference
 
   scope :processed, -> { where processed: true }
+  scope :unprocessed, -> { where processed: false }
 
   scope :authorisation, -> { where event_code: "AUTHORISATION" }
 
