@@ -48,19 +48,18 @@ class AdyenNotification < ActiveRecord::Base
 
   scope :processed, -> { where processed: true }
   scope :unprocessed, -> { where processed: false }
-
   scope :authorisation, -> { where event_code: "AUTHORISATION" }
 
-  # A notification should always include an event_code
   validates_presence_of :event_code
-
-  # A notification should always include a psp_reference
   validates_presence_of :psp_reference
-
   validates_uniqueness_of :success, scope: [:psp_reference, :event_code]
 
   # Make sure we don't end up with an original_reference with an empty string
-  before_validation { |notification| notification.original_reference = nil if notification.original_reference.blank? }
+  before_validation do |notification|
+    if notification.original_reference.blank?
+      notification.original_reference = nil
+    end
+  end
 
   # Logs an incoming notification into the database.
   #
