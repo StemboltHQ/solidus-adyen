@@ -54,13 +54,9 @@ module Spree
     def capture(amount, source, currency:, **_opts)
       value = { currency: currency, value: amount }
 
-      response = provider.capture_payment(source.psp_reference, value)
-
-      ActiveMerchant::Billing::Response.new(
-        response.success?,
-        JSON.pretty_generate(response.params),
-        {},
-        authorization: source.psp_reference)
+      handle_response(
+        provider.capture_payment(source.psp_reference, value),
+        source.psp_reference)
     end
 
     # According to Spree Processing class API the response object should respond
@@ -95,6 +91,17 @@ module Spree
       end
 
       response
+    end
+
+    private
+
+    def handle_response response, original_reference
+      ActiveMerchant::Billing::Response.new(
+        response.success?,
+        JSON.pretty_generate(response.params),
+        {},
+        authorization: original_reference
+      )
     end
   end
 end

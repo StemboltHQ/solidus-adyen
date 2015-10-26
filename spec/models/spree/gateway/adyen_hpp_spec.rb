@@ -2,13 +2,13 @@ require 'spec_helper'
 
 module Spree
   describe Gateway::AdyenHPP do
+    let(:hpp_source) { create :hpp_source, psp_reference: "9999" }
+    let(:gateway) { described_class.new }
+
     describe ".capture" do
       subject do
         gateway.capture(2000, hpp_source, currency: "CAD")
       end
-
-      let(:hpp_source) { create :hpp_source, psp_reference: "9999" }
-      let(:gateway) { described_class.new }
 
       let(:response) do
         instance_double(
@@ -41,6 +41,11 @@ module Spree
           expect(subject.void("huhu").authorization).to eq "huhu"
         end
       end
+    end
+
+    describe ".authorize" do
+      subject { gateway.authorize 2000, hpp_source, currency: "CAD" }
+      it { is_expected.to be_a ActiveMerchant::Billing::Response }
     end
 
     context "calculate ship_before_date" do
