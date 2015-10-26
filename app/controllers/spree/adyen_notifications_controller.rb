@@ -6,7 +6,7 @@ class Spree::AdyenNotificationsController < Spree::StoreController
   def notify
     notification = AdyenNotification.build(params)
 
-    if duplicate? notification
+    if notification.duplicate?
       accept and return
     end
 
@@ -27,13 +27,5 @@ class Spree::AdyenNotificationsController < Spree::StoreController
   private
   def accept
     render text: "[accepted]"
-  end
-
-  def duplicate? notification
-    AdyenNotification.exists?(
-      psp_reference: notification.psp_reference,
-      event_code: notification.event_code,
-      success: notification.success
-    )
   end
 end

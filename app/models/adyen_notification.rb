@@ -119,6 +119,14 @@ class AdyenNotification < ActiveRecord::Base
     self.payment_method.match(/^bankTransfer/)
   end
 
+  def duplicate?
+    self.class.exists?(
+      psp_reference: self.psp_reference,
+      event_code: self.event_code,
+      success: self.success
+    )
+  end
+
   def auto_captured?
     payment_method_auto_capture_only? || bank_transfer?
   end
