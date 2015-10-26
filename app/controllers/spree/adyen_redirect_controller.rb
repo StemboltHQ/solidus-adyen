@@ -26,6 +26,10 @@ module Spree
           state: "checkout"
         )
 
+      # We may have already recieved the authorization notification, so process
+      # it now
+      Spree::Adyen::NotificationProcessor.process_outstanding!(payment)
+
       if current_order.complete
         flash.notice = Spree.t(:current_order_processed_successfully)
         redirect_to order_path(current_order)
