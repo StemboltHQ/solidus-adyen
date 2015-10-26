@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe AdyenNotification do
   it { is_expected.to have_many(:next).inverse_of(:prev) }
@@ -58,7 +58,7 @@ RSpec.describe AdyenNotification do
           merchant_account_code: "Test",
           merchant_reference: "R999999999",
           operations: "CANCEL,CAPTURE,REFUND",
-          original_reference: "",
+          original_reference: nil,
           payment_method: "visa",
           psp_reference: "999999999",
           reason: "41061:1111:6/2016",

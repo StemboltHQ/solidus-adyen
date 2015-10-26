@@ -54,13 +54,6 @@ class AdyenNotification < ActiveRecord::Base
   validates_presence_of :psp_reference
   validates_uniqueness_of :success, scope: [:psp_reference, :event_code]
 
-  # Make sure we don't end up with an original_reference with an empty string
-  before_validation do |notification|
-    if notification.original_reference.blank?
-      notification.original_reference = nil
-    end
-  end
-
   # Logs an incoming notification into the database.
   #
   # @param [Hash] params The notification parameters that should be stored in the database.
@@ -73,7 +66,11 @@ class AdyenNotification < ActiveRecord::Base
     self.new.tap do |notification|
       params.each do |key, value|
         setter = "#{key.to_s.underscore}="
-        notification.send(setter, value) if notification.respond_to?(setter)
+
+        # don't assign if value is empty string.
+        if notification.respond_to?(setter) && value.present?
+          notification.send(setter, value)
+        end
       end
     end
   end
