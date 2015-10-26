@@ -68,8 +68,6 @@ class AdyenNotification < ActiveRecord::Base
   # @raise This method will raise an exception if the notification cannot be stored.
   # @see Adyen::Notification::HttpPost.log
   def self.build(params)
-    converted_params = {}
-
     # Assign explicit each attribute from CamelCase notation to notification
     # For example, merchantReference will be converted to merchant_reference
     self.new.tap do |notification|
