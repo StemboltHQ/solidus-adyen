@@ -1,9 +1,24 @@
 class Spree::Adyen::NotificationProcessor
   attr_accessor :notification, :payment
 
-  def initialize(notification)
+  def initialize(notification, payment = nil)
     self.notification = notification
-    self.payment = self.notification.payment
+    self.payment = payment ? payment : notification.payment
+  end
+
+  # for the given payment, process all notifications that are currently
+  # unprocessed in the order that they were dispatched.
+  def self.process_outstanding!(payment)
+    Spree::Payment.transaction do
+      payment.
+        source.
+        notifications(true). # bypass caching
+        unprocessed.
+        as_dispatched.
+        map do |notification|
+          new(notification, payment).process!
+        end
+    end
   end
 
   def process!

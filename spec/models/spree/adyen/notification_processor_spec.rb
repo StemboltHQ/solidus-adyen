@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe Spree::Adyen::NotificationProcessor do
   describe "#process" do
@@ -129,6 +129,33 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
       it "sets processed to false" do
         expect(subject.processed).to be false
       end
+    end
+  end
+
+  describe "#process_outstanding!" do
+    subject { described_class.process_outstanding! payment }
+
+    let!(:payment) { create :bogus_hpp_payment, amount: 19.99, state: "pending" }
+
+    let!(:notifications) do
+      opts = {payment: payment, value: 1999}
+      [
+        create(:notification, :auth, **opts),
+        create(:notification, :capture, **opts)
+      ]
+    end
+
+    it "processes all notifications" do
+      subject
+      notifications.map(&:reload)
+      expect(notifications).to all be_processed
+    end
+
+    it "modifies the payment" do
+      expect { subject }.
+        to change { payment.state }.from("pending").to("completed").
+
+        and change { payment.captured_amount }.from(0).to(19.99)
     end
   end
 end

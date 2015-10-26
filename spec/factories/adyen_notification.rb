@@ -21,6 +21,12 @@ FactoryGirl.define do
        payment nil
      end
 
+     before(:create) do |record, evaluator|
+       if evaluator.payment
+         record.merchant_reference = evaluator.payment.order.number
+       end
+     end
+
      trait :normal_event do
        before(:create) do |record, evaluator|
          if evaluator.payment
