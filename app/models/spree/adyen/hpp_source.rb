@@ -41,7 +41,7 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
   end
 
   def actions
-    if modifiable?
+    if mutable?
       authorised_actions
     else
       []
@@ -54,11 +54,11 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     [PENDING, AUTHORISED].include? auth_result
   end
 
-  def modifiable?
+  private
+  def mutable?
     !payment.void? && !payment.processing?
   end
 
-  private
   # authorised_actions :: [String] | []
   def authorised_actions
     notifications.
