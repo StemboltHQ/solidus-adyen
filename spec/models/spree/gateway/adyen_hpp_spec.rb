@@ -24,6 +24,7 @@ module Spree
       it "makes an api call the returns the orginal psp ref as an authorization" do
         expect(gateway.provider_class).
           to receive(:capture_payment).
+          with("9999", {currency: "CAD", value: 2000}).
           and_return(response)
 
         expect(subject).to be_a ::ActiveMerchant::Billing::Response
