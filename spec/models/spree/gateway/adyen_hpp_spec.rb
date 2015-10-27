@@ -7,7 +7,7 @@ module Spree
 
     describe ".capture" do
       subject do
-        gateway.capture(2000, hpp_source, currency: "CAD")
+        gateway.capture(2000, hpp_source.psp_reference, currency: "CAD")
       end
 
       let(:response) do

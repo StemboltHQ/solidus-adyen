@@ -51,12 +51,12 @@ module Spree
       ActiveMerchant::Billing::Response.new(true, 'successful hpp payment')
     end
 
-    def capture(amount, source, currency:, **_opts)
+    def capture(amount, psp_reference, currency:, **_opts)
       value = { currency: currency, value: amount }
 
       handle_response(
-        provider.capture_payment(source.psp_reference, value),
-        source.psp_reference)
+        provider.capture_payment(psp_reference, value),
+        psp_reference)
     end
 
     # According to Spree Processing class API the response object should respond

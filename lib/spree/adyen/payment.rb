@@ -7,7 +7,7 @@ module Spree::Adyen::Payment
     started_processing!
     # success state must remain as processing, it will change to completed
     # once the notification is received
-    gateway_action(source, :capture, :started_processing)
+    gateway_action(response_code, :capture, :started_processing)
   end
 
   def adyen_hpp_refund!
