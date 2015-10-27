@@ -8,10 +8,12 @@ RSpec.describe Spree::Adyen::HppSource do
   let(:hpp_source) do
     create :hpp_source,
       psp_reference: "999999999",
-      merchant_reference: "R11111111"
+      merchant_reference: "R11111111",
+      payment: create(:bogus_hpp_payment)
   end
 
   describe ".actions" do
+    subject { hpp_source.actions }
     let!(:notification) do
       create(
         :notification,
@@ -27,9 +29,23 @@ RSpec.describe Spree::Adyen::HppSource do
     it { expect(hpp_source.actions).
          to eq %w{adyen_hpp_capture adyen_hpp_refund} }
 
-    context "when it has not auth notification" do
+    shared_examples "has no actions" do
+      it { is_expected.to eq [] }
+    end
+
+    context "when it has no auth notification" do
       let!(:notification) { nil }
-      it { expect(hpp_source.actions).to eq [] }
+      include_examples "has no actions"
+    end
+
+    context "when the payment is void" do
+      before { hpp_source.payment.void }
+      include_examples "has no actions"
+    end
+
+    context "when the payment is still proccesing" do
+      before { hpp_source.payment.started_processing! }
+      include_examples "has no actions"
     end
   end
 
@@ -45,6 +61,25 @@ RSpec.describe Spree::Adyen::HppSource do
           capture_events.
           create! amount: ::Money.new(1000, "EUR").to_f
       end
+      it { is_expected.to be false }
+    end
+  end
+
+  describe ".authorised?" do
+    subject { described_class.new(auth_result: event).authorised? }
+
+    context "when pending" do
+      let(:event) { "PENDING" }
+      it { is_expected.to be true }
+    end
+
+    context "when authorised" do
+      let(:event) { "AUTHORISED" }
+      it { is_expected.to be true }
+    end
+
+    context "when something else" do
+      let(:event) { "REFUSED" }
       it { is_expected.to be false }
     end
   end

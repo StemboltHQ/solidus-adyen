@@ -3,7 +3,7 @@ require 'spec_helper'
 # https://docs.adyen.com/display/TD/HPP+payment+response
 RSpec.describe Spree::AdyenRedirectController, type: :controller do
   let(:order) { create(:order_with_line_items, state: "payment") }
-  let(:payment_method) { create :hpp_gateway }
+  let(:payment_method) { create :bogus_hpp_gateway }
 
   before do
     allow(controller).to receive(:current_order).and_return order
@@ -58,14 +58,14 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
       end
     end
 
-    context "when the payment is AUTHORIZED" do
+    context "when the payment is AUTHORISED" do
       include_examples "payment is successful"
-      let(:auth_result) { described_class::AUTHORIZED }
+      let(:auth_result) { "AUTHORISED" }
     end
 
     context "when the payment is PENDING" do
       include_examples "payment is successful"
-      let(:auth_result) { described_class::PENDING }
+      let(:auth_result) { "PENDING" }
     end
 
     shared_examples "payment is not successful" do
@@ -81,12 +81,12 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
 
     context "when the payment is CANCELLED" do
       include_examples "payment is not successful"
-      let(:auth_result) { described_class::CANCELLED }
+      let(:auth_result) { "CANCELLED" }
     end
 
     context "when the payment is REFUSED" do
       include_examples "payment is not successful"
-      let(:auth_result) { described_class::REFUSED }
+      let(:auth_result) { "REFUSED" }
     end
   end
 end

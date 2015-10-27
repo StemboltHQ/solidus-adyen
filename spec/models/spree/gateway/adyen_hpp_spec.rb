@@ -1,8 +1,29 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Spree
   describe Gateway::AdyenHPP do
+    let(:hpp_source) { create :hpp_source, psp_reference: "9999" }
+    let(:gateway) { described_class.new }
+
+    describe ".cancel" do
+      subject { gateway.cancel("9999", currency: "CAD") }
+
+      let(:response) do
+        instance_double(
+          ::Adyen::API::PaymentService::CancelOrRefundResponse,
+          success?: true,
+          params:
+          { psp_reference: "1234",
+            response: "[cancelOrRefund-received]"
+          }
+        )
+      end
+
+    end
+
     describe ".capture" do
+      subject { gateway.capture(2000, "9999", currency: "CAD") }
+
       let(:response) do
         instance_double(
           ::Adyen::API::PaymentService::CaptureResponse,
@@ -14,25 +35,21 @@ module Spree
         )
       end
 
-      it "makes an api call" do
-        expect(subject.provider_class).
+      it "makes an api call the returns the orginal psp ref as an authorization" do
+        expect(gateway.provider_class).
           to receive(:capture_payment).
+          with("9999", {currency: "CAD", value: 2000}).
           and_return(response)
 
-        expect(subject.capture(2000, "1234", currency: "CAD")).
-          to be_a ::ActiveMerchant::Billing::Response
+        expect(subject).to be_a ::ActiveMerchant::Billing::Response
+
+        expect(subject.authorization).to eq "9999"
       end
     end
 
-    context "comply with spree payment/processing api" do
-      context "void" do
-        it "makes response.authorization returns the psp reference" do
-          response = double('Response', success?: true, psp_reference: "huhu")
-          allow(subject).to receive_message_chain(:provider, cancel_payment: response)
-
-          expect(subject.void("huhu").authorization).to eq "huhu"
-        end
-      end
+    describe ".authorize" do
+      subject { gateway.authorize 2000, hpp_source, currency: "CAD" }
+      it { is_expected.to be_a ActiveMerchant::Billing::Response }
     end
 
     context "calculate ship_before_date" do

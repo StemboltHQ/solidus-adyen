@@ -6,15 +6,11 @@ class Spree::AdyenNotificationsController < Spree::StoreController
   def notify
     notification = AdyenNotification.build(params)
 
-    if duplicate? notification
+    if notification.duplicate?
       accept and return
     end
 
-    # if a failure occurs we don't want to send anything, it wil be
-    # interpretted as a success.
-    AdyenNotification.transaction do
-      Spree::Adyen::NotificationProcessing.process notification
-    end
+    Spree::Adyen::NotificationProcessor.new(notification).process!
 
     # accept after processing has completed
     accept
@@ -31,13 +27,5 @@ class Spree::AdyenNotificationsController < Spree::StoreController
   private
   def accept
     render text: "[accepted]"
-  end
-
-  def duplicate? notification
-    AdyenNotification.exists?(
-      psp_reference: notification.psp_reference,
-      event_code: notification.event_code,
-      success: notification.success
-    )
   end
 end

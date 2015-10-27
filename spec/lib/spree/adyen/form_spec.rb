@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe Spree::Adyen::Form do
-  let(:order) { create :order, total: 99.0 }
+  let(:order) { create :order, total: 39.98 }
   let(:payment_method) { create :hpp_gateway, preferences: preferences }
   let(:preferences){
     {server: "test",
@@ -26,7 +26,7 @@ RSpec.describe Spree::Adyen::Form do
         skin_code: payment_method.skin_code,
         shared_secret: payment_method.shared_secret,
         country_code: order.billing_address.country.iso,
-        payment_amount: (order.total.to_f * 100).to_int }
+        payment_amount: 3998 }
 
        ::Adyen::Form.redirect_url(redirect_params)
     end
@@ -166,8 +166,8 @@ RSpec.describe Spree::Adyen::Form do
 
   describe "details_url" do
     let(:brand_code) { "paypal" }
-    subject { 
-      described_class.details_url(order, payment_method, brand_code) 
+    subject {
+      described_class.details_url(order, payment_method, brand_code)
     }
 
     it "calls endpoint url with the expected params" do
@@ -180,14 +180,14 @@ RSpec.describe Spree::Adyen::Form do
   describe "details_url_with_issuer" do
     let(:issuer_id) { "1654" }
     let(:brand_code) { "paypal" }
-    
-    subject { 
+
+    subject {
       described_class.details_url_with_issuer(
         order,
         payment_method,
         brand_code,
         issuer_id
-      ) 
+      )
     }
 
     it "calls endpoint url with the expected params" do

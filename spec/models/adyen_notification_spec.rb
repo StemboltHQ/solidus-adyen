@@ -1,9 +1,31 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe AdyenNotification do
   it { is_expected.to have_many(:next).inverse_of(:prev) }
   it { is_expected.to belong_to(:prev).inverse_of(:next) }
   it { is_expected.to belong_to :order }
+
+  describe ".payment" do
+    subject { notification.payment }
+
+    let(:ref) { "999999999" }
+    let!(:payment) { create :payment, response_code: ref }
+    let!(:notification) { described_class.new attr => ref }
+
+    shared_examples "finds the payment" do
+      it { is_expected.to eq payment }
+    end
+
+    context "normal notification" do
+      let(:attr) { :original_reference }
+      include_examples "finds the payment"
+    end
+
+    context "modification notification" do
+      let(:attr) { :psp_reference }
+      include_examples "finds the payment"
+    end
+  end
 
   describe "#build" do
     subject { described_class.build params }
@@ -36,7 +58,7 @@ RSpec.describe AdyenNotification do
           merchant_account_code: "Test",
           merchant_reference: "R999999999",
           operations: "CANCEL,CAPTURE,REFUND",
-          original_reference: "",
+          original_reference: nil,
           payment_method: "visa",
           psp_reference: "999999999",
           reason: "41061:1111:6/2016",

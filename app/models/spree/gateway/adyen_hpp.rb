@@ -51,33 +51,18 @@ module Spree
       ActiveMerchant::Billing::Response.new(true, 'successful hpp payment')
     end
 
-    def capture(amount, response_code, currency:, **_opts)
+    def capture(amount, psp_reference, currency:, **_opts)
       value = { currency: currency, value: amount }
 
-      response = provider.capture_payment(response_code, value)
-
-      ActiveMerchant::Billing::Response.new(
-        response.success?,
-        JSON.pretty_generate(response.params),
-        {},
-        authorization: response_code)
+      handle_response(
+        provider.capture_payment(psp_reference, value),
+        psp_reference)
     end
 
-    # According to Spree Processing class API the response object should respond
-    # to an authorization method which return value should be assigned to payment
-    # response_code
-    def void(response_code, gateway_options = {})
-      response = provider.cancel_payment(response_code)
-
-      if response.success?
-        def response.authorization; psp_reference; end
-      else
-        # TODO confirm the error response will always have these two methods
-        def response.to_s
-          "#{result_code} - #{refusal_reason}"
-        end
-      end
-      response
+    def cancel(psp_reference, _gateway_options = {})
+      handle_response(
+        provider.cancel_or_refund_payment(psp_reference),
+        psp_reference)
     end
 
     def credit(credit_cents, transaction_id, gateway_options = {})
@@ -95,6 +80,17 @@ module Spree
       end
 
       response
+    end
+
+    private
+
+    def handle_response response, original_reference
+      ActiveMerchant::Billing::Response.new(
+        response.success?,
+        JSON.pretty_generate(response.params),
+        {},
+        authorization: original_reference
+      )
     end
   end
 end

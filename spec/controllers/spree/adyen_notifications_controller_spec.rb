@@ -20,7 +20,13 @@ describe Spree::AdyenNotificationsController do
       "live" => "false" }
   end
 
-  let!(:payment) { create :payment, response_code: reference }
+  let!(:payment) do
+    create :payment, response_code: reference,
+      payment_method: payment_method
+  end
+
+  let(:payment_method) { create :bogus_hpp_gateway, :forced_success }
+
   let(:reference) { "8513823667306210" }
 
   before do

@@ -16,6 +16,17 @@
 #      @invoice.set_paid!
 #    end
 class AdyenNotification < ActiveRecord::Base
+  AUTO_CAPTURE_ONLY_METHODS = ["ideal", "c_cash", "directEbanking"].freeze
+
+  AUTHORISATION = "AUTHORISATION".freeze
+  CANCELLATION = "CANCELLATION".freeze
+  REFUND = "REFUND".freeze
+  CANCEL_OR_REFUND = "CANCEL_OR_REFUND".freeze
+  CAPTURE = "CAPTURE".freeze
+  CAPTURE_FAILED = "CAPTURE_FAILED".freeze
+  REFUND_FAILED = "REFUND_FAILED".freeze
+  REFUNDED_REVERSED = "REFUNDED_REVERSED".freeze
+
   belongs_to :prev,
     class_name: self,
     foreign_key: :original_reference,
@@ -35,18 +46,14 @@ class AdyenNotification < ActiveRecord::Base
     primary_key: :number,
     foreign_key: :merchant_reference
 
+  scope :as_dispatched, -> { order(event_date: :desc) }
   scope :processed, -> { where processed: true }
-
+  scope :unprocessed, -> { where processed: false }
   scope :authorisation, -> { where event_code: "AUTHORISATION" }
 
-  # A notification should always include an event_code
   validates_presence_of :event_code
-
-  # A notification should always include a psp_reference
   validates_presence_of :psp_reference
-
-  # Make sure we don't end up with an original_reference with an empty string
-  before_validation { |notification| notification.original_reference = nil if notification.original_reference.blank? }
+  validates_uniqueness_of :success, scope: [:psp_reference, :event_code]
 
   # Logs an incoming notification into the database.
   #
@@ -55,33 +62,79 @@ class AdyenNotification < ActiveRecord::Base
   # @raise This method will raise an exception if the notification cannot be stored.
   # @see Adyen::Notification::HttpPost.log
   def self.build(params)
-    converted_params = {}
-
     # Assign explicit each attribute from CamelCase notation to notification
     # For example, merchantReference will be converted to merchant_reference
     self.new.tap do |notification|
       params.each do |key, value|
         setter = "#{key.to_s.underscore}="
-        notification.send(setter, value) if notification.respond_to?(setter)
+
+        # don't assign if value is empty string.
+        if notification.respond_to?(setter) && value.present?
+          notification.send(setter, value)
+        end
       end
     end
+  end
+
+  def payment
+    Spree::Payment.find_by response_code: original_reference || psp_reference
   end
 
   # Returns true if this notification is an AUTHORISATION notification
   # @return [true, false] true iff event_code == 'AUTHORISATION'
   # @see Adyen.notification#successful_authorisation?
   def authorisation?
-    event_code == 'AUTHORISATION'
+    event_code == AUTHORISATION
   end
 
   def capture?
-    event_code == 'CAPTURE'
+    event_code == CAPTURE
+  end
+
+  def cancel_or_refund?
+    event_code == CANCEL_OR_REFUND
   end
 
   def actions
     self.operations.
       split(",").
       map(&:downcase)
+  end
+
+  # https://docs.adyen.com/display/TD/Notification+fields
+  def modification_event?
+    [ CANCELLATION,
+      REFUND,
+      CANCEL_OR_REFUND,
+      CAPTURE,
+      CAPTURE_FAILED,
+      REFUND_FAILED,
+      REFUNDED_REVERSED
+    ].member? self.event_code
+  end
+
+  def normal_event?
+    AUTHORISATION == self.event_code
+  end
+
+  def bank_transfer?
+    self.payment_method.match(/^bankTransfer/)
+  end
+
+  def duplicate?
+    self.class.exists?(
+      psp_reference: self.psp_reference,
+      event_code: self.event_code,
+      success: self.success
+    )
+  end
+
+  def auto_captured?
+    payment_method_auto_capture_only? || bank_transfer?
+  end
+
+  def payment_method_auto_capture_only?
+    AUTO_CAPTURE_ONLY_METHODS.member?(self.payment_method)
   end
 
   alias_method :authorization?, :authorisation?
