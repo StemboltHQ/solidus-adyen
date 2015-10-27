@@ -54,8 +54,18 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     [PENDING, AUTHORISED].include? auth_result
   end
 
+  def modifiable?
+    !payment.void? && !payment.processing?
+  end
+
   private
-  def auth_notification
-    self.notifications.processed.authorisation.last
+  # authorised_actions :: [String] | []
+  def authorised_actions
+    notifications.
+      processed.
+      authorisation.
+      last.
+      try { actions }.
+      try { map { |action| "adyen_hpp_#{action}" } } || []
   end
 end
