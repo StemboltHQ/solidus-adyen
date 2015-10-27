@@ -84,11 +84,11 @@ class AdyenNotification < ActiveRecord::Base
   # @return [true, false] true iff event_code == 'AUTHORISATION'
   # @see Adyen.notification#successful_authorisation?
   def authorisation?
-    event_code == 'AUTHORISATION'
+    event_code == AUTHORISATION
   end
 
   def capture?
-    event_code == 'CAPTURE'
+    event_code == CAPTURE
   end
 
   def actions
