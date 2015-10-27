@@ -41,10 +41,8 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
   end
 
   def actions
-    if auth_notification
-      auth_notification.
-        actions.
-        map { |action| "adyen_hpp_#{action}" }
+    if modifiable?
+      authorised_actions
     else
       []
     end

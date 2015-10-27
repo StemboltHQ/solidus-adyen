@@ -65,6 +65,11 @@ FactoryGirl.define do
        event_code "CAPTURE"
      end
 
+     trait :cancel_or_refund do
+       modification_event
+       event_code "CANCEL_OR_REFUND"
+     end
+
      trait :refund do
        modification_event
        event_code "REFUND"

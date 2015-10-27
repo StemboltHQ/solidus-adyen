@@ -72,6 +72,10 @@ class Spree::Adyen::NotificationProcessor
   def handle_modification_event
     if notification.capture?
       complete_payment!
+
+    elsif notification.cancel_or_refund?
+      payment.void
+
     end
   end
 
@@ -79,6 +83,7 @@ class Spree::Adyen::NotificationProcessor
   def handle_normal_event
     if notification.auto_captured?
       complete_payment!
+
     else
       payment.adyen_hpp_capture!
     end

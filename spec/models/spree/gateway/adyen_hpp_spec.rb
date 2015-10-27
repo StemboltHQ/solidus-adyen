@@ -1,14 +1,28 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Spree
   describe Gateway::AdyenHPP do
     let(:hpp_source) { create :hpp_source, psp_reference: "9999" }
     let(:gateway) { described_class.new }
 
-    describe ".capture" do
-      subject do
-        gateway.capture(2000, hpp_source.psp_reference, currency: "CAD")
+    describe ".cancel" do
+      subject { gateway.cancel("9999", currency: "CAD") }
+
+      let(:response) do
+        instance_double(
+          ::Adyen::API::PaymentService::CancelOrRefundResponse,
+          success?: true,
+          params:
+          { psp_reference: "1234",
+            response: "[cancelOrRefund-received]"
+          }
+        )
       end
+
+    end
+
+    describe ".capture" do
+      subject { gateway.capture(2000, "9999", currency: "CAD") }
 
       let(:response) do
         instance_double(
@@ -30,17 +44,6 @@ module Spree
         expect(subject).to be_a ::ActiveMerchant::Billing::Response
 
         expect(subject.authorization).to eq "9999"
-      end
-    end
-
-    context "comply with spree payment/processing api" do
-      context "void" do
-        it "makes response.authorization returns the psp reference" do
-          response = double('Response', success?: true, psp_reference: "huhu")
-          allow(subject).to receive_message_chain(:provider, cancel_payment: response)
-
-          expect(subject.void("huhu").authorization).to eq "huhu"
-        end
       end
     end
 

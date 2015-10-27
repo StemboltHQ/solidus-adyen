@@ -122,6 +122,21 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
       include_examples "completes payment"
     end
 
+    context "when event is CANCEL_OR_REFUND" do
+      let(:event_type) { :cancel_or_refund }
+
+      before do
+        payment.complete
+      end
+
+      it "voids the payment" do
+        expect { subject }.
+          to change { payment.reload.state }.
+          from("completed").
+          to("void")
+      end
+    end
+
     context "when the event is an event we don't process" do
       let(:event_type) { :pending }
       include_examples "returns the notification"

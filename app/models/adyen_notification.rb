@@ -91,6 +91,10 @@ class AdyenNotification < ActiveRecord::Base
     event_code == CAPTURE
   end
 
+  def cancel_or_refund?
+    event_code == CANCEL_OR_REFUND
+  end
+
   def actions
     self.operations.
       split(",").
