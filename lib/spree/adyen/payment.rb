@@ -11,9 +11,22 @@ module Spree::Adyen::Payment
     gateway_action(response_code, :capture, :started_processing)
   end
 
-  # adyen_hpp_refund! :: bool | error
-  def adyen_hpp_refund!
-    raise NotImplementedError
+  # adyen_hpp_credit! :: bool | error
+  def adyen_hpp_credit! amount, options
+    started_processing!
+    response = payment_method.credit(amount, response_code, options)
+    record_response(response)
+
+    if response.success?
+      # The payments controller's fire action expects a truthy value to
+      # indicate success
+      true
+    else
+      # this is done to be consistent with capture, but we might actually
+      # want them to just return to the previous state
+      self.failure
+      gateway_error(response)
+    end
   end
 
   # adyen_hpp_cancel! :: bool | error

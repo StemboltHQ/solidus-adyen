@@ -65,21 +65,12 @@ module Spree
         psp_reference)
     end
 
-    def credit(credit_cents, transaction_id, gateway_options = {})
-      currency = gateway_options[:currency]
-      currency ||= gateway_options[:originator].payment.currency
-      amount = { currency: currency, value: credit_cents }
-      response = provider.refund_payment transaction_id, amount
+    def credit(amount, psp_reference, currency:, **_opts)
+      amount = { currency: currency, value: amount }
 
-      if response.success?
-        def response.authorization; psp_reference; end
-      else
-        def response.to_s
-          refusal_reason
-        end
-      end
-
-      response
+      handle_response(
+        provider.refund_payment(psp_reference, amount),
+        psp_reference)
     end
 
     private

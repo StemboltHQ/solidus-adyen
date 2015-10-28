@@ -29,7 +29,7 @@ RSpec.describe Spree::Adyen::HppSource do
 
     it { expect(hpp_source.notifications.count).to eq 1 }
     it { expect(hpp_source.actions).
-         to eq %w{adyen_hpp_capture adyen_hpp_refund} }
+         to eq %w{adyen_hpp_capture credit} }
 
     shared_examples "has no actions" do
       it { is_expected.to eq [] }

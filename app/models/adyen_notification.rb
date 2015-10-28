@@ -95,6 +95,10 @@ class AdyenNotification < ActiveRecord::Base
     event_code == CANCEL_OR_REFUND
   end
 
+  def refund?
+    event_code == REFUND
+  end
+
   def actions
     if operations
       operations.

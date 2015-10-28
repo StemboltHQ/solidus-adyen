@@ -76,6 +76,15 @@ class Spree::Adyen::NotificationProcessor
     elsif notification.cancel_or_refund?
       payment.void
 
+    elsif notification.refund?
+      payment.refunds.create!(
+        amount: notification.value / 100, # cents to dollars
+        transaction_id: notification.psp_reference,
+        refund_reason_id: Spree::RefundReason.first.id # FIXME
+      )
+      # payment was processing, move back to completed
+      payment.complete!
+
     end
   end
 

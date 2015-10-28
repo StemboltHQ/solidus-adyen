@@ -61,11 +61,27 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
 
   # authorised_actions :: [String] | []
   def authorised_actions
-    notifications.
-      processed.
-      authorisation.
-      last.
-      try { actions }.
-      try { map { |action| "adyen_hpp_#{action}" } } || []
+    if auth_notification
+      auth_notification.
+        actions.map(&method(:transform_action))
+
+    else
+      []
+
+    end
+  end
+
+  def transform_action action
+    if action == "refund"
+      # return credit so that we go to the new refund action
+      "credit"
+    else
+      # call custom payment actions
+      "adyen_hpp_#{action}"
+    end
+  end
+
+  def auth_notification
+    notifications.processed.authorisation.last
   end
 end
