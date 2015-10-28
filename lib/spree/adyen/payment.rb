@@ -12,6 +12,9 @@ module Spree::Adyen::Payment
   end
 
   # adyen_hpp_credit! :: bool | error
+  #
+  # Issue a request to credit the payment, this does NOT perform validation on
+  # the amount to be credited, which is assumed to have been done prior to this.
   def adyen_hpp_credit! amount, options
     started_processing!
     response = payment_method.credit(amount, response_code, options)
