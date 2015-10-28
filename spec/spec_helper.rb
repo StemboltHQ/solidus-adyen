@@ -31,6 +31,7 @@ require 'spree/testing_support/factories'
 require 'spree/testing_support/controller_requests'
 require 'spree/testing_support/url_helpers'
 require "support/shared_contexts/mock_adyen_api"
+require "spree/testing_support/authorization_helpers"
 
 FactoryGirl.definition_file_paths = %w{./spec/factories}
 FactoryGirl.find_definitions
