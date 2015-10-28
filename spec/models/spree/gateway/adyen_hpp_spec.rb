@@ -8,13 +8,15 @@ module Spree
 
     include_context "mock adyen api", success: true
 
-    describe ".capture" do
-      subject { gateway.capture(2000, "9999", currency: "CAD") }
+    shared_examples "delayed gateway action" do
+      context "when the action succeeds" do
+        include_context "mock adyen api", success: true
 
-      it "makes an api call the returns the orginal psp ref as an authorization" do
-        expect(subject).to be_a ::ActiveMerchant::Billing::Response
+        it { is_expected.to be_a ::ActiveMerchant::Billing::Response }
 
-        expect(subject.authorization).to eq "9999"
+        it "returns the orginal psp ref as an authorization" do
+          expect(subject.authorization).to eq "9999"
+        end
       end
 
       context "when the action fails" do
@@ -30,8 +32,23 @@ module Spree
       end
     end
 
+    describe ".capture" do
+      subject { gateway.capture(2000, "9999", currency: "EUR") }
+      include_examples "delayed gateway action"
+    end
+
+    describe ".credit" do
+      subject { gateway.credit(2000, "9999", currency: "EUR") }
+      include_examples "delayed gateway action"
+    end
+
+    describe ".cancel" do
+      subject { gateway.cancel("9999") }
+      include_examples "delayed gateway action"
+    end
+
     describe ".authorize" do
-      subject { gateway.authorize 2000, hpp_source, currency: "CAD" }
+      subject { gateway.authorize 2000, hpp_source, currency: "EUR" }
       it { is_expected.to be_a ActiveMerchant::Billing::Response }
     end
 
