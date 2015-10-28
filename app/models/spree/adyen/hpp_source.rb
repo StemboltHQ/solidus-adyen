@@ -48,6 +48,10 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     end
   end
 
+  def can_adyen_hpp_cancel? payment
+    payment.refunds.empty?
+  end
+
   def authorised?
     # Many banks return pending, this is considered a valid response and
     # the order should proceed.

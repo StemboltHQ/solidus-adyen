@@ -85,4 +85,17 @@ RSpec.describe Spree::Adyen::HppSource do
       it { is_expected.to be false }
     end
   end
+
+  describe ".can_adyen_hpp_cancel?" do
+    subject { hpp_source.can_adyen_hpp_cancel? hpp_source.payment }
+
+    context "when the payment has refunds" do
+      before { create :refund, amount: 1, payment: hpp_source.payment }
+      it { is_expected.to be false }
+    end
+
+    context "when the payment doesn't have refunds" do
+      it { is_expected.to be true }
+    end
+  end
 end
