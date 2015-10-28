@@ -1,45 +1,15 @@
 require "spec_helper"
+require "support/shared_contexts/mock_adyen_api"
 
 module Spree
   describe Gateway::AdyenHPP do
     let(:hpp_source) { create :hpp_source, psp_reference: "9999" }
     let(:gateway) { described_class.new }
 
-    describe ".cancel" do
-      subject { gateway.cancel("9999", currency: "CAD") }
-
-      let(:response) do
-        instance_double(
-          ::Adyen::API::PaymentService::CancelOrRefundResponse,
-          success?: true,
-          params: {
-            psp_reference: "1234",
-            response: "[cancelOrRefund-received]"
-          }
-        )
-      end
-    end
+    include_context "mock adyen api", success: true
 
     describe ".capture" do
       subject { gateway.capture(2000, "9999", currency: "CAD") }
-
-      let(:response) do
-        instance_double(
-          ::Adyen::API::PaymentService::CaptureResponse,
-          success?: true,
-          params:
-          { psp_reference: "1234",
-            response: "[capture-received]"
-          }
-        )
-      end
-
-      before do
-        expect(gateway.provider_class).
-          to receive(:capture_payment).
-          with("9999", currency: "CAD", value: 2000).
-          and_return(response)
-      end
 
       it "makes an api call the returns the orginal psp ref as an authorization" do
         expect(subject).to be_a ::ActiveMerchant::Billing::Response
@@ -48,17 +18,10 @@ module Spree
       end
 
       context "when the action fails" do
-        let(:response) do
-          instance_double(
-            ::Adyen::API::PaymentService::CaptureResponse,
-            success?: false,
-            fault_message: "Should fail",
-            params: {
-              psp_reference: "1234",
-              response: "[someAction-received]"
-            }
-          )
-        end
+        include_context(
+          "mock adyen api",
+          success: false,
+          fault_message: "Should fail")
 
         it "has a response that contains the failure message" do
           expect(subject.success?).to be false
