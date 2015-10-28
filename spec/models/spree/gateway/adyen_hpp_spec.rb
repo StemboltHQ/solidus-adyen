@@ -12,13 +12,12 @@ module Spree
         instance_double(
           ::Adyen::API::PaymentService::CancelOrRefundResponse,
           success?: true,
-          params:
-          { psp_reference: "1234",
+          params: {
+            psp_reference: "1234",
             response: "[cancelOrRefund-received]"
           }
         )
       end
-
     end
 
     describe ".capture" do
@@ -35,15 +34,36 @@ module Spree
         )
       end
 
-      it "makes an api call the returns the orginal psp ref as an authorization" do
+      before do
         expect(gateway.provider_class).
           to receive(:capture_payment).
-          with("9999", {currency: "CAD", value: 2000}).
+          with("9999", currency: "CAD", value: 2000).
           and_return(response)
+      end
 
+      it "makes an api call the returns the orginal psp ref as an authorization" do
         expect(subject).to be_a ::ActiveMerchant::Billing::Response
 
         expect(subject.authorization).to eq "9999"
+      end
+
+      context "when the action fails" do
+        let(:response) do
+          instance_double(
+            ::Adyen::API::PaymentService::CaptureResponse,
+            success?: false,
+            fault_message: "Should fail",
+            params: {
+              psp_reference: "1234",
+              response: "[someAction-received]"
+            }
+          )
+        end
+
+        it "has a response that contains the failure message" do
+          expect(subject.success?).to be false
+          expect(subject.message).to eq "Should fail"
+        end
       end
     end
 
