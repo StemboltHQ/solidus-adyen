@@ -50,6 +50,14 @@ FactoryGirl.define do
        reason "31893:0002:8/2018"
      end
 
+     trait :sofort_auth do
+       auth
+       event_code "AUTHORISATION"
+       payment_method "directEbanking"
+       operations nil
+       reason nil
+     end
+
      trait :bank_auth do
        auth
        operations "REFUND"
