@@ -8,7 +8,7 @@ describe Spree::Adyen::Payment do
       include_context "mock adyen api", success: true
 
       it "logs the response" do
-        expect{ subject }.to change{ payment.log_entries.count }.by(1)
+        expect{ subject }.to change{ payment.reload.log_entries.count }.by(1)
       end
 
       it "changes payment state to processing" do
@@ -22,12 +22,16 @@ describe Spree::Adyen::Payment do
         success: false,
         fault_message: "Expected message")
 
-      it "changes payment state to failed" do
+      it "logs the response" do
         expect{ subject }.
-          to change{ payment.state }.to("failed").
+          to raise_error(Spree::Core::GatewayError).
+          and change{ payment.reload.log_entries.count }.by(1)
+      end
 
-          and raise_error(
-            Spree::Core::GatewayError, "Expected message")
+      it "does not change the status of the payment" do
+        expect{ subject }.
+          to raise_error(Spree::Core::GatewayError, "Expected message").
+          and keep { payment.reload.state }
       end
     end
   end

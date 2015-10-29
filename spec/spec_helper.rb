@@ -47,6 +47,8 @@ module Spree
 end
 
 RSpec.configure do |config|
+  RSpec::Matchers.define_negated_matcher :keep, :change
+
   config.color = true
   config.infer_spec_type_from_file_location!
   config.mock_with :rspec
