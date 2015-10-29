@@ -27,6 +27,12 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
       }
     end
 
+    shared_examples "payments are pending" do
+      it "has pending payments" do
+        expect(order.payments).to all be_pending
+      end
+    end
+
     shared_examples "payment is successful" do
       it "changes the order state to completed" do
         expect{ subject }.
@@ -40,13 +46,11 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
           and redirect_to order_path(order)
       end
 
-      it "creates a pending payment" do
+      it "creates a payment" do
         expect{ subject }.
           to change{ order.payments.count }.
           from(0).
           to(1)
-
-        expect(order.payments).to all be_pending
       end
 
       context "and the order cannot complete" do
@@ -60,11 +64,19 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
 
     context "when the payment is AUTHORISED" do
       include_examples "payment is successful"
+      include_examples "payments are pending"
       let(:auth_result) { "AUTHORISED" }
+
+      context "and the authorisation notification has already been received" do
+        before { create(:notification, :auth, psp_reference: psp_reference, merchant_reference: order.number) }
+
+        include_examples "payment is successful"
+      end
     end
 
     context "when the payment is PENDING" do
       include_examples "payment is successful"
+      include_examples "payments are pending"
       let(:auth_result) { "PENDING" }
     end
 
