@@ -96,9 +96,15 @@ class AdyenNotification < ActiveRecord::Base
   end
 
   def actions
-    self.operations.
-      split(",").
-      map(&:downcase)
+    if operations
+      operations.
+        split(",").
+        map(&:downcase)
+
+    else
+      []
+
+    end
   end
 
   # https://docs.adyen.com/display/TD/Notification+fields
