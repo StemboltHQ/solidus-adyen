@@ -23,7 +23,18 @@ module Spree
           payment_method: payment_method,
           source: source,
           response_code: params[:pspReference],
-          state: "checkout"
+          state: "checkout",
+          # Order is explicitly defined here because as of writing the
+          # Order -> Payments association does not have the inverse of defined
+          # when we call `current_order.complete` below payment.order will still
+          # refer to a previous state of the record.
+          #
+          # If the payment is auto captured only then the payment will completed
+          # in `process_outstanding!`, and because Payment calls
+          # .order.update_totals after save the order is saved with its
+          # previous values, causing payment_state and shipment_state to revert
+          # to nil.
+          order: current_order
         )
 
       if current_order.complete
