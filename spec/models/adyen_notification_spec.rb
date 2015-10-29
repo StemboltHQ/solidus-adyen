@@ -67,4 +67,20 @@ RSpec.describe AdyenNotification do
         )
     end
   end
+
+  describe ".actions" do
+    subject { notification.actions }
+    let(:notification) { create :notification, :auth, operations: operations }
+
+    context "when the notification has operations" do
+      let(:operations) { "CAPTURE,REFUND,CANCEL_OR_REFUND" }
+
+      it { is_expected.to eq ["capture", "refund", "cancel_or_refund"] }
+    end
+
+    context "when the notification's operations are nil" do
+      let(:operations) { nil }
+      it { is_expected.to eq [] }
+    end
+  end
 end
