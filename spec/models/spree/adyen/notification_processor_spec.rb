@@ -1,6 +1,8 @@
 require "spec_helper"
 
 RSpec.describe Spree::Adyen::NotificationProcessor do
+  include_context "mock adyen api", success: true
+
   describe "#process" do
     subject { described_class.new(notification).process! }
 
@@ -9,7 +11,7 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
     end
 
     let!(:hpp_gateway) do
-      create(:bogus_hpp_gateway)
+      create(:hpp_gateway)
     end
 
     let!(:notification) do
@@ -150,7 +152,7 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
   describe "#process_outstanding!" do
     subject { described_class.process_outstanding! payment }
 
-    let!(:payment) { create :bogus_hpp_payment, amount: 19.99, state: "pending" }
+    let!(:payment) { create :hpp_payment, amount: 19.99, state: "pending" }
 
     let!(:notifications) do
       opts = {payment: payment, value: 1999}

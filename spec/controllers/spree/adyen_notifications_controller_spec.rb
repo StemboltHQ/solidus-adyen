@@ -1,6 +1,8 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Spree::AdyenNotificationsController do
+  include_context "mock adyen api", success: true
+
   routes { Spree::Core::Engine.routes }
 
   let(:order) { create :order }
@@ -25,7 +27,7 @@ describe Spree::AdyenNotificationsController do
       payment_method: payment_method
   end
 
-  let(:payment_method) { create :bogus_hpp_gateway, :forced_success }
+  let(:payment_method) { create :hpp_gateway }
 
   let(:reference) { "8513823667306210" }
 

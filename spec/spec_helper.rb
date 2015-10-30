@@ -30,6 +30,7 @@ Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].each {|f| require f }
 require 'spree/testing_support/factories'
 require 'spree/testing_support/controller_requests'
 require 'spree/testing_support/url_helpers'
+require "support/shared_contexts/mock_adyen_api"
 
 FactoryGirl.definition_file_paths = %w{./spec/factories}
 FactoryGirl.find_definitions
