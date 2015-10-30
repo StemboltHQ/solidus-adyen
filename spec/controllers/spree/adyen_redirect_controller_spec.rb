@@ -1,26 +1,30 @@
-require 'spec_helper'
+require "spec_helper"
+require "support/shared_contexts/mock_adyen_api"
 
 # https://docs.adyen.com/display/TD/HPP+payment+response
 RSpec.describe Spree::AdyenRedirectController, type: :controller do
+  include_context "mock adyen api", success: true
+
   let(:order) { create(:order_with_line_items, state: "payment") }
-  let(:payment_method) { create :bogus_hpp_gateway }
+  let(:gateway) { create :hpp_gateway }
 
   before do
     allow(controller).to receive(:current_order).and_return order
     allow(controller).to receive(:check_signature)
     allow(controller).to receive(:payment_method).
-      and_return payment_method
+      and_return gateway
   end
 
   describe "GET confirm" do
     subject(:action) { spree_get :confirm, params }
 
     let(:psp_reference) { "8813824003752247" }
+    let(:payment_method) { "amex" }
     let(:params) do
       { merchantReference: order.number,
         skinCode: "xxxxxxxx",
         shopperLocale: "en_GB",
-        paymentMethod: "visa",
+        paymentMethod: payment_method,
         authResult: auth_result,
         pspReference:  psp_reference,
         merchantSig: "erewrwerewrewrwer"
@@ -35,10 +39,18 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
 
     shared_examples "payment is successful" do
       it "changes the order state to completed" do
-        expect{ subject }.
-          to change{ order.state }.
+        expect { subject }.
+          to change { order.reload.state }.
           from("payment").
-          to("complete")
+          to("complete").
+
+          and change { order.payment_state }.
+          from(nil).
+          to("balance_due").
+
+          and change { order.shipment_state }.
+          from(nil).
+          to("pending")
       end
 
       it "redirects to the order complete page" do
@@ -68,9 +80,41 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
       let(:auth_result) { "AUTHORISED" }
 
       context "and the authorisation notification has already been received" do
-        before { create(:notification, :auth, psp_reference: psp_reference, merchant_reference: order.number) }
+        let(:payment_method) { notification.payment_method }
 
-        include_examples "payment is successful"
+        let(:notification) do
+          create(
+            :notification,
+            notification_type,
+            psp_reference: psp_reference,
+            merchant_reference: order.number)
+        end
+
+        shared_examples "auth received" do
+          include_examples "payment is successful"
+
+          it "processes the notification" do
+            expect { subject }.
+              to change { notification.reload.processed }.
+              from(false).
+              to(true)
+          end
+        end
+
+        context "and payment method is sofort" do
+          let(:notification_type) { :sofort_auth  }
+          include_examples "auth received"
+        end
+
+        context "and payment method is ideal" do
+          let(:notification_type) { :ideal_auth }
+          include_examples "auth received"
+        end
+
+        context "and payment method is credit" do
+          let(:notification_type) { :auth }
+          include_examples "auth received"
+        end
       end
     end
 
