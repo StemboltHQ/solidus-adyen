@@ -1,6 +1,8 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe Spree::Adyen::HppSource do
+  include_context "mock adyen api", success: true
+
   it { is_expected.to belong_to(:order) }
   it { is_expected.to have_one(:payment) }
   it { is_expected.to have_many(:notifications) }
@@ -9,7 +11,7 @@ RSpec.describe Spree::Adyen::HppSource do
     create :hpp_source,
       psp_reference: "999999999",
       merchant_reference: "R11111111",
-      payment: create(:bogus_hpp_payment)
+      payment: create(:hpp_payment)
   end
 
   describe ".actions" do

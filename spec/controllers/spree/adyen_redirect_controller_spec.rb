@@ -1,5 +1,4 @@
 require "spec_helper"
-require "support/shared_contexts/mock_adyen_api"
 
 # https://docs.adyen.com/display/TD/HPP+payment+response
 RSpec.describe Spree::AdyenRedirectController, type: :controller do
