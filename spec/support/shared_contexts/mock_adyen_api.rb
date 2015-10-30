@@ -6,9 +6,20 @@ shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: 
   end
 
   let(:provider) do
-    mock_response = -> (method) {
-      response(method, success, fault_message, psp_reference)
-    }
+    # lambda so that this doesn't leak outside of this context.
+    mock_response = lambda do |method|
+      psp_reference ||= "%016d" % SecureRandom.random_number(10**16)
+
+      instance_double(
+        "Adyen::API::PaymentService::#{method.camelcase}Response",
+        success?: success,
+        fault_message: fault_message,
+        params: {
+          psp_reference: psp_reference,
+          response: "[#{method.camelcase(:lower)}-received]"
+        }
+      )
+    end
 
     instance_double("Adyen::API").tap do |double|
       allow(double).
@@ -17,12 +28,12 @@ shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: 
           kind_of(String),
           hash_including(:currency, :value)
         ).
-        and_return(mock_response.("capture"))
+        and_return(mock_response.call("capture"))
 
       allow(double).
         to receive(:cancel_or_refund_payment).
         with(kind_of(String)).
-        and_return(mock_response.("cancel_or_refund"))
+        and_return(mock_response.call("cancel_or_refund"))
 
       allow(double).
         to receive(:refund_payment).
@@ -30,21 +41,7 @@ shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: 
           kind_of(String),
           hash_including(:currency, :value)
         ).
-        and_return(mock_response.("refund"))
+        and_return(mock_response.call("refund"))
     end
-  end
-
-  def response(method, success, fault_message, ref = nil)
-    ref ||= "%016d" % SecureRandom.random_number(10**16)
-
-    instance_double(
-      "Adyen::API::PaymentService::#{method.camelcase}Response",
-      success?: success,
-      fault_message: fault_message,
-      params: {
-        psp_reference: ref,
-        response: "[#{method.camelcase(:lower)}-received]"
-      }
-    )
   end
 end
