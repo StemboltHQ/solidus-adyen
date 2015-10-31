@@ -1,6 +1,10 @@
 ---
 en:
   solidus-adyen:
+    payment:
+      failure: "Action failed, check reason for more information."
+      success: "Action succeeded."
+      unprocessed: "Action was not processed: payment may require manual resolution."
     manual_refund:
       order_button: "manual refund required"
       log_message: A cancellation was attempted on this payment but the payment

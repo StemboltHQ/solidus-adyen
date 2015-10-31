@@ -1,26 +1,14 @@
-<% adyen_notification_fields = [
-  :event_code,
-  :psp_preference,
-  :reason,
-  :processed,
-  :currency,
-  :value,
-  :operations,
-  :success,
-  :processed,
-  :event_date,
-  :create_at
-] %>
+<% content_for :page_actions do %>
+  <li>
+    <%=
+      link_to "View in Customer Area",
+        Spree::Adyen::URL.payment_adyen_customer_area_url(
+          merchant_account: payment.payment_method.preferred_merchant_account,
+          psp_reference: payment.response_code
+        ),
+        class: "button fa"
+    %>
+  </li>
+<% end %>
 
-<fieldset data-hook="credit_card">
-  <legend align="center">Adyen HPP payment</legend>
-
-  <%= render payment.source %>
-
-  <fieldset>
-    <legend align="center">Adyen Notifications</legend>
-    <table>
-      <tbody> <%= render payment.source.notifications.order :event_date %> </tbody>
-    </table>
-  </fieldset>
-</fieldset>
+<%= render Spree::Adyen::Presenters::Communication.from_source(payment.source) %>

@@ -151,5 +151,9 @@ class AdyenNotification < ActiveRecord::Base
     AUTO_CAPTURE_ONLY_METHODS.member?(self.payment_method)
   end
 
+  def money
+    ::Money.new(value, currency)
+  end
+
   alias_method :authorization?, :authorisation?
 end

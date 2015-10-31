@@ -1,0 +1,121 @@
+@import 'variables';
+@import 'bourbon';
+
+$timestamp-fade: 0.25;
+$notch-size: 16px;
+$color-sent-bg: mix($color-3, white, 100%);
+$color-received-bg: mix($color-3, white, 10%);
+
+@mixin notch($side, $color) {
+  #{$side}: -($notch-size);
+  border-#{$side}: $notch-size solid transparent;
+  border-top: $notch-size solid $color;
+  content: '';
+  padding-left: 0;
+  position: absolute;
+  top: 0;
+}
+
+@mixin message($side, $color-bg, $color-text) {
+  background-color: $color-bg;
+  border-top-#{$side}-radius: 0;
+  box-shadow: 2px 2px 1px -1px fade-out(mix($color-bg, black, 70%), 0.2);
+  color: $color-text;
+  line-height: 1.6em;
+  margin-left: $notch-size;
+
+  @if $side == right {
+    float: right;
+    margin-right: $notch-size;
+  } @else {
+    margin-left: $notch-size;
+  }
+
+  &:before {
+    @include notch($side, $color-bg);
+  }
+
+  .adyen-comm-timestamp {
+    color: fade-out($color-text, $timestamp-fade);
+  }
+}
+
+/* cannot use a real table here because spree clobbers all default style for
+ * tables and is super specific.
+ */
+.adyen-comm-content {
+  display: table;
+  border-spacing: 20px 10px
+}
+
+.adyen-comm-content-cell {
+  display: table-cell;
+
+  &:first-child {
+    font-weight: bold;
+  }
+}
+
+.adyen-comm-content-row {
+  display: table-row;
+}
+
+.adyen-comm {
+  border-radius: 10px;
+  display: inline-block;
+  margin-bottom: 10px;
+  min-width: 350px;
+  padding: 5px 20px;
+  position: relative;
+
+  .adyen-comm-sent & {
+    @include message(right, $color-sent-bg, white);
+  }
+
+  .adyen-comm-received & {
+    @include message(left, $color-received-bg, black);
+  }
+}
+
+.adyen-comm-received,
+.adyen-comm-sent {
+  & + & .adyen-comm {
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    &:before {
+      display: none;
+    }
+  }
+}
+
+.adyen-comm-icon-success {
+  color: $color-success;
+}
+
+.adyen-comm-icon-failure {
+  color: $color-error;
+}
+
+.adyen-comm-icon-unprocessed {
+  color: $color-safety-yellow;
+}
+
+.adyen-comm-icon {
+  @include display(flex);
+  @include flex-direction(column);
+  @include justify-content(space-between);
+  font-size: 30px;
+}
+
+.adyen-comm-body {
+  @include display(flex);
+  @include align-items(center);
+
+  .adyen-comm-sent & {
+    @include flex-direction(row-reverse);
+  }
+}
+
+.adyen-comm-timestamp {
+  text-align: right;
+}
