@@ -10,10 +10,14 @@ class Spree::AdyenNotificationsController < Spree::StoreController
       accept and return
     end
 
-    Spree::Adyen::NotificationProcessor.new(notification).process!
+    notification.save!
 
-    # accept after processing has completed
-    accept
+    begin
+      Spree::Adyen::NotificationProcessor.new(notification).process!
+    ensure
+      # must accept notification, but still bubble error
+      accept
+    end
   end
 
   protected
