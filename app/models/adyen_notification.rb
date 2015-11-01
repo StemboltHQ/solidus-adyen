@@ -99,6 +99,10 @@ class AdyenNotification < ActiveRecord::Base
     event_code == REFUND
   end
 
+  def processed!
+    update processed: true
+  end
+
   def actions
     if operations
       operations.
