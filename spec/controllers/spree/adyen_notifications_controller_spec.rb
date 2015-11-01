@@ -63,6 +63,21 @@ describe Spree::AdyenNotificationsController do
         let(:payment) { nil }
         include_examples "logs the notification"
       end
+
+      # regression test
+      context "an error occurs during processing" do
+        before { payment.void! }
+        before { params["success"] = false }
+
+        it "errors and creates a notification" do
+          expect { subject }.
+            to raise_error(StateMachines::InvalidTransition).
+            and change { AdyenNotification.count }.by(1)
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to have_content "[accepted]"
+        end
+      end
     end
 
     context "request not authenticated" do
