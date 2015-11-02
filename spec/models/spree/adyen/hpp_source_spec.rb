@@ -29,7 +29,7 @@ RSpec.describe Spree::Adyen::HppSource do
 
     it { expect(hpp_source.notifications.count).to eq 1 }
     it { expect(hpp_source.actions).
-         to eq %w{adyen_hpp_capture adyen_hpp_refund} }
+         to eq %w{adyen_hpp_capture credit} }
 
     shared_examples "has no actions" do
       it { is_expected.to eq [] }
@@ -83,6 +83,19 @@ RSpec.describe Spree::Adyen::HppSource do
     context "when something else" do
       let(:event) { "REFUSED" }
       it { is_expected.to be false }
+    end
+  end
+
+  describe ".can_adyen_hpp_cancel?" do
+    subject { hpp_source.can_adyen_hpp_cancel? hpp_source.payment }
+
+    context "when the payment has refunds" do
+      before { create :refund, amount: 1, payment: hpp_source.payment }
+      it { is_expected.to be false }
+    end
+
+    context "when the payment doesn't have refunds" do
+      it { is_expected.to be true }
     end
   end
 end

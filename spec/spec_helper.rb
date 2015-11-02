@@ -31,6 +31,7 @@ require 'spree/testing_support/factories'
 require 'spree/testing_support/controller_requests'
 require 'spree/testing_support/url_helpers'
 require "support/shared_contexts/mock_adyen_api"
+require "spree/testing_support/authorization_helpers"
 
 FactoryGirl.definition_file_paths = %w{./spec/factories}
 FactoryGirl.find_definitions
@@ -46,6 +47,8 @@ module Spree
 end
 
 RSpec.configure do |config|
+  RSpec::Matchers.define_negated_matcher :keep, :change
+
   config.color = true
   config.infer_spec_type_from_file_location!
   config.mock_with :rspec

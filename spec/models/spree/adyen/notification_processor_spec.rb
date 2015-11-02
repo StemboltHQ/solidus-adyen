@@ -7,7 +7,13 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
     subject { described_class.new(notification).process! }
 
     let!(:payment) do
-      create(:payment, state: payment_state, payment_method: hpp_gateway)
+      create(
+        :payment,
+        amount: 23.99,
+        state: payment_state,
+        payment_method: hpp_gateway,
+        order: create(:order, currency: "EUR")
+      )
     end
 
     let!(:hpp_gateway) do
@@ -136,6 +142,25 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
           to change { payment.reload.state }.
           from("completed").
           to("void")
+      end
+    end
+
+    context "when event is REFUND" do
+      let(:event_type) { :refund }
+      let(:payment_state) { "processing" }
+
+      it "creates a refund" do
+        expect { subject }.
+          to change { payment.reload.refunds.count }.
+          from(0).
+          to(1)
+      end
+
+      it "changes the payment state to completed" do
+        expect { subject }.
+          to change { payment.reload.state }.
+          from("processing").
+          to("completed")
       end
     end
 
