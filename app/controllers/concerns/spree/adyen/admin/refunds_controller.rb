@@ -1,5 +1,9 @@
-Spree::Admin::RefundsController.class_eval do
-  before_filter :adyen_create, only: [:create]
+module Spree::Adyen::Admin::RefundsController
+  extend ActiveSupport::Concern
+
+  included do
+    before_filter :adyen_create, only: [:create]
+  end
 
   def adyen_create
     if hpp_payment?

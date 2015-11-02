@@ -3,6 +3,8 @@
 # standard capture! and friends as they change the payment state and would
 # result is false positives (payment could fail after capture).
 module Spree::Adyen::Payment
+  extend ActiveSupport::Concern
+
   # adyen_hpp_capture! :: bool | error
   def adyen_hpp_capture!
     amount = money.money.cents
