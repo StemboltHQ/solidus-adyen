@@ -4,29 +4,47 @@
 # result is false positives (payment could fail after capture).
 module Spree::Adyen::Payment
   extend ActiveSupport::Concern
+  include Spree::Adyen::HppCheck
 
-  # adyen_hpp_capture! :: bool | error
-  def adyen_hpp_capture!
-    amount = money.money.cents
-    process do
-      payment_method.send(:capture, amount, response_code, gateway_options)
+  # capture! :: bool | error
+  def capture!
+    if hpp_payment?
+      amount = money.money.cents
+      process do
+        payment_method.send(:capture, amount, response_code, gateway_options)
+      end
+    else
+      super
     end
   end
 
-  # adyen_hpp_credit! :: bool | error
+  # credit! :: bool | error
   #
   # Issue a request to credit the payment, this does NOT perform validation on
   # the amount to be credited, which is assumed to have been done prior to this.
-  def adyen_hpp_credit! amount, options
-    process { payment_method.credit(amount, response_code, options) }
+  #
+  # credit! is only implemented for hpp payments, because of the delayed manner
+  # of Adyen api communications. If this method is called on a payment that is
+  # not from Adyen then it should fail. This is crummy way of getting around the
+  # fact that Payment methods cannot specifiy these methods.
+  def credit! amount, options
+    if hpp_payment?
+      process { payment_method.credit(amount, response_code, options) }
+    else
+      fail NotImplementedError, "Spree::Payment does not implement credit!"
+    end
   end
 
-  # adyen_hpp_cancel! :: bool | error
+  # cancel! :: bool | error
   #
   # Borrowed from handle_void_response, this has been modified so that it won't
   # actually void the payment _yet_.
-  def adyen_hpp_cancel!
-    process { payment_method.cancel response_code }
+  def cancel!
+    if hpp_payment?
+      process { payment_method.cancel response_code }
+    else
+      super
+    end
   end
 
   private

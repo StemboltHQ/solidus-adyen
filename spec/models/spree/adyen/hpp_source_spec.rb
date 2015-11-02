@@ -29,7 +29,7 @@ RSpec.describe Spree::Adyen::HppSource do
 
     it { expect(hpp_source.notifications.count).to eq 1 }
     it { expect(hpp_source.actions).
-         to eq %w{adyen_hpp_capture credit} }
+         to eq %w{capture credit} }
 
     shared_examples "has no actions" do
       it { is_expected.to eq [] }
@@ -51,8 +51,8 @@ RSpec.describe Spree::Adyen::HppSource do
     end
   end
 
-  describe ".can_adyen_hpp_capture?" do
-    subject { hpp_source.can_adyen_hpp_capture? payment }
+  describe ".can_capture?" do
+    subject { hpp_source.can_capture? payment }
     let!(:payment) { create :payment, amount: 10.0 }
 
     it { is_expected.to be true }
@@ -86,8 +86,8 @@ RSpec.describe Spree::Adyen::HppSource do
     end
   end
 
-  describe ".can_adyen_hpp_cancel?" do
-    subject { hpp_source.can_adyen_hpp_cancel? hpp_source.payment }
+  describe ".can_cancel?" do
+    subject { hpp_source.can_cancel? hpp_source.payment }
 
     context "when the payment has refunds" do
       before { create :refund, amount: 1, payment: hpp_source.payment }

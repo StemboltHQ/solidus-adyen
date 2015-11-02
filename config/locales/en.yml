@@ -1,6 +1,0 @@
----
-en:
-  spree:
-    adyen_hpp_capture: Capture
-    adyen_hpp_refund: Refund
-    adyen_hpp_cancel: Cancel

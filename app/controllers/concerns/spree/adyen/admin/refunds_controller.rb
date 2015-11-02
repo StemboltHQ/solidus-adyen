@@ -1,12 +1,13 @@
 module Spree::Adyen::Admin::RefundsController
   extend ActiveSupport::Concern
+  include Spree::Adyen::HppCheck
 
   included do
     before_filter :adyen_create, only: [:create]
   end
 
   def adyen_create
-    if hpp_payment?
+    if hpp_payment?(@payment)
       # this sucks, but the attributes are not assigned until after callbacks
       # if we're here we aren't going down the normal flow anyways
       @refund.attributes = permitted_resource_params
@@ -15,7 +16,7 @@ module Spree::Adyen::Admin::RefundsController
       return if @refund.invalid?
 
       @payment.refunds.reset # we don't want to save the refund
-      @payment.adyen_hpp_credit!(cents, currency: currency)
+      @payment.credit!(cents, currency: currency)
 
       respond
     end
@@ -33,10 +34,6 @@ module Spree::Adyen::Admin::RefundsController
 
   def money
     @refund.money.money
-  end
-
-  def hpp_payment?
-    @refund.payment.source.class == Spree::Adyen::HppSource
   end
 
   # This is directly copied from .create's response, no way to make it any

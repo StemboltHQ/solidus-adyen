@@ -81,7 +81,7 @@ class Spree::Adyen::NotificationProcessor
       complete_payment!
 
     else
-      payment.adyen_hpp_capture!
+      payment.capture!
 
     end
     notification.processed!
