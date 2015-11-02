@@ -10,9 +10,9 @@ class Spree::AdyenNotificationsController < Spree::StoreController
       accept and return
     end
 
-    Spree::Adyen::NotificationProcessor.new(notification).process!
+    notification.save!
 
-    # accept after processing has completed
+    Spree::Adyen::NotificationProcessor.new(notification).process!
     accept
   end
 

@@ -21,14 +21,10 @@ class Spree::Adyen::NotificationProcessor
     end
   end
 
+  # only process the notification if there is a matching payment there's a
+  # number of reasons why there may not be a matching payment such as test
+  # notifications, reports etc, we just log them and then accept
   def process!
-    # only process the notification if there is a matching payment
-    # there's a number of reasons why there may not be a matching payment
-    # such as test notifications, reports etc, we just log them and then
-    # accept
-    #
-    # if processing fails all modifications should be rolled back and we should
-    # not acknowledge the notification.
     Spree::Payment.transaction do
       if payment
         if !notification.success?
@@ -40,20 +36,8 @@ class Spree::Adyen::NotificationProcessor
         elsif notification.normal_event?
           handle_normal_event
 
-        else
-          # the notification was not handled by any clause and should be logged
-          # as unprocessed, this is typical of any event like a dispute or any
-          # other currently unsupported event. This could potentially let us go
-          # back and correct them retroactively or see what was actually handled
-          # by the system.
-          notification.processed = false
-          return notification
         end
-
-        notification.processed = true
       end
-
-      notification.save!
     end
 
     return notification
@@ -62,6 +46,7 @@ class Spree::Adyen::NotificationProcessor
   private
 
   def handle_failure
+    notification.processed!
     # ignore failures if the payment was already completed
     return if payment.completed?
     # might have to do something else on modification events,
@@ -71,9 +56,11 @@ class Spree::Adyen::NotificationProcessor
 
   def handle_modification_event
     if notification.capture?
+      notification.processed!
       complete_payment!
 
     elsif notification.cancel_or_refund?
+      notification.processed!
       payment.void
 
     elsif notification.refund?
@@ -95,7 +82,9 @@ class Spree::Adyen::NotificationProcessor
 
     else
       payment.adyen_hpp_capture!
+
     end
+    notification.processed!
   end
 
   def complete_payment!
