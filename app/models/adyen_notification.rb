@@ -100,7 +100,7 @@ class AdyenNotification < ActiveRecord::Base
   end
 
   def processed!
-    update processed: true
+    update! processed: true
   end
 
   def actions
