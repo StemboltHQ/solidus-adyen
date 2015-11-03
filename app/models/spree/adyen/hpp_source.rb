@@ -52,6 +52,10 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     payment.refunds.empty?
   end
 
+  def requires_manual_refund?
+    payment_method == "directEbanking" # aka sofort
+  end
+
   def authorised?
     # Many banks return pending, this is considered a valid response and
     # the order should proceed.

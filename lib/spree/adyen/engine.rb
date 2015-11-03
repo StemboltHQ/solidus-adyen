@@ -22,6 +22,7 @@ module Spree
 
       def self.activate
         Spree::Payment.include Spree::Adyen::Payment
+        Spree::Order.include Spree::Adyen::Order
         Spree::Admin::RefundsController.include Spree::Adyen::Admin::RefundsController
       end
 
