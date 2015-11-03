@@ -1,0 +1,15 @@
+@import 'variables';
+
+.button-error {
+  background-color: $color-error;
+
+  &.fa:before {
+    color: $color-warning;
+  }
+  &:hover {
+    background-color: lighten($color-error, 5%);
+  }
+  &:active {
+    background-color: darken($color-error, 5%);
+  }
+}
