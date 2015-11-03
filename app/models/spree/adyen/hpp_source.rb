@@ -36,7 +36,7 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     foreign_key: :merchant_reference,
     primary_key: :merchant_reference
 
-  def can_adyen_hpp_capture? payment
+  def can_capture? payment
     payment.uncaptured_amount != 0.0
   end
 
@@ -48,7 +48,7 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
     end
   end
 
-  def can_adyen_hpp_cancel? payment
+  def can_cancel? payment
     payment.refunds.empty?
   end
 
@@ -80,8 +80,7 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
       # return credit so that we go to the new refund action
       "credit"
     else
-      # call custom payment actions
-      "adyen_hpp_#{action}"
+      action
     end
   end
 

@@ -7,6 +7,11 @@ module Spree
 
       config.autoload_paths += Dir["#{config.root}/lib/**/"]
 
+      config.autoload_paths += %W(
+        #{config.root}/app/controllers/concerns
+        #{config.root}/app/models/concerns
+      )
+
       config.generators do |g|
         g.test_framework :rspec
       end
@@ -16,9 +21,8 @@ module Spree
       end
 
       def self.activate
-        Dir.glob(File.join(File.dirname(__FILE__), "../../../app/**/*_decorator.rb")) do |c|
-          Rails.configuration.cache_classes ? require(c) : load(c)
-        end
+        Spree::Payment.include Spree::Adyen::Payment
+        Spree::Admin::RefundsController.include Spree::Adyen::Admin::RefundsController
       end
 
       config.to_prepare(&method(:activate).to_proc)

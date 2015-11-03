@@ -42,7 +42,7 @@ RSpec.describe Spree::Admin::RefundsController do
 
       it "requests the refund" do
         expect_any_instance_of(Spree::Payment).
-          to receive(:adyen_hpp_credit!).
+          to receive(:credit!).
           with(10000, currency: "EUR")
         subject
       end
@@ -59,7 +59,7 @@ RSpec.describe Spree::Admin::RefundsController do
 
         it "doesn't attempt to credit the payment" do
           expect_any_instance_of(Spree::Payment).
-            to_not receive(:adyen_hpp_credit!)
+            to_not receive(:credit!)
           subject
         end
       end

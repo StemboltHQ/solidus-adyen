@@ -36,18 +36,43 @@ describe Spree::Adyen::Payment do
     end
   end
 
-  describe "adyen_hpp_cancel!" do
-    subject { payment.adyen_hpp_cancel! }
+  describe "cancel!" do
+    subject { payment.cancel! }
     include_examples "gateway action"
+
+    context "when the payment doesn't have an hpp source" do
+      let(:payment) { create :payment }
+
+      it "keeps the orginal behaviour" do
+        expect{ subject }.
+          to change { payment.reload.state }.
+          from("checkout").
+          to("void")
+      end
+    end
   end
 
-  describe "adyen_hpp_capture!" do
-    subject { payment.adyen_hpp_capture! }
+  describe "capture!" do
+    subject { payment.capture! }
     include_examples "gateway action"
+
+    context "when the payment doesn't have an hpp source" do
+      let(:payment) { create :payment }
+
+      it "keeps the orginal behaviour" do
+        expect{ subject }.
+          to change { payment.reload.state }.
+          from("checkout").
+          to("completed").
+
+          and change { payment.capture_events.count }.
+          by(1)
+      end
+    end
   end
 
-  describe "adyen_hpp_credit!" do
-    subject { payment.adyen_hpp_credit! "1000", currency: "EUR" }
+  describe "credit!" do
+    subject { payment.credit! "1000", currency: "EUR" }
     include_examples "gateway action"
   end
 end
