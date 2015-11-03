@@ -50,6 +50,21 @@ describe Spree::Adyen::Payment do
           to("void")
       end
     end
+
+    context "when payment is only manually refundable" do
+      let(:payment) { create :hpp_payment, source: source }
+      let(:source) { create :hpp_source, :sofort }
+
+      it "creates a log entry" do
+        expect { subject }.
+          to change { payment.reload.log_entries.count }
+      end
+
+      it "doesn't change the state" do
+        expect { subject }.
+          to_not change { payment.reload.state }
+      end
+    end
   end
 
   describe "capture!" do
