@@ -5,6 +5,11 @@ FactoryGirl.define do
     auth_result 'AUTHORISED'
     psp_reference { SecureRandom.hex }
     merchant_sig 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    payment_method "amex"
     order
+
+    trait :sofort do
+      payment_method "directEbanking"
+    end
   end
 end

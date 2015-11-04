@@ -8,10 +8,14 @@
 # Information about when certain action are valid:
 # https://docs.adyen.com/display/TD/HPP+modifications
 class Spree::Adyen::HppSource < ActiveRecord::Base
-  PENDING = "PENDING"
-  AUTHORISED = "AUTHORISED"
-  REFUSED = "REFUSED"
-  CANCELLED = "CANCELLED"
+  MANUALLY_REFUNDABLE = [
+    "directEbanking"
+  ].freeze
+
+  PENDING = "PENDING".freeze
+  AUTHORISED = "AUTHORISED".freeze
+  REFUSED = "REFUSED".freeze
+  CANCELLED = "CANCELLED".freeze
 
   # support updates from capital-cased responses, which is what adyen gives us
   alias_attribute :authResult, :auth_result
@@ -50,6 +54,10 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
 
   def can_cancel? payment
     payment.refunds.empty?
+  end
+
+  def requires_manual_refund?
+    MANUALLY_REFUNDABLE.include?(payment_method)
   end
 
   def authorised?

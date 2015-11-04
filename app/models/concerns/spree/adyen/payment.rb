@@ -41,13 +41,25 @@ module Spree::Adyen::Payment
   # actually void the payment _yet_.
   def cancel!
     if hpp_payment?
-      process { payment_method.cancel response_code }
+      if source.requires_manual_refund?
+        log_manual_refund
+      else
+        process { payment_method.cancel response_code }
+      end
     else
       super
     end
   end
 
   private
+
+  def log_manual_refund
+    message = I18n.t("solidus-adyen.manual_refund.log_message")
+    record_response(
+      OpenStruct.new(
+        success?: false,
+        message: message))
+  end
 
   def process &block
     check_environment

@@ -1,0 +1,9 @@
+<% if @order.requires_manual_refund? %>
+  <%=
+    link_to(
+      t("solidus-adyen.manual_refund.order_button"),
+      Spree::Adyen::URL.modify_search_url(query: @order.number),
+      class: "fa fa-warning button button-error",
+      target: "_blank"
+    )%>
+<% end %>
