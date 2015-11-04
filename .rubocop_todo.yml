@@ -7,29 +7,6 @@
 # versions of RuboCop, may require this file to be generated again.
 
 # Offense count: 1
-# Configuration parameters: AllowSafeAssignment.
-Lint/AssignmentInCondition:
-  Exclude:
-    - 'spec/dummy/db/migrate/20151021182339_create_store_from_preferences.spree.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Lint/BlockAlignment:
-  Exclude:
-    - 'spec/dummy/config/routes.rb'
-
-# Offense count: 1
-Lint/Debugger:
-  Exclude:
-    - 'bin/checkout.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AlignWith, SupportedStyles, AutoCorrect.
-Lint/DefEndAlignment:
-  Enabled: false
-
-# Offense count: 1
 Lint/Eval:
   Exclude:
     - 'spec/dummy/db/migrate/20151021182301_migrate_old_shipping_calculators.spree.rb'
@@ -120,21 +97,6 @@ Style/BracesAroundHashParameters:
   Exclude:
     - 'lib/spree/adyen/form.rb'
     - 'spec/lib/spree/adyen/form_spec.rb'
-
-# Offense count: 10
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/ClassAndModuleChildren:
-  Exclude:
-    - 'app/controllers/spree/adyen/hpps_controller.rb'
-    - 'app/controllers/spree/adyen_notifications_controller.rb'
-    - 'app/models/spree/adyen/hpp_source.rb'
-    - 'app/models/spree/adyen/notification_processor.rb'
-    - 'app/models/spree/gateway/adyen_hpp.rb'
-    - 'app/models/spree/gateway/adyen_hpp_bogus.rb'
-    - 'lib/spree/adyen/form.rb'
-    - 'lib/spree/adyen/payment.rb'
-    - 'lib/spree/adyen/url.rb'
-    - 'spec/dummy/db/migrate/20151021182348_move_order_token_from_tokenized_permission.spree.rb'
 
 # Offense count: 4
 # Cop supports --auto-correct.
@@ -429,12 +391,6 @@ Style/SpaceInsideHashLiteralBraces:
 Style/SpecialGlobalVars:
   Exclude:
     - 'solidus-adyen.gemspec'
-
-# Offense count: 1803
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
 
 # Offense count: 1
 # Cop supports --auto-correct.

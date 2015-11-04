@@ -4,3 +4,6 @@ AllCops:
   Exclude:
     - "spec/dummy/**/*"
     - "vendor/bundle/**/*"
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes

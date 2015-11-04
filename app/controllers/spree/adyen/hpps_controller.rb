@@ -1,13 +1,21 @@
 module Spree
-  class Adyen::HppsController < ::ActionController::Base
-    load_resource :order, class: "Spree::Order", id_param: :order_id
-    load_resource :payment_method, class: "Spree::PaymentMethod", id_param: :payment_method_id
+  module Adyen
+    class HppsController < ::ActionController::Base
+      load_resource :order, class: "Spree::Order", id_param: :order_id
+      load_resource(
+        :payment_method,
+        class: "Spree::PaymentMethod",
+        id_param: :payment_method_id)
 
-    def directory
-      @brands = Adyen::Form.payment_methods_from_directory @order, @payment_method
-      respond_to do |format|
-        format.html
-        format.json { render json: @brands }
+      def directory
+        @brands = Adyen::Form.payment_methods_from_directory(
+          @order,
+          @payment_method)
+
+        respond_to do |format|
+          format.html
+          format.json { render json: @brands }
+        end
       end
     end
   end
