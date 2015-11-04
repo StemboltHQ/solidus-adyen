@@ -21,7 +21,6 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'adyen', "~> 1.4"
   spec.add_runtime_dependency "solidus_core", "~> 1.0"
-  spec.add_runtime_dependency "solidus_core", "~> 1.0"
   spec.add_runtime_dependency "bourbon"
 
   spec.add_development_dependency "solidus", "~> 1.0"
