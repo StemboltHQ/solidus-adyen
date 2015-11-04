@@ -10,21 +10,21 @@ module Spree::Adyen::Form
     end
 
     def select_url order, payment_method
-      endpoint_url 'select', order, payment_method
+      endpoint_url "select", order, payment_method
     end
 
     def directory_url order, payment_method
-      endpoint_url 'directory', order, payment_method
+      endpoint_url "directory", order, payment_method
     end
 
     def details_url order, payment_method, brand_code
       endpoint_url(
-        'details', order, payment_method, { brandCode: brand_code })
+        "details", order, payment_method, { brandCode: brand_code })
     end
 
     def details_url_with_issuer order, payment_method, brand_code, issuer_id
       endpoint_url(
-        'details',
+        "details",
         order,
         payment_method,
         {
@@ -60,8 +60,8 @@ module Spree::Adyen::Form
     end
 
     def form_payment_methods_and_urls response, order, payment_method
-      response.fetch('paymentMethods').map do |brand|
-        issuers = brand.fetch('issuers', []).map do |issuer|
+      response.fetch("paymentMethods").map do |brand|
+        issuers = brand.fetch("issuers", []).map do |issuer|
           form_issuer(issuer, order, payment_method, brand)
         end
         form_payment_method(brand, order, payment_method, issuers)
@@ -70,24 +70,24 @@ module Spree::Adyen::Form
 
     def form_issuer issuer, order, payment_method, brand
       {
-        name: issuer['name'],
+        name: issuer["name"],
         payment_url: Spree::Adyen::Form.details_url_with_issuer(
           order,
           payment_method,
-          brand['brandCode'],
-          issuer['issuerId']
+          brand["brandCode"],
+          issuer["issuerId"]
         ).to_s
       }
     end
 
     def form_payment_method brand, order, payment_method, issuers
       {
-        brand_code: brand['brandCode'],
-        name: brand['name'],
+        brand_code: brand["brandCode"],
+        name: brand["name"],
         payment_url: Spree::Adyen::Form.details_url(
           order,
           payment_method,
-          brand['brandCode']
+          brand["brandCode"]
         ).to_s,
         issuers: issuers
       }

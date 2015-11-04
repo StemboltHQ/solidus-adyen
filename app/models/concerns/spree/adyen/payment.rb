@@ -69,7 +69,7 @@ module Spree::Adyen::Payment
       protect_from_connection_error do
         started_processing!
         response = yield(block)
-        raise ActiveRecord::Rollback unless response.success?
+        fail ActiveRecord::Rollback unless response.success?
       end
     end
 

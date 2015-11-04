@@ -27,16 +27,16 @@ class Spree::Adyen::HppSource < ActiveRecord::Base
   alias_attribute :shopperLocale, :shopper_locale
   alias_attribute :merchantReturnData, :merchant_return_data
 
-  belongs_to :order, class_name: 'Spree::Order',
+  belongs_to :order, class_name: "Spree::Order",
     primary_key: :number,
     foreign_key: :merchant_reference
 
-  has_one :payment, class_name: 'Spree::Payment', as: :source
+  has_one :payment, class_name: "Spree::Payment", as: :source
 
   # FIXME should change this to find the auth notification by order number, then
   # all notification that have a original ref that matches it's psp
   has_many :notifications,
-    class_name: 'AdyenNotification',
+    class_name: "AdyenNotification",
     foreign_key: :merchant_reference,
     primary_key: :merchant_reference
 

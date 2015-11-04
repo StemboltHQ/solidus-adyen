@@ -101,7 +101,7 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
         end
 
         context "and payment method is sofort" do
-          let(:notification_type) { :sofort_auth  }
+          let(:notification_type) { :sofort_auth }
           include_examples "auth received"
         end
 
