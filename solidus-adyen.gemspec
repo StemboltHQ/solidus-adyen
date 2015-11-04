@@ -6,11 +6,11 @@ require 'spree/adyen/version'
 Gem::Specification.new do |spec|
   spec.name          = "solidus-adyen"
   spec.version       = Spree::Adyen::VERSION
-  spec.authors       = ["Washington Luiz"]
-  spec.email         = ["huoxito@gmail.com"]
-  spec.description   = "Plugs Adyen Payment Gateway into Spree Stores"
-  spec.summary       = "Plugs Adyen Payment Gateway into Spree Stores"
-  spec.homepage      = ""
+  spec.authors       = ["Dylan Kendal"]
+  spec.email         = ["dylan@stembolt.com"]
+  spec.description   = "Adyen HPP payments for Solidus Stores"
+  spec.summary       = "Adyen HPP payments for Solidus Stores"
+  spec.homepage      = "https://github.com/StemboltHQ/solidus-adyen"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
