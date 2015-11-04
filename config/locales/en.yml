@@ -1,5 +1,15 @@
 ---
 en:
+  spree:
+    adyen:
+      communication:
+        communication:
+          payment_method: "Payment method"
+          event_code: "Event code"
+          result: "Result"
+          message: "Message"
+          Reason: "Reason"
+          amount: "Amount"
   solidus-adyen:
     payment:
       failure: "Action failed, check reason for more information."
