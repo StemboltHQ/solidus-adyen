@@ -1,15 +1,16 @@
 @import 'variables';
 @import 'bourbon';
 
-$timestamp-fade: 0.25;
-$notch-size: 16px;
-$color-sent-bg: mix($color-3, white, 100%);
 $color-received-bg: mix($color-3, white, 10%);
+$color-sent-bg: mix($color-3, white, 100%);
+$notch-size-side: 12px;
+$notch-size-top: 18px;
+$timestamp-fade: 0.25;
 
 @mixin notch($side, $color) {
-  #{$side}: -($notch-size);
-  border-#{$side}: $notch-size solid transparent;
-  border-top: $notch-size solid $color;
+  #{$side}: -($notch-size-side);
+  border-#{$side}: $notch-size-side solid transparent;
+  border-top: $notch-size-top solid $color;
   content: '';
   padding-left: 0;
   position: absolute;
@@ -22,13 +23,12 @@ $color-received-bg: mix($color-3, white, 10%);
   box-shadow: 2px 2px 1px -1px fade-out(mix($color-bg, black, 70%), 0.2);
   color: $color-text;
   line-height: 1.6em;
-  margin-left: $notch-size;
+
+  margin-right: $notch-size-side;
+  margin-left: $notch-size-side;
 
   @if $side == right {
     float: right;
-    margin-right: $notch-size;
-  } @else {
-    margin-left: $notch-size;
   }
 
   &:before {
