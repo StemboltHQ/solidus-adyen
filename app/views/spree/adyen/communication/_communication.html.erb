@@ -1,0 +1,42 @@
+<%= content_tag :div, class: "#{communication.css_class} clearfix" do %>
+  <div class="adyen-comm">
+    <div class="adyen-comm-body">
+      <div class="adyen-comm-icon">
+        <% if !communication.processed? %>
+          <i
+            class="fa fa-warning adyen-comm-icon-unprocessed"
+            title="<%= t("solidus-adyen.payment.unprocessed")%>"
+            ></i>
+        <% end %>
+        <% if communication.success? %>
+          <i
+            class="fa fa-check adyen-comm-icon-success"
+            title="<%= t("solidus-adyen.payment.success")%>"
+            ></i>
+        <% else %>
+          <i
+            class="fa fa-times adyen-comm-icon-failure"
+            title="<%= t("solidus-adyen.payment.failure")%>"
+            ></i>
+        <% end %>
+      </div>
+      <div>
+        <div class="adyen-comm-content">
+          <% communication.present_fields.each do |name, val| %>
+            <div class="adyen-comm-content-row">
+              <div class="adyen-comm-content-cell">
+                <%= t(".#{name}") %>
+              </div>
+              <div class="adyen-comm-content-cell">
+                <%= val %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <p class="adyen-comm-timestamp">
+          <%= communication.created_at_s %>
+        </p>
+      </div>
+    </div>
+  </div>
+<% end %>
