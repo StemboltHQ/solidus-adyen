@@ -1,8 +1,8 @@
 FactoryGirl.define do
   factory(
     :active_merchant_billing_response,
-    aliases: ['am_response'],
-    class: 'ActiveMerchant::Billing::Response'
+    aliases: ["am_response"],
+    class: "ActiveMerchant::Billing::Response"
   ) do
     skip_create
     params Hash.new

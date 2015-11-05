@@ -8,7 +8,7 @@ shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: 
   let(:provider) do
     # lambda so that this doesn't leak outside of this context.
     mock_response = lambda do |method|
-      psp_reference ||= "%016d" % SecureRandom.random_number(10**16)
+      psp_reference ||= format "%016d", SecureRandom.random_number(10**16)
 
       instance_double(
         "Adyen::API::PaymentService::#{method.camelcase}Response",

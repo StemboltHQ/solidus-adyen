@@ -1,31 +1,34 @@
-class Spree::AdyenNotificationsController < Spree::StoreController
-  skip_before_filter :verify_authenticity_token
+module Spree
+  class AdyenNotificationsController < StoreController
+    skip_before_filter :verify_authenticity_token
 
-  before_filter :authenticate
+    before_filter :authenticate
 
-  def notify
-    notification = AdyenNotification.build(params)
+    def notify
+      notification = AdyenNotification.build(params)
 
-    if notification.duplicate?
-      accept and return
+      if notification.duplicate?
+        accept and return
+      end
+
+      notification.save!
+
+      Spree::Adyen::NotificationProcessor.new(notification).process!
+      accept
     end
 
-    notification.save!
-
-    Spree::Adyen::NotificationProcessor.new(notification).process!
-    accept
-  end
-
-  protected
-  # Enable HTTP basic authentication
-  def authenticate
-    authenticate_or_request_with_http_basic do |username, password|
-      username == ENV['ADYEN_NOTIFY_USER'] && password == ENV['ADYEN_NOTIFY_PASSWD']
+    protected
+    # Enable HTTP basic authentication
+    def authenticate
+      authenticate_or_request_with_http_basic do |username, password|
+        username == ENV["ADYEN_NOTIFY_USER"] &&
+          password == ENV["ADYEN_NOTIFY_PASSWD"]
+      end
     end
-  end
 
-  private
-  def accept
-    render text: "[accepted]"
+    private
+    def accept
+      render text: "[accepted]"
+    end
   end
 end

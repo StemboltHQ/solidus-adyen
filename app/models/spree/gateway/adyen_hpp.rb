@@ -9,7 +9,7 @@ module Spree
     preference :merchant_account, :string
 
     def merchant_account
-      ENV['ADYEN_MERCHANT_ACCOUNT'] || preferred_merchant_account
+      ENV["ADYEN_MERCHANT_ACCOUNT"] || preferred_merchant_account
     end
 
     def provider_class
@@ -18,9 +18,9 @@ module Spree
 
     def provider
       ::Adyen.configuration.api_username =
-        (ENV['ADYEN_API_USERNAME'] || preferred_api_username)
+        (ENV["ADYEN_API_USERNAME"] || preferred_api_username)
       ::Adyen.configuration.api_password =
-        (ENV['ADYEN_API_PASSWORD'] || preferred_api_password)
+        (ENV["ADYEN_API_PASSWORD"] || preferred_api_password)
       ::Adyen.configuration.default_api_params[:merchant_account] =
         merchant_account
 
@@ -32,11 +32,11 @@ module Spree
     end
 
     def shared_secret
-      ENV['ADYEN_SHARED_SECRET'] || preferred_shared_secret
+      ENV["ADYEN_SHARED_SECRET"] || preferred_shared_secret
     end
 
     def skin_code
-      ENV['ADYEN_SKIN_CODE'] || preferred_skin_code
+      ENV["ADYEN_SKIN_CODE"] || preferred_skin_code
     end
 
     def ship_before_date
@@ -48,7 +48,7 @@ module Spree
       # in the checkout state and allow the payment method to attempt to auth
       # them here. We just return a dummy response here because the payment has
       # already been authorized
-      ActiveMerchant::Billing::Response.new(true, 'successful hpp payment')
+      ActiveMerchant::Billing::Response.new(true, "successful hpp payment")
     end
 
     def capture(amount, psp_reference, currency:, **_opts)

@@ -1,1 +1,9 @@
 inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Exclude:
+    - "spec/dummy/**/*"
+    - "vendor/bundle/**/*"
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes

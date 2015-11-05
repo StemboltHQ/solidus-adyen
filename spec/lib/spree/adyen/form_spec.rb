@@ -37,21 +37,21 @@ RSpec.describe Spree::Adyen::Form do
       expect(hash_query subject).to eq hash_query expected
     end
 
-    it 'has the proper protocol' do
-      expect(URI(subject).scheme).to eq 'https'
+    it "has the proper protocol" do
+      expect(URI(subject).scheme).to eq "https"
     end
 
-    it 'the right host' do
-      expect(URI(subject).host).to eq 'test.adyen.com'
+    it "the right host" do
+      expect(URI(subject).host).to eq "test.adyen.com"
     end
 
-    context 'when in production' do
+    context "when in production" do
       before do
-        payment_method.preferences[:server] = 'live'
+        payment_method.preferences[:server] = "live"
       end
 
-      it 'has the proper protocol and host' do
-        expect(URI(subject).host).to eq 'live.adyen.com'
+      it "has the proper protocol and host" do
+        expect(URI(subject).host).to eq "live.adyen.com"
       end
     end
   end

@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 require "bundler/setup"
 require "capybara"
-require 'capybara'
-require 'capybara/dsl'
-require 'capybara/poltergeist'
+require "capybara"
+require "capybara/dsl"
+require "capybara/poltergeist"
 require "pry"
 
 Capybara.default_driver = :poltergeist

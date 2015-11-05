@@ -1,1 +1,1 @@
-require 'spree/adyen'
+require "spree/adyen"
