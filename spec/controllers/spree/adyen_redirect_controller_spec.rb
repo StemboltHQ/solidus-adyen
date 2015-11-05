@@ -4,11 +4,20 @@ require "spec_helper"
 RSpec.describe Spree::AdyenRedirectController, type: :controller do
   include_context "mock adyen api", success: true
 
-  let(:order) { create(:order_with_line_items, state: "payment") }
+  let(:order) do
+    create(
+      :order_with_line_items,
+      state: "payment",
+      store: store
+    )
+  end
+
+  let(:store) { Spree::Store.default }
   let(:gateway) { create :hpp_gateway }
 
   before do
-    allow(controller).to receive(:current_order).and_return order
+    allow(controller).to receive(:try_spree_current_user).
+      and_return order.user
     allow(controller).to receive(:check_signature)
     allow(controller).to receive(:payment_method).
       and_return gateway
