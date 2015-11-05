@@ -36,16 +36,6 @@ require "spree/testing_support/authorization_helpers"
 FactoryGirl.definition_file_paths = %w{./spec/factories}
 FactoryGirl.find_definitions
 
-module Spree
-  module Adyen
-    module TestHelper
-      def test_credentials
-        @tc ||= YAML::load_file(File.new("#{Engine.config.root}/config/credentials.yml"))
-      end
-    end
-  end
-end
-
 RSpec.configure do |config|
   RSpec::Matchers.define_negated_matcher :keep, :change
 
@@ -60,8 +50,6 @@ RSpec.configure do |config|
   config.include Spree::TestingSupport::UrlHelpers
 
   config.filter_run_excluding :external => true
-
-  config.include Spree::Adyen::TestHelper
 end
 
 VCR.configure do |c|
