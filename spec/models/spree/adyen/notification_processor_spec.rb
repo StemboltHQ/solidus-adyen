@@ -146,6 +146,8 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
     end
 
     context "when event is REFUND" do
+      include_examples "processed event"
+
       let(:event_type) { :refund }
       let(:payment_state) { "processing" }
 
