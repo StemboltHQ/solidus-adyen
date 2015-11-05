@@ -20,6 +20,10 @@ module Spree
           def inbound?
             true
           end
+
+          def self.applicable? obj
+            obj.is_a? Spree::Adyen::HppSource
+          end
         end
       end
     end
