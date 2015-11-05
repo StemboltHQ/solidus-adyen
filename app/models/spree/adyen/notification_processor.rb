@@ -73,7 +73,7 @@ module Spree
           )
           # payment was processing, move back to completed
           payment.complete!
-
+          notification.processed!
         end
       end
 
