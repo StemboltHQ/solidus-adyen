@@ -17,6 +17,10 @@ module Spree
             { message: message
             }
           end
+
+          def self.applicable? obj
+            obj.is_a? Spree::LogEntry
+          end
         end
       end
     end

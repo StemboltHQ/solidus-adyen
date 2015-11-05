@@ -31,18 +31,28 @@ module Spree
         end
 
         describe "#build" do
+          subject { described_class.build(record) }
+
           [[:log_entry, Communications::LogEntry],
            [:source, Communications::HppSource],
            [:notification, Communications::AdyenNotification]
           ].each do |assigned_name, presenter|
             context "when presented object is a #{assigned_name.to_s.humanize}" do
-              subject { described_class.build(record) }
-
               let(:record) { send assigned_name }
 
               it "creates a presenter using #{presenter}" do
                 is_expected.to be_a presenter
               end
+            end
+          end
+
+          context "when a presenter cannot be found" do
+            let(:record) { Object.new }
+
+            it "fails" do
+              expect { subject }.to raise_error(
+                RuntimeError,
+                /Couldn't map to a communication type/)
             end
           end
         end

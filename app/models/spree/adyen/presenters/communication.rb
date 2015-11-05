@@ -6,6 +6,12 @@ module Spree
       # Factory for creating communication presenters, based on a payment
       # source.
       class Communication < SimpleDelegator
+        PRESENTERS = [
+          Communications::AdyenNotification,
+          Communications::HppSource,
+          Communications::LogEntry
+        ].freeze
+
         def self.from_source source
           ([source] + source.notifications + source.payment.log_entries).
             sort_by(&:created_at).
@@ -13,21 +19,13 @@ module Spree
         end
 
         def self.build object
-          case object.class.name
-          when "Spree::Adyen::HppSource"
-            Communications::HppSource.new(object)
+          presenter_for(object).new(object)
+        end
 
-          when "Spree::LogEntry"
-            Communications::LogEntry.new(object)
-
-          when "AdyenNotification"
-            Spree::Adyen::Presenters::Communications::AdyenNotification.
-              new(object)
-
-          else
-            fail "Couldn't map to a communication type"
-
-          end
+        def self.presenter_for object
+          PRESENTERS.detect do |klass|
+            klass.applicable? object
+          end || fail("Couldn't map to a communication type")
         end
       end
     end

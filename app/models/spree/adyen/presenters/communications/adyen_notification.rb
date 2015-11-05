@@ -15,6 +15,10 @@ module Spree
           def inbound?
             true
           end
+
+          def self.applicable? obj
+            obj.is_a? ::AdyenNotification
+          end
         end
       end
     end
