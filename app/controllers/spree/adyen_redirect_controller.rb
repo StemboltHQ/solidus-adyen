@@ -14,19 +14,23 @@ module Spree
         return
       end
 
+      order = Spree::Order.find_by(number: params[:merchantReference]) ||
+                current_order ||
+                raise(ActiveRecord::RecordNotFound)
+
       # payment is created in a 'checkout' state so that the payment method
       # can attempt to auth it. The payment of course is already auth'd and
       # adyen hpp's authorize implementation just returns a dummy response.
       payment =
-        current_order.payments.create!(
-          amount: current_order.total,
+        order.payments.create!(
+          amount: order.total,
           payment_method: payment_method,
           source: source,
           response_code: params[:pspReference],
           state: "checkout",
           # Order is explicitly defined here because as of writing the
           # Order -> Payments association does not have the inverse of defined
-          # when we call `current_order.complete` below payment.order will still
+          # when we call `order.complete` below payment.order will still
           # refer to a previous state of the record.
           #
           # If the payment is auto captured only then the payment will completed
@@ -34,19 +38,19 @@ module Spree
           # .order.update_totals after save the order is saved with its
           # previous values, causing payment_state and shipment_state to revert
           # to nil.
-          order: current_order
+          order: order
         )
 
-      if current_order.complete
+      if order.complete
         # We may have already recieved the authorization notification, so process
         # it now
         Spree::Adyen::NotificationProcessor.process_outstanding!(payment)
 
         flash.notice = Spree.t(:current_order_processed_successfully)
-        redirect_to order_path(current_order)
+        redirect_to order_path(order)
       else
         #TODO void/cancel payment
-        redirect_to checkout_state_path(current_order.state)
+        redirect_to checkout_state_path(order.state)
       end
     end
 
