@@ -23,28 +23,17 @@ require "ffaker"
 require "shoulda/matchers"
 require "pry"
 
+require "spree/testing_support/factories"
+require "spree/testing_support/controller_requests"
+require "spree/testing_support/url_helpers"
+require "spree/testing_support/authorization_helpers"
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].each {|f| require f }
 
-require "spree/testing_support/factories"
-require "spree/testing_support/controller_requests"
-require "spree/testing_support/url_helpers"
-require "support/shared_contexts/mock_adyen_api"
-require "spree/testing_support/authorization_helpers"
-
 FactoryGirl.definition_file_paths = %w{./spec/factories}
 FactoryGirl.find_definitions
-
-module Spree
-  module Adyen
-    module TestHelper
-      def test_credentials
-        @tc ||= YAML::load_file(File.new("#{Engine.config.root}/config/credentials.yml"))
-      end
-    end
-  end
-end
 
 RSpec.configure do |config|
   RSpec::Matchers.define_negated_matcher :keep, :change
@@ -60,8 +49,6 @@ RSpec.configure do |config|
   config.include Spree::TestingSupport::UrlHelpers
 
   config.filter_run_excluding :external => true
-
-  config.include Spree::Adyen::TestHelper
 end
 
 VCR.configure do |c|

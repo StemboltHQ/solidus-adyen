@@ -14,15 +14,12 @@ module Spree
         return
       end
 
-      order = current_order ||
-                Spree::Order.find_by!(number: params[:merchantReference])
-
       # payment is created in a 'checkout' state so that the payment method
       # can attempt to auth it. The payment of course is already auth'd and
       # adyen hpp's authorize implementation just returns a dummy response.
       payment =
-        order.payments.create!(
-          amount: order.total,
+        current_order.payments.create!(
+          amount: current_order.total,
           payment_method: payment_method,
           source: source,
           response_code: params[:pspReference],
@@ -37,19 +34,19 @@ module Spree
           # .order.update_totals after save the order is saved with its
           # previous values, causing payment_state and shipment_state to revert
           # to nil.
-          order: order
+          order: current_order
         )
 
-      if order.complete
+      if current_order.complete
         # We may have already recieved the authorization notification, so process
         # it now
         Spree::Adyen::NotificationProcessor.process_outstanding!(payment)
 
         flash.notice = Spree.t(:current_order_processed_successfully)
-        redirect_to order_path(order)
+        redirect_to order_path(current_order)
       else
         #TODO void/cancel payment
-        redirect_to checkout_state_path(order.state)
+        redirect_to checkout_state_path(current_order.state)
       end
     end
 
@@ -65,6 +62,19 @@ module Spree
     # it back here to make sure we find the right payment method
     def payment_method
       @payment_method ||= Gateway::AdyenHPP.last # find(params[:merchantReturnData])
+    end
+
+    def current_order
+      @__adyen_current_order ||=
+        Spree::Order.incomplete.find_by!(current_order_params)
+    end
+
+    def current_order_params
+      { number: params[:merchantReference],
+        store_id: current_store.id,
+        user_id: try_spree_current_user.try(:id),
+        currency: current_currency
+      }
     end
 
     def source_params params
