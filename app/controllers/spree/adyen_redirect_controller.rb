@@ -14,9 +14,8 @@ module Spree
         return
       end
 
-      order = Spree::Order.find_by(number: params[:merchantReference]) ||
-                current_order ||
-                raise(ActiveRecord::RecordNotFound)
+      order = current_order ||
+                Spree::Order.find_by!(number: params[:merchantReference])
 
       # payment is created in a 'checkout' state so that the payment method
       # can attempt to auth it. The payment of course is already auth'd and
