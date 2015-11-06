@@ -1,10 +1,11 @@
+# Solidus-Adyen
 Adds support for Adyen Hosted Payment Page payments to Solidus stores using the
 [Adyen](https://github.com/wvanbergen/adyen/) gem.
 
 Due to the way Adyen's payment API works, the payments created using the
-AdyenHPP method behavior significantly different then normal payments.
+AdyenHPP method's behavior differ significantly from normal payments.
 
-Adyen's API is totally asynchronous, Solidus makes a request for modifying a
+Adyen's API is totally asynchronous, Solidus makes a request to modify a
 payment, and some time in the future Adyen responds to a specified endpoint
 with the result of the action. After capture/refund/cancellation the payment
 will move to a `processing` state, and will be change to the new state after the
@@ -12,15 +13,11 @@ notification is received from Adyen.
 
 # Installation
 Add this line to your application's Gemfile:
-
 ```ruby
 gem 'solidus-adyen', github: 'StemboltHQ/solidus-adyen', tag: 'v0.1.0'
 ```
 
-Download the gem, install and run migrations provided by this gem. The
-solidus-adyen migrations will allow responses from Adyen to be persisted to the
-database.
-
+Then run:
 ```bash
 $ bundle install
 $ bundle exec rake spree_adyen:install:migrations
@@ -29,14 +26,14 @@ $ bundle exec rake db:migrate
 
 # Usage
 
-To integrate with Adyen Payments you'll need to request API credentials by
-signing up at Adyen website https://www.adyen.com/.
+To integrate with Adyen payments you'll need to request API credentials by
+signing up at Adyen's [website](https://www.adyen.com/).
 
-This gem only support Adyen HPP payment methods. At this time there are no plans
+This gem only supports Adyen HPP payment methods. At this time there are no plans
 to support the direct payment methods.
 
-A payment method called `AdyenHPP` is exposed that allows your store to
-authorize payments using Adyen Hosted Payments Page solution. This works much
+A payment method called `AdyenHPP` added to the list of available payment methods 
+allowing stores to authorize payments using Adyen Hosted Payments Page solution. This works much
 like paypal and similar services where the customer is redirected to Adyen at
 the payment step, and is redirected back to your store after they have
 completed payment.
@@ -65,7 +62,7 @@ $ rake routes | grep spree/adyen_notifications#notify
 ```
 is the default path for the endpoint.
 
-It is worth to note that Adyen will only issue notifications to servers that
+It is worth noting that Adyen will only issue notifications to servers that
 are running on standard HTTP ports, so your rails server must be accessible on
 port 80, 8080, [or some other http-alternative
 port](https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers).
