@@ -1,5 +1,3 @@
-require_relative "./communications"
-
 module Spree
   module Adyen
     module Presenters
@@ -7,9 +5,9 @@ module Spree
       # source.
       class Communication < SimpleDelegator
         PRESENTERS = [
-          Communications::AdyenNotification,
-          Communications::HppSource,
-          Communications::LogEntry
+          ::Spree::Adyen::Presenters::Communications::AdyenNotification,
+          ::Spree::Adyen::Presenters::Communications::HppSource,
+          ::Spree::Adyen::Presenters::Communications::LogEntry
         ].freeze
 
         def self.from_source source
