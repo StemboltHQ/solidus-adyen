@@ -42,7 +42,7 @@ module Spree
         # it now
         Spree::Adyen::NotificationProcessor.process_outstanding!(payment)
 
-        flash.notice = Spree.t(:current_order_processed_successfully)
+        flash.notice = Spree.t(:order_processed_successfully)
         redirect_to order_path(current_order)
       else
         #TODO void/cancel payment
