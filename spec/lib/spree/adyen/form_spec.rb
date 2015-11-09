@@ -26,9 +26,15 @@ RSpec.describe Spree::Adyen::Form do
         skin_code: payment_method.skin_code,
         shared_secret: payment_method.shared_secret,
         country_code: order.billing_address.country.iso,
-        payment_amount: 3998 }
+        merchant_return_data: merchant_return_data,
+        payment_amount: 3998
+      }
 
        ::Adyen::Form.redirect_url(redirect_params)
+    end
+
+    let(:merchant_return_data) do
+      [order.guest_token, payment_method.id].join("|")
     end
 
     subject { described_class.directory_url order, payment_method  }

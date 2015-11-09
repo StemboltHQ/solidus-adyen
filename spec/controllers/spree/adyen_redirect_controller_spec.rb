@@ -16,11 +16,7 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
   let(:gateway) { create :hpp_gateway }
 
   before do
-    allow(controller).to receive(:try_spree_current_user).
-      and_return order.user
     allow(controller).to receive(:check_signature)
-    allow(controller).to receive(:payment_method).
-      and_return gateway
   end
 
   describe "GET confirm" do
@@ -35,9 +31,11 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
         paymentMethod: payment_method,
         authResult: auth_result,
         pspReference:  psp_reference,
-        merchantSig: "erewrwerewrewrwer"
+        merchantSig: "erewrwerewrewrwer",
+        merchantReturnData: merchantReturnData
       }
     end
+    let(:merchantReturnData) { [order.guest_token, gateway.id].join("|") }
 
     shared_examples "payments are pending" do
       it "has pending payments" do

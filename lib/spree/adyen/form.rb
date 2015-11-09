@@ -96,9 +96,16 @@ module Spree
         end
 
         def params order, payment_method
+          merchant_return_data = [
+            order.guest_token,
+            payment_method.id
+          ].
+          join("|")
+
           Form.flat_payment_parameters default_params.
             merge(order_params order).
-            merge(payment_method_params payment_method)
+            merge(payment_method_params payment_method).
+            merge(merchant_return_data: merchant_return_data)
         end
 
         # TODO set this in the adyen config
@@ -111,14 +118,16 @@ module Spree
           { currency_code: order.currency,
             merchant_reference: order.number.to_s,
             country_code: order.billing_address.country.iso,
-            payment_amount: (order.total * 100).to_int }
+            payment_amount: (order.total * 100).to_int
+          }
         end
 
         def payment_method_params payment_method
           { merchant_account: payment_method.merchant_account,
             skin_code: payment_method.skin_code,
             shared_secret: payment_method.shared_secret,
-            ship_before_date: payment_method.ship_before_date }
+            ship_before_date: payment_method.ship_before_date
+          }
         end
       end
     end
