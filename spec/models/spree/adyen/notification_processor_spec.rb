@@ -146,23 +146,37 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
     end
 
     context "when event is REFUND" do
-      include_examples "processed event"
-
-      let(:event_type) { :refund }
-      let(:payment_state) { "processing" }
-
-      it "creates a refund" do
-        expect { subject }.
-          to change { payment.reload.refunds.count }.
-          from(0).
-          to(1)
+      shared_examples "refund" do
+        let(:event_type) { :refund }
+        it "creates a refund" do
+          expect { subject }.
+            to change { payment.reload.refunds.count }.
+            from(0).
+            to(1)
+        end
       end
 
-      it "changes the payment state to completed" do
-        expect { subject }.
-          to change { payment.reload.state }.
-          from("processing").
-          to("completed")
+      context "when refunded from Solidus" do
+        let(:payment_state) { "processing" }
+        include_examples "refund"
+
+        it "changes the payment state to completed" do
+          expect { subject }.
+            to change { payment.reload.state }.
+            from("processing").
+            to("completed")
+        end
+      end
+
+      context "when refunded from Adyen" do
+        let(:payment_state) { "completed" }
+        include_examples "refund"
+
+        it "does not change the payment state" do
+          expect { subject }.
+            not_to change { payment.reload.state }.
+            from("completed")
+        end
       end
     end
 
