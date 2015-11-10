@@ -66,7 +66,7 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
       end
 
       it "completes the payment" do
-        expect{ subject }.
+        expect { subject }.
           to change{ payment.reload.state }.
           from("pending").
           to("completed")
