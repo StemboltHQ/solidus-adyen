@@ -72,7 +72,7 @@ module Spree
             refund_reason_id: ::Spree::RefundReason.first.id # FIXME
           )
           # payment was processing, move back to completed
-          payment.complete!
+          payment.complete! unless payment.completed?
           notification.processed!
         end
       end
