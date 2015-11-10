@@ -12,9 +12,11 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
         amount: 23.99,
         state: payment_state,
         payment_method: hpp_gateway,
-        order: create(:order, currency: "EUR")
+        order: order
       )
     end
+
+    let!(:order) { create(:order, currency: "EUR") }
 
     let!(:hpp_gateway) do
       create(:hpp_gateway)
@@ -27,7 +29,8 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
         success: success,
         value: 2399,
         currency: "EUR",
-        payment: payment
+        payment: payment,
+        order: order
       )
     end
 
