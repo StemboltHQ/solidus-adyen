@@ -1,5 +1,11 @@
 module Spree
   module Adyen
+    # Class responsible for taking in a notification from Adyen and applying
+    # some form of modification to the associated payment.
+    #
+    # I would in the future like to refactor this by breaking this into
+    # separate classes that are only aware of how to process specific kinds of
+    # notifications (auth, capture, refund, etc.).
     class NotificationProcessor
       attr_accessor :notification, :payment
 
