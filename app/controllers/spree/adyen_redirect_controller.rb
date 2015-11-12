@@ -7,7 +7,17 @@ module Spree
 
     # This is the entry point after an Adyen HPP payment is completed
     def confirm
-      source = Adyen::HppSource.new(source_params(params))
+      if @order.complete?
+        confirm_order_already_completed
+      else
+        confirm_order_incomplete
+      end
+    end
+
+    private
+
+    def confirm_order_incomplete
+      source = Adyen::HppSource.new(source_params)
 
       unless source.authorised?
         flash.notice = Spree.t(:payment_processing_failed)
@@ -18,40 +28,39 @@ module Spree
       # payment is created in a 'checkout' state so that the payment method
       # can attempt to auth it. The payment of course is already auth'd and
       # adyen hpp's authorize implementation just returns a dummy response.
-      payment =
-        @order.payments.create!(
-          amount: @order.total,
-          payment_method: @payment_method,
-          source: source,
-          response_code: params[:pspReference],
-          state: "checkout",
-          # Order is explicitly defined here because as of writing the
-          # Order -> Payments association does not have the inverse of defined
-          # when we call `order.complete` below payment.order will still
-          # refer to a previous state of the record.
-          #
-          # If the payment is auto captured only then the payment will completed
-          # in `process_outstanding!`, and because Payment calls
-          # .order.update_totals after save the order is saved with its
-          # previous values, causing payment_state and shipment_state to revert
-          # to nil.
-          order: @order
-        )
+      @order.payments.create!(
+        amount: @order.total,
+        payment_method: @payment_method,
+        source: source,
+        response_code: psp_reference,
+        state: "checkout"
+      )
 
       if @order.complete
-        # We may have already recieved the authorization notification, so process
-        # it now
-        Spree::Adyen::NotificationProcessor.process_outstanding!(payment)
-
-        flash.notice = Spree.t(:order_processed_successfully)
-        redirect_to order_path(@order)
+        redirect_to_order
       else
         #TODO void/cancel payment
         redirect_to checkout_state_path(@order.state)
       end
     end
 
-    private
+    # If an authorization notification is received before the redirection the
+    # payment is created there.In this case we just need to assign the addition
+    # parameters received about the source.
+    #
+    # We do this because there is a chance that we never get redirected back
+    # so we need to make sure we complete the payment and order.
+    def confirm_order_already_completed
+      payment = @order.payments.find_by(response_code: psp_reference)
+      payment.source.update(source_params)
+
+      redirect_to_order
+    end
+
+    def redirect_to_order
+      flash.notice = Spree.t(:order_processed_successfully)
+      redirect_to order_path(@order)
+    end
 
     def check_signature
       unless ::Adyen::Form.redirect_signature_check(params, @payment_method.shared_secret)
@@ -71,11 +80,10 @@ module Spree
 
       @order =
         Spree::Order.
-        incomplete.
         find_by!(guest_token: cookies.signed[:guest_token])
     end
 
-    def source_params params
+    def source_params
       params.permit(
         :authResult,
         :pspReference,
@@ -85,6 +93,10 @@ module Spree
         :paymentMethod,
         :shopperLocale,
         :merchantReturnData)
+    end
+
+    def psp_reference
+      params[:pspReference]
     end
   end
 end

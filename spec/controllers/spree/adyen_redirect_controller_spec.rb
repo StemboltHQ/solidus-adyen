@@ -45,18 +45,13 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
 
     shared_examples "payment is successful" do
       it "changes the order state to completed" do
-        expect { subject }.
-          to change { order.reload.state }.
-          from("payment").
-          to("complete").
-
-          and change { order.payment_state }.
-          from(nil).
-          to("balance_due").
-
-          and change { order.shipment_state }.
-          from(nil).
-          to("pending")
+        subject
+        order.reload
+        expect(order).to have_attributes(
+          state: "complete",
+          payment_state: "balance_due",
+          shipment_state: "pending"
+        )
       end
 
       it "redirects to the order complete page" do
@@ -65,10 +60,8 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
       end
 
       it "creates a payment" do
-        expect{ subject }.
-          to change{ order.payments.count }.
-          from(0).
-          to(1)
+        subject
+        expect(order.reload.payments.count).to eq 1
       end
 
       context "and the order cannot complete" do
@@ -92,34 +85,33 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
           create(
             :notification,
             notification_type,
+            processed: true,
             psp_reference: psp_reference,
             merchant_reference: order.number)
         end
 
-        shared_examples "auth received" do
-          include_examples "payment is successful"
+        # there will already be a payment and source created at this point
+        before do
+          source =
+            create(:hpp_source, psp_reference: psp_reference, order: order)
 
-          it "processes the notification" do
-            expect { subject }.
-              to change { notification.reload.processed }.
-              from(false).
-              to(true)
-          end
+          create(:hpp_payment, source: source, order: order)
+          order.complete
         end
 
         context "and payment method is sofort" do
           let(:notification_type) { :sofort_auth }
-          include_examples "auth received"
+          include_examples "payment is successful"
         end
 
         context "and payment method is ideal" do
           let(:notification_type) { :ideal_auth }
-          include_examples "auth received"
+          include_examples "payment is successful"
         end
 
         context "and payment method is credit" do
           let(:notification_type) { :auth }
-          include_examples "auth received"
+          include_examples "payment is successful"
         end
       end
     end
