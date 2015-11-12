@@ -102,8 +102,6 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
     context "when event is AUTHORISATION" do
       let(:event_type) { :auth }
 
-      it "changes the available actions"
-
       context "and payment method was c_cash", pending: true do
         pending "completes payment"
       end
