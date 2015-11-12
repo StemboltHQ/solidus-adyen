@@ -37,12 +37,6 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
     end
     let(:merchantReturnData) { [order.guest_token, gateway.id].join("|") }
 
-    shared_examples "payments are pending" do
-      it "has pending payments" do
-        expect(order.payments).to all be_pending
-      end
-    end
-
     shared_examples "payment is successful" do
       it "changes the order state to completed" do
         subject
@@ -52,6 +46,10 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
           payment_state: "balance_due",
           shipment_state: "pending"
         )
+      end
+
+      it "has pending payments" do
+        expect(order.payments).to all be_pending
       end
 
       it "redirects to the order complete page" do
@@ -73,9 +71,20 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
       end
     end
 
+    shared_examples "payment is not successful" do
+      it "does not change order state" do
+        expect{ subject }.to_not change{ order.state }
+      end
+
+      it "redirects to the order payment page" do
+        is_expected.to have_http_status(:redirect).
+          and redirect_to checkout_state_path("payment")
+      end
+    end
+
     context "when the payment is AUTHORISED" do
       include_examples "payment is successful"
-      include_examples "payments are pending"
+
       let(:auth_result) { "AUTHORISED" }
 
       context "and the authorisation notification has already been received" do
@@ -84,7 +93,7 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
         let(:notification) do
           create(
             :notification,
-            notification_type,
+            :auth,
             processed: true,
             psp_reference: psp_reference,
             merchant_reference: order.number)
@@ -96,41 +105,17 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
             create(:hpp_source, psp_reference: psp_reference, order: order)
 
           create(:hpp_payment, source: source, order: order)
+
           order.complete
         end
 
-        context "and payment method is sofort" do
-          let(:notification_type) { :sofort_auth }
-          include_examples "payment is successful"
-        end
-
-        context "and payment method is ideal" do
-          let(:notification_type) { :ideal_auth }
-          include_examples "payment is successful"
-        end
-
-        context "and payment method is credit" do
-          let(:notification_type) { :auth }
-          include_examples "payment is successful"
-        end
+        include_examples "payment is successful"
       end
     end
 
     context "when the payment is PENDING" do
       include_examples "payment is successful"
-      include_examples "payments are pending"
       let(:auth_result) { "PENDING" }
-    end
-
-    shared_examples "payment is not successful" do
-      it "does not change order state" do
-        expect{ subject }.to_not change{ order.state }
-      end
-
-      it "redirects to the order payment page" do
-        is_expected.to have_http_status(:redirect).
-          and redirect_to checkout_state_path("payment")
-      end
     end
 
     context "when the payment is CANCELLED" do
