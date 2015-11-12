@@ -24,6 +24,7 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
 
     let(:psp_reference) { "8813824003752247" }
     let(:payment_method) { "amex" }
+    let(:merchantReturnData) { "#{order.guest_token}|#{gateway.id}" }
     let(:params) do
       { merchantReference: order.number,
         skinCode: "xxxxxxxx",
@@ -35,7 +36,6 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
         merchantReturnData: merchantReturnData
       }
     end
-    let(:merchantReturnData) { [order.guest_token, gateway.id].join("|") }
 
     shared_examples "payment is successful" do
       it "changes the order state to completed" do
