@@ -51,7 +51,7 @@ module Spree
     # We do this because there is a chance that we never get redirected back
     # so we need to make sure we complete the payment and order.
     def confirm_order_already_completed
-      payment = @order.payments.find_by(response_code: psp_reference)
+      payment = @order.payments.find_by!(response_code: psp_reference)
       payment.source.update(source_params)
 
       redirect_to_order
