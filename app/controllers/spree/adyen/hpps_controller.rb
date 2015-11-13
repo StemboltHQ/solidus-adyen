@@ -1,6 +1,6 @@
 module Spree
   module Adyen
-    class HppsController < ::ActionController::Base
+    class HppsController < StoreController
       load_resource :order, class: "Spree::Order", id_param: :order_id
       load_resource(
         :payment_method,
