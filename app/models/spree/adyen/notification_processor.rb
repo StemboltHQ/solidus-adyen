@@ -14,30 +14,7 @@ module Spree
         self.payment = payment ? payment : notification.payment
 
         if self.payment.nil?
-          # At this point the auth was received before the redirect, we create
-          # the payment here with the information we have available so that if
-          # the user is not redirected to back for some reason we still have a
-          # record of the payment.
-          order = self.notification.order
-
-          source = Spree::Adyen::HppSource.new(
-            auth_result: "unknown",
-            order: order,
-            payment_method: notification.payment_method,
-            psp_reference: notification.psp_reference
-          )
-
-          self.payment = order.payments.create!(
-            amount: notification.money.dollars,
-            # We have no idea what payment method they used, this will be
-            # updated when/if they get redirected
-            payment_method: Spree::Gateway::AdyenHPP.last,
-            response_code: notification.psp_reference,
-            source: source,
-            order: order
-          )
-
-          order.complete
+          self.payment = create_missing_payment
         end
       end
 
@@ -129,6 +106,34 @@ module Spree
         payment.capture_events.create!(amount: money.to_f)
         payment.update!(amount: payment.captured_amount)
         payment.complete!
+      end
+
+      # At this point the auth was received before the redirect, we create
+      # the payment here with the information we have available so that if
+      # the user is not redirected to back for some reason we still have a
+      # record of the payment.
+      def create_missing_payment
+        order = notification.order
+
+        source = Spree::Adyen::HppSource.new(
+          auth_result: "unknown",
+          order: order,
+          payment_method: notification.payment_method,
+          psp_reference: notification.psp_reference
+        )
+
+        payment = order.payments.create!(
+          amount: notification.money.dollars,
+          # We have no idea what payment method they used, this will be
+          # updated when/if they get redirected
+          payment_method: Spree::Gateway::AdyenHPP.last,
+          response_code: notification.psp_reference,
+          source: source,
+          order: order
+        )
+
+        order.complete
+        payment
       end
     end
   end
