@@ -4,10 +4,10 @@
 capybara-*.html
 .rspec
 .rvmrc
-/.bundle
-/vendor/bundle
-/log/*
-/tmp/*
+/.bundle/
+/vendor/bundle/
+/log/
+/tmp/
 /db/*.sqlite3
 /public/system/*
 /coverage/
