@@ -16,7 +16,13 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
       )
     end
 
-    let!(:order) { create(:order, currency: "EUR") }
+    let!(:order) do
+      # spree factories suck, it's not easy to get something to payment state
+      create(:order_with_line_items, currency: "EUR").tap do |order|
+        order.contents.advance
+        expect(order.state).to eq "payment"
+      end
+    end
 
     let!(:hpp_gateway) do
       create(:hpp_gateway)
@@ -108,6 +114,31 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
 
       context "and payment method was bank transfer", pending: true do
         pending "completes payment"
+      end
+
+      # this is for the situation where we can the notification before the
+      # redirect
+      context "and the payment doesn't exist yet" do
+        let!(:payment) { nil }
+
+        it "processes the notification" do
+          expect { subject }.
+            to change { notification.processed }.
+            to true
+        end
+
+        it "completes the order" do
+          subject
+          expect(order.reload).to have_attributes(
+            state: "complete"
+          )
+        end
+
+        it "creates a payment" do
+          expect { subject }.
+            to change { order.payments.count }.
+            to 1
+        end
       end
 
       context "and payment method was ideal" do

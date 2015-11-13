@@ -12,8 +12,8 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
     )
   end
 
-  let(:store) { Spree::Store.default }
-  let(:gateway) { create :hpp_gateway }
+  let!(:store) { Spree::Store.default }
+  let!(:gateway) { create :hpp_gateway }
 
   before do
     allow(controller).to receive(:check_signature)
@@ -107,6 +107,15 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
           create(:hpp_payment, source: source, order: order)
 
           order.complete
+        end
+
+        it { expect { subject }.to_not change { order.payments.count }.from 1 }
+
+        it "updates the source" do
+          expect(order.payments.last.source).to have_attributes(
+            auth_result: "AUTHORISED",
+            skin_code: "XXXXXXXX"
+          )
         end
 
         include_examples "payment is successful"
