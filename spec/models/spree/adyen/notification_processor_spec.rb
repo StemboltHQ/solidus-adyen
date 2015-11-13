@@ -248,4 +248,24 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
         and change { payment.captured_amount }.from(0).to(19.99)
     end
   end
+
+  describe "#new" do
+    subject { described_class.new(notification) }
+    context "notification not related to order" do
+      let!(:notification) do
+        create(
+          :notification,
+          :auth,
+          success: true,
+          value: 2399,
+          currency: "USD",
+          merchant_reference: "not an order number"
+        )
+      end
+
+      it "does not create a payment" do
+        expect { subject }.not_to change { Spree::Payment.count }
+      end
+    end
+  end
 end

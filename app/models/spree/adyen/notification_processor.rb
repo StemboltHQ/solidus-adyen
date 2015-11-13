@@ -115,6 +115,8 @@ module Spree
       def create_missing_payment
         order = notification.order
 
+        return unless order
+
         source = Spree::Adyen::HppSource.new(
           auth_result: "unknown",
           order: order,
