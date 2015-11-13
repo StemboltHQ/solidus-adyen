@@ -13,7 +13,7 @@ module Spree
         self.notification = notification
         self.payment = payment ? payment : notification.payment
 
-        if self.payment.nil?
+        if self.payment.nil? && self.notification.order.present?
           self.payment = create_missing_payment
         end
       end
@@ -114,8 +114,6 @@ module Spree
       # record of the payment.
       def create_missing_payment
         order = notification.order
-
-        return unless order
 
         source = Spree::Adyen::HppSource.new(
           auth_result: "unknown",
