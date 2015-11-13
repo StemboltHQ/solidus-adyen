@@ -13,7 +13,7 @@ module Spree
         self.notification = notification
         self.payment = payment ? payment : notification.payment
 
-        if self.payment.nil?
+        if self.payment.nil? && self.notification.order.present?
           self.payment = create_missing_payment
         end
       end
