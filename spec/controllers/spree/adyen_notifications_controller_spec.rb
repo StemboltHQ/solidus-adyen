@@ -5,7 +5,6 @@ describe Spree::AdyenNotificationsController do
 
   routes { Spree::Core::Engine.routes }
 
-  let(:order) { create :order }
   let(:params) do
     { "pspReference" => reference,
       "eventDate" => "2013-10-21T14:45:45.93Z",
@@ -22,12 +21,14 @@ describe Spree::AdyenNotificationsController do
       "live" => "false" }
   end
 
+  let!(:order) { create :completed_order_with_totals }
+
   let!(:payment) do
-    create :payment, response_code: reference,
-      payment_method: payment_method
+    create :hpp_payment, response_code: reference,
+      payment_method: payment_method, order: order
   end
 
-  let(:payment_method) { create :hpp_gateway }
+  let!(:payment_method) { create :hpp_gateway }
 
   let(:reference) { "8513823667306210" }
 

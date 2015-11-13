@@ -12,8 +12,16 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
         amount: 23.99,
         state: payment_state,
         payment_method: hpp_gateway,
-        order: create(:order, currency: "EUR")
+        order: order
       )
+    end
+
+    let!(:order) do
+      # spree factories suck, it's not easy to get something to payment state
+      create(:order_with_line_items).tap do |order|
+        order.contents.advance
+        expect(order.state).to eq "payment"
+      end
     end
 
     let!(:hpp_gateway) do
@@ -26,8 +34,9 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
         event_type, # these are registered traits, refer to the factory
         success: success,
         value: 2399,
-        currency: "EUR",
-        payment: payment
+        currency: "USD",
+        payment: payment,
+        order: order
       )
     end
 
@@ -66,7 +75,7 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
       end
 
       it "completes the payment" do
-        expect{ subject }.
+        expect { subject }.
           to change{ payment.reload.state }.
           from("pending").
           to("completed")
@@ -99,14 +108,37 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
     context "when event is AUTHORISATION" do
       let(:event_type) { :auth }
 
-      it "changes the available actions"
-
       context "and payment method was c_cash", pending: true do
         pending "completes payment"
       end
 
       context "and payment method was bank transfer", pending: true do
         pending "completes payment"
+      end
+
+      # this is for the situation where we can the notification before the
+      # redirect
+      context "and the payment doesn't exist yet" do
+        let!(:payment) { nil }
+
+        it "processes the notification" do
+          expect { subject }.
+            to change { notification.processed }.
+            to true
+        end
+
+        it "completes the order" do
+          subject
+          expect(order.reload).to have_attributes(
+            state: "complete"
+          )
+        end
+
+        it "creates a payment" do
+          expect { subject }.
+            to change { order.payments.count }.
+            to 1
+        end
       end
 
       context "and payment method was ideal" do
