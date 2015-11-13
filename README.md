@@ -14,7 +14,7 @@ notification is received from Adyen.
 # Installation
 Add this line to your application's Gemfile:
 ```ruby
-gem 'solidus-adyen', '~> 0.1`
+gem 'solidus-adyen', '~> 0.1'
 ```
 
 Then run:
