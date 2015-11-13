@@ -18,7 +18,7 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
 
     let!(:order) do
       # spree factories suck, it's not easy to get something to payment state
-      create(:order_with_line_items, currency: "EUR").tap do |order|
+      create(:order_with_line_items).tap do |order|
         order.contents.advance
         expect(order.state).to eq "payment"
       end
@@ -34,7 +34,7 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
         event_type, # these are registered traits, refer to the factory
         success: success,
         value: 2399,
-        currency: "EUR",
+        currency: "USD",
         payment: payment,
         order: order
       )
