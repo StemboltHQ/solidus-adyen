@@ -13,7 +13,10 @@ module Spree
 
       notification.save!
 
-      Spree::Adyen::NotificationProcessor.new(notification).process!
+      # prevent alteration to associated payment while we're handling the action
+      ActiveRecord::Base.transaction do
+        Spree::Adyen::NotificationProcessor.new(notification).process!
+      end
       accept
     end
 
