@@ -7,6 +7,8 @@ module Spree
         class: "Spree::PaymentMethod",
         id_param: :payment_method_id)
 
+      layout false
+
       def directory
         @brands = Adyen::Form.payment_methods_from_directory(
           @order,
