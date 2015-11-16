@@ -16,7 +16,12 @@
 #      @invoice.set_paid!
 #    end
 class AdyenNotification < ActiveRecord::Base
-  AUTO_CAPTURE_ONLY_METHODS = ["ideal", "c_cash", "directEbanking"].freeze
+  AUTO_CAPTURE_ONLY_METHODS = [
+    "ideal",
+    "c_cash",
+    "directEbanking",
+    "trustly"
+  ].freeze
 
   AUTHORISATION = "AUTHORISATION".freeze
   CANCELLATION = "CANCELLATION".freeze
