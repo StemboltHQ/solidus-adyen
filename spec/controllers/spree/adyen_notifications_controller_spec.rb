@@ -24,8 +24,17 @@ describe Spree::AdyenNotificationsController do
   let!(:order) { create :completed_order_with_totals }
 
   let!(:payment) do
-    create :hpp_payment, response_code: reference,
-      payment_method: payment_method, order: order
+    create(
+      :hpp_payment,
+      response_code: reference,
+      payment_method: payment_method,
+      order: order,
+      source: create(
+        :hpp_source,
+        psp_reference: reference,
+        order: order
+      )
+    )
   end
 
   let!(:payment_method) { create :hpp_gateway }
