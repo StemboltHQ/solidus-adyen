@@ -21,34 +21,30 @@ module Spree
       # for the given payment, process all notifications that are currently
       # unprocessed in the order that they were dispatched.
       def self.process_outstanding!(payment)
-        Spree::Payment.transaction do
-          payment.
-            source.
-            notifications(true). # bypass caching
-            unprocessed.
-            as_dispatched.
-            map do |notification|
-              new(notification, payment).process!
-            end
-        end
+        payment.
+          source.
+          notifications(true). # bypass caching
+          unprocessed.
+          as_dispatched.
+          map do |notification|
+            new(notification, payment).process!
+          end
       end
 
       # only process the notification if there is a matching payment there's a
       # number of reasons why there may not be a matching payment such as test
       # notifications, reports etc, we just log them and then accept
       def process!
-        Spree::Payment.transaction do
-          if payment
-            if !notification.success?
-              handle_failure
+        if payment
+          if !notification.success?
+            handle_failure
 
-            elsif notification.modification_event?
-              handle_modification_event
+          elsif notification.modification_event?
+            handle_modification_event
 
-            elsif notification.normal_event?
-              handle_normal_event
+          elsif notification.normal_event?
+            handle_normal_event
 
-            end
           end
         end
 

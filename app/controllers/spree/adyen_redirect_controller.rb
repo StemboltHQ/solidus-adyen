@@ -7,10 +7,14 @@ module Spree
 
     # This is the entry point after an Adyen HPP payment is completed
     def confirm
-      if @order.complete?
-        confirm_order_already_completed
-      else
-        confirm_order_incomplete
+      ActiveRecord::Base.transaction do
+        # reload order as it might have changed since previously loading it
+        # from an auth notification coming in at the same time.
+        if @order.reload.complete?
+          confirm_order_already_completed
+        else
+          confirm_order_incomplete
+        end
       end
     end
 
@@ -52,6 +56,7 @@ module Spree
     # so we need to make sure we complete the payment and order.
     def confirm_order_already_completed
       payment = @order.payments.find_by!(response_code: psp_reference)
+
       payment.source.update(source_params)
 
       redirect_to_order
