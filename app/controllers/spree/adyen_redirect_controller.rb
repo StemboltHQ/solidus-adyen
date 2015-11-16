@@ -78,9 +78,7 @@ module Spree
 
       @payment_method = Spree::PaymentMethod.find(payment_method_id)
 
-      @order =
-        Spree::Order.
-        find_by!(guest_token: cookies.signed[:guest_token])
+      @order = Spree::Order.find_by!(number: order_number)
     end
 
     def source_params
@@ -93,6 +91,10 @@ module Spree
         :paymentMethod,
         :shopperLocale,
         :merchantReturnData)
+    end
+
+    def order_number
+      params[:merchantReference]
     end
 
     def psp_reference
