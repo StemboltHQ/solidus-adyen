@@ -7,10 +7,13 @@ module Spree
 
     # This is the entry point after an Adyen HPP payment is completed
     def confirm
-      ActiveRecord::Base.transaction do
-        # reload order as it might have changed since previously loading it
-        # from an auth notification coming in at the same time.
-        if @order.reload.complete?
+      # Reload order as it might have changed since previously loading it
+      # from an auth notification coming in at the same time.
+      # This and the notification processing need to have a lock on the order
+      # as they both decide what to do based on whether or not the order is
+      # complete.
+      @order.with_lock do
+        if @order.complete?
           confirm_order_already_completed
         else
           confirm_order_incomplete
