@@ -153,6 +153,8 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
     end
 
     context "when event is REFUND" do
+      before { create :refund_reason }
+
       shared_examples "refund" do
         let(:event_type) { :refund }
         it "creates a refund" do
