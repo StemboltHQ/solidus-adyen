@@ -183,6 +183,18 @@ RSpec.describe Spree::Adyen::Form do
     end
   end
 
+  describe "pay_url" do
+    subject {
+      described_class.pay_url(order, payment_method)
+    }
+
+    it "calls endpoint url with the expected params" do
+      expect(described_class).to receive(:endpoint_url).
+                                     with("pay", order, payment_method)
+      subject
+    end
+  end
+
   describe "details_url_with_issuer" do
     let(:issuer_id) { "1654" }
     let(:brand_code) { "paypal" }

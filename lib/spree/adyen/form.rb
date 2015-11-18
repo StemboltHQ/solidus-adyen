@@ -11,6 +11,10 @@ module Spree
           payment_methods(order, payment_method)
         end
 
+        def pay_url order, payment_method
+          endpoint_url "pay", order, payment_method
+        end
+
         def select_url order, payment_method
           endpoint_url "select", order, payment_method
         end
