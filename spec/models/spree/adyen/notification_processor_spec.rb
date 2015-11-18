@@ -3,6 +3,14 @@ require "spec_helper"
 RSpec.describe Spree::Adyen::NotificationProcessor do
   include_context "mock adyen api", success: true
 
+  let!(:order) do
+    # spree factories suck, it's not easy to get something to payment state
+    create(:order_with_line_items).tap do |order|
+      order.contents.advance
+      expect(order.state).to eq "payment"
+    end
+  end
+
   describe "#process" do
     subject { described_class.new(notification).process! }
 
@@ -14,14 +22,6 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
         payment_method: hpp_gateway,
         order: order
       )
-    end
-
-    let!(:order) do
-      # spree factories suck, it's not easy to get something to payment state
-      create(:order_with_line_items).tap do |order|
-        order.contents.advance
-        expect(order.state).to eq "payment"
-      end
     end
 
     let!(:hpp_gateway) do
@@ -114,31 +114,6 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
 
       context "and payment method was bank transfer", pending: true do
         pending "completes payment"
-      end
-
-      # this is for the situation where we can the notification before the
-      # redirect
-      context "and the payment doesn't exist yet" do
-        let!(:payment) { nil }
-
-        it "processes the notification" do
-          expect { subject }.
-            to change { notification.processed }.
-            to true
-        end
-
-        it "completes the order" do
-          subject
-          expect(order.reload).to have_attributes(
-            state: "complete"
-          )
-        end
-
-        it "creates a payment" do
-          expect { subject }.
-            to change { order.payments.count }.
-            to 1
-        end
       end
 
       context "and payment method was ideal" do
@@ -265,6 +240,41 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
 
       it "does not create a payment" do
         expect { subject }.not_to change { Spree::Payment.count }
+      end
+    end
+
+    # this is for the situation where we can the notification before the
+    # redirect
+    context "and the payment doesn't exist yet" do
+      context "an it is not a successful auth notification" do
+        let(:notification) do
+          create(:notification, :auth, success: false, order: order)
+        end
+
+        it "does not create a payment" do
+          expect { subject }.to_not change { order.payments.count }
+        end
+
+        it "does not complete the order" do
+          expect { subject }.to_not change { order.state }
+        end
+      end
+
+      context "and it is a successful auth notification" do
+        let(:notification) do
+          create(:notification, :auth, order: order)
+        end
+
+        it "creates a payment" do
+          expect { subject }.
+            to change { order.payments.count }.
+            to 1
+        end
+
+        it "completes the order" do
+          expect { subject }.
+            to change { order.state }.to "complete"
+        end
       end
     end
   end
