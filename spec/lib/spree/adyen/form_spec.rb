@@ -13,6 +13,7 @@ RSpec.describe Spree::Adyen::Form do
      shared_secret: "1234567890",
      days_to_ship: 3}
   }
+  let(:locale) { I18n.locale }
 
   describe "directory_url" do
     let(:expected) do
@@ -27,7 +28,8 @@ RSpec.describe Spree::Adyen::Form do
         shared_secret: payment_method.shared_secret,
         country_code: order.billing_address.country.iso,
         merchant_return_data: merchant_return_data,
-        payment_amount: 3998
+        payment_amount: 3998,
+        shopper_locale: locale
       }
 
        ::Adyen::Form.redirect_url(redirect_params)

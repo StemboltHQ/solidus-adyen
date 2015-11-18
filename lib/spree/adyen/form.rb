@@ -118,7 +118,8 @@ module Spree
           { currency_code: order.currency,
             merchant_reference: order.number.to_s,
             country_code: order.billing_address.country.iso,
-            payment_amount: (order.total * 100).to_int
+            payment_amount: (order.total * 100).to_int,
+            shopper_locale: I18n.locale
           }
         end
 
