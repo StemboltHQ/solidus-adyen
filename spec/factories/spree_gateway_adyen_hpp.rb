@@ -16,7 +16,7 @@ FactoryGirl.define do
       preferred_api_password { ENV.fetch("ADYEN_API_PASSWORD") }
       preferred_api_username { ENV.fetch("ADYEN_API_USERNAME") }
       preferred_merchant_account { ENV.fetch("ADYEN_MERCHANT_ACCOUNT") }
-      preferred_shared_secret { ENV.fetch("ADYEN_SKIN_CODE") }
+      preferred_shared_secret { ENV.fetch("ADYEN_SHARED_SECRET") }
       preferred_skin_code { ENV.fetch("ADYEN_SKIN_CODE") }
     end
   end

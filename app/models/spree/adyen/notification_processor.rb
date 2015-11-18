@@ -7,15 +7,12 @@ module Spree
     # separate classes that are only aware of how to process specific kinds of
     # notifications (auth, capture, refund, etc.).
     class NotificationProcessor
-      attr_accessor :notification, :payment
+      attr_accessor :notification, :payment, :order
 
       def initialize(notification, payment = nil)
         self.notification = notification
+        self.order = notification.order
         self.payment = payment ? payment : notification.payment
-
-        if should_create_payment?
-          self.payment = create_missing_payment
-        end
       end
 
       # for the given payment, process all notifications that are currently
@@ -35,7 +32,13 @@ module Spree
       # number of reasons why there may not be a matching payment such as test
       # notifications, reports etc, we just log them and then accept
       def process!
-        if payment
+        return notification if order.nil?
+
+        order.with_lock do
+          if should_create_payment?
+            self.payment = create_missing_payment
+          end
+
           if !notification.success?
             handle_failure
 
@@ -55,8 +58,9 @@ module Spree
 
       def handle_failure
         notification.processed!
-        # ignore failures if the payment was already completed
-        return if payment.completed?
+        # ignore failures if the payment was already completed, or if it doesn't
+        # exist
+        return if payment.nil? || payment.completed?
         # might have to do something else on modification events,
         # namely refunds
         payment.failure!

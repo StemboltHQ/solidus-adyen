@@ -12,7 +12,7 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
     )
   end
 
-  let!(:store) { Spree::Store.default }
+  let!(:store) { create :store }
   let!(:gateway) { create :hpp_gateway }
 
   before do
