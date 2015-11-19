@@ -189,8 +189,9 @@ RSpec.describe Spree::Adyen::Form do
     }
 
     it "calls endpoint url with the expected params" do
-      expect(described_class).to receive(:endpoint_url).
-                                     with("pay", order, payment_method)
+      expect(described_class).
+          to receive(:endpoint_url).
+          with("pay", order, payment_method)
       subject
     end
   end
