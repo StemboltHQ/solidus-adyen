@@ -44,8 +44,10 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = true
   config.example_status_persistence_file_path = "./spec/examples.txt"
 
-  config.include Spree::TestingSupport::ControllerRequests, type: :controller
+  config.include ControllerHelpers, type: :controller
+  config.include Devise::TestHelpers, type: :controller
   config.include FactoryGirl::Syntax::Methods
+  config.include Spree::TestingSupport::ControllerRequests, type: :controller
   config.include Spree::TestingSupport::UrlHelpers
 
   config.filter_run_excluding :external => true
