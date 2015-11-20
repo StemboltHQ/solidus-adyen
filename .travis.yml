@@ -1,6 +1,8 @@
 language: ruby
 rvm:
   - 2.2.3
+env:
+  - DB=postgres
 install:
   - bundle install
 script:

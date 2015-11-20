@@ -30,7 +30,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "coffee-rails"
 
   spec.add_development_dependency "pg"
-  spec.add_development_dependency "sqlite3"
 
   spec.add_development_dependency "rspec-rails", "~> 3.3"
   spec.add_development_dependency "rspec-activemodel-mocks"
