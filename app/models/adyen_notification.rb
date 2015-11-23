@@ -20,7 +20,8 @@ class AdyenNotification < ActiveRecord::Base
     "ideal",
     "c_cash",
     "directEbanking",
-    "trustly"
+    "trustly",
+    "giropay"
   ].freeze
 
   AUTHORISATION = "AUTHORISATION".freeze
