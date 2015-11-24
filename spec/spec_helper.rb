@@ -22,6 +22,7 @@ require "vcr"
 require "ffaker"
 require "shoulda/matchers"
 require "pry"
+require "database_cleaner"
 
 require "spree/testing_support/factories"
 require "spree/testing_support/controller_requests"
@@ -41,18 +42,32 @@ RSpec.configure do |config|
   config.color = true
   config.infer_spec_type_from_file_location!
   config.mock_with :rspec
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
   config.example_status_persistence_file_path = "./spec/examples.txt"
 
+  config.include ControllerHelpers, type: :controller
+  config.include Devise::TestHelpers, type: :controller
   config.include Spree::TestingSupport::ControllerRequests, type: :controller
   config.include FactoryGirl::Syntax::Methods
+  config.include Spree::TestingSupport::ControllerRequests, type: :controller
   config.include Spree::TestingSupport::UrlHelpers
 
-  config.filter_run_excluding :external => true
+  config.before(:suite) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.around(:each) do |example|
+    DatabaseCleaner.strategy =
+      example.metadata[:truncation] ? :truncation : :transaction
+    DatabaseCleaner.start
+    example.run
+    DatabaseCleaner.clean
+  end
 end
 
 VCR.configure do |c|
   # c.allow_http_connections_when_no_cassette = true
+  c.ignore_localhost = true
   c.cassette_library_dir = "spec/cassettes"
   c.hook_into :webmock
 end

@@ -22,5 +22,4 @@ Gemfile.lock
 spec/dummy
 config/credentials.yml
 
-spec/cassettes
 spec/examples.txt
