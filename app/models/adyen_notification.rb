@@ -53,7 +53,6 @@ class AdyenNotification < ActiveRecord::Base
 
   validates_presence_of :event_code
   validates_presence_of :psp_reference
-  validates_uniqueness_of :success, scope: [:psp_reference, :event_code]
 
   # Logs an incoming notification into the database.
   #
