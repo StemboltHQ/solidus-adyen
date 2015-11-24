@@ -3,6 +3,7 @@ FactoryGirl.define do
     class: "Spree::Gateway::AdyenHPP" do
     name "Adyen"
     environment "test"
+    display_on "both"
     preferences(
       skin_code: "XXXXX",
       shared_secret: "1234",
