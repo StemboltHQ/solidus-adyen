@@ -1,4 +1,4 @@
-# Solidus-Adyen
+# Solidus-Adyen [![Build Status](https://travis-ci.org/StemboltHQ/solidus-adyen.svg)](https://travis-ci.org/StemboltHQ/solidus-adyen) 
 Adds support for Adyen Hosted Payment Page payments to Solidus stores using the
 [Adyen](https://github.com/wvanbergen/adyen/) gem.
 
