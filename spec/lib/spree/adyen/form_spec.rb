@@ -13,7 +13,7 @@ RSpec.describe Spree::Adyen::Form do
      shared_secret: "1234567890",
      days_to_ship: 3}
   }
-  let(:locale) { I18n.locale }
+  let(:locale) { I18n.locale.to_s.gsub("-", "_") }
 
   describe "directory_url" do
     let(:expected) do

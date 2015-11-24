@@ -123,7 +123,7 @@ module Spree
             merchant_reference: order.number.to_s,
             country_code: order.billing_address.country.iso,
             payment_amount: (order.total * 100).to_int,
-            shopper_locale: I18n.locale
+            shopper_locale: I18n.locale.to_s.gsub("-", "_")
           }
         end
 
