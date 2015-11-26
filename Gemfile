@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 
-gem "solidus", "~> 1.0"
-gem "solidus_auth_devise", "~> 1.2"
+gem "solidus", "~> 1.0.0"
+gem "solidus_auth_devise", "~> 1.2.0"
 
 group :test do
   gem "timecop"
