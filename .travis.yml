@@ -7,4 +7,5 @@ install:
   - bundle install
 script:
   - bundle exec rake test_app
+  - ( cd ./spec/dummy && bundle exec rake solidus-adyen:factory_girl:lint RAILS_ENV=test )
   - bundle exec rspec
