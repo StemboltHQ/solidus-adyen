@@ -132,7 +132,8 @@ module Spree
           order: order
         )
 
-        order.next && order.complete
+        order.contents.advance
+        order.complete
         payment
       end
 
@@ -142,7 +143,6 @@ module Spree
         notification.order.present? &&
         payment.nil?
       end
-
     end
   end
 end

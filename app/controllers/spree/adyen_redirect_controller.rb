@@ -43,7 +43,7 @@ module Spree
         state: "checkout"
       )
 
-      if @order.next && @order.complete
+      if complete
         redirect_to_order
       else
         #TODO void/cancel payment
@@ -107,6 +107,11 @@ module Spree
 
     def psp_reference
       params[:pspReference]
+    end
+
+    def complete
+      @order.contents.advance
+      @order.complete
     end
   end
 end
