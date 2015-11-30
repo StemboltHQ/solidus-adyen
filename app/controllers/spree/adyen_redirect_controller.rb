@@ -43,7 +43,7 @@ module Spree
         state: "checkout"
       )
 
-      if @order.complete
+      if @order.next && @order.complete
         redirect_to_order
       else
         #TODO void/cancel payment

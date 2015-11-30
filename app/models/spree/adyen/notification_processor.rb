@@ -132,7 +132,7 @@ module Spree
           order: order
         )
 
-        order.complete
+        order.next && order.complete
         payment
       end
 

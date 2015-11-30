@@ -106,7 +106,7 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
 
           create(:hpp_payment, source: source, order: order)
 
-          order.complete
+          order.next && order.complete
         end
 
         it { expect { subject }.to_not change { order.payments.count }.from 1 }
