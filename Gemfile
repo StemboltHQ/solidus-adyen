@@ -7,9 +7,8 @@ group :test do
   gem "database_cleaner"
   gem "factory_girl"
   gem "timecop"
-  gem "webmock"
   gem "vcr"
-  gem "sqlite3"
+  gem "webmock"
 end
 
 gemspec
