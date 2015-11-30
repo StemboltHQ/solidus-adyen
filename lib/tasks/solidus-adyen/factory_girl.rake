@@ -10,7 +10,7 @@ namespace :"solidus-adyen" do
           DatabaseCleaner.clean
         end
       else
-        system("bundle exec rake factory_girl:lint RAILS_ENV='test'")
+        system("bundle exec rake soldius-adyen:factory_girl:lint RAILS_ENV='test'")
       end
     end
   end
