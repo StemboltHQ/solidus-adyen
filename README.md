@@ -196,8 +196,10 @@ in the view.
 
 # Testing
 ```bash
-$ bundle exec rake test_app
+$ DB=postgres bundle exec rake test_app
 $ rspec
+$ cd spec/dummy
+$ rake solidus-adyen:factory_girl:lint
 ```
 
 # Development

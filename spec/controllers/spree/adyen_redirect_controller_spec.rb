@@ -106,6 +106,7 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
 
           create(:hpp_payment, source: source, order: order)
 
+          order.contents.advance
           order.complete
         end
 
