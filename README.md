@@ -1,4 +1,4 @@
-# Solidus-Adyen [![Build Status](https://travis-ci.org/StemboltHQ/solidus-adyen.svg)](https://travis-ci.org/StemboltHQ/solidus-adyen) 
+# Solidus-Adyen [![Build Status](https://travis-ci.org/StemboltHQ/solidus-adyen.svg)](https://travis-ci.org/StemboltHQ/solidus-adyen)
 Adds support for Adyen Hosted Payment Page payments to Solidus stores using the
 [Adyen](https://github.com/wvanbergen/adyen/) gem.
 
@@ -14,7 +14,7 @@ notification is received from Adyen.
 # Installation
 Add this line to your application's Gemfile:
 ```ruby
-gem 'solidus-adyen', '~> 0.1'
+gem 'solidus-adyen', '~> 0.2.2'
 ```
 
 Then run:
@@ -205,13 +205,8 @@ $ rake solidus-adyen:factory_girl:lint
 # Development
 My prefered method of setting up a sandbox is with
 ```bash
-$ rake test_app
-$ cd spec/dummy
-$ rake railties:install:migrations
-$ rake db:migrate
-$ rake db:seed
-$ rake db:spree_sample:load
-$ ./bin/rails s
+$ ./bin/bootstrap.sh
+$ ./spec/dummy/bin/rails s
 ```
 You will need to reverse tunnel or make your server publicly available by some
 other means - and update the server communication as well as the skin's url
