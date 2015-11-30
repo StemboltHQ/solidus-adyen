@@ -67,7 +67,6 @@ module Spree
       end
 
       def process &block
-        check_environment
         response = nil
 
         Spree::Payment.transaction do
