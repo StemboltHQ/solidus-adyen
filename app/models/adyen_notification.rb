@@ -83,7 +83,16 @@ class AdyenNotification < ActiveRecord::Base
   end
 
   def payment
-    Spree::Payment.find_by response_code: original_reference || psp_reference
+    reference = original_reference || psp_reference
+    payment_with_reference = Spree::Payment.find_by response_code: reference
+    return payment_with_reference if payment_with_reference
+
+    # If no reference take the last payment in the associated order where the
+    # response_code was nil.
+    order
+      .payments
+      .where(source_type: "Spree::Adyen::HppSource", response_code: nil)
+      .last
   end
 
   # Returns true if this notification is an AUTHORISATION notification

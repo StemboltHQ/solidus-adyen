@@ -25,6 +25,17 @@ RSpec.describe AdyenNotification do
       let(:attr) { :psp_reference }
       include_examples "finds the payment"
     end
+
+    context "payment with no reference" do
+      let!(:payment) { create :payment, response_code: nil }
+
+      context "normal notification" do
+        let!(:notification) {
+          described_class.new :merchant_reference => payment.order.number
+        }
+        include_examples "finds the payment"
+      end
+    end
   end
 
   describe "#build" do
