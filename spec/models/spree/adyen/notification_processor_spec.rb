@@ -200,6 +200,11 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
             from(0).
             to(1)
         end
+
+        it "creates a refund of the correct value" do
+          subject
+          expect(payment.reload.refunds.last.amount).to eq 23.99
+        end
       end
 
       context "when refunded from Solidus" do

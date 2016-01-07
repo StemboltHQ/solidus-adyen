@@ -77,7 +77,7 @@ module Spree
 
         elsif notification.refund?
           payment.refunds.create!(
-            amount: notification.value / 100, # cents to dollars
+            amount: notification.value / 100.0, # cents to dollars
             transaction_id: notification.psp_reference,
             refund_reason_id: ::Spree::RefundReason.first.id # FIXME
           )
