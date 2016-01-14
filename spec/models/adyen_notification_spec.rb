@@ -36,6 +36,13 @@ RSpec.describe AdyenNotification do
         include_examples "finds the payment"
       end
     end
+
+    context "no connected order" do
+      let!(:notification) {
+        described_class.new :merchant_reference => "notarealorder"
+      }
+      it { is_expected.to eq nil }
+    end
   end
 
   describe "#build" do

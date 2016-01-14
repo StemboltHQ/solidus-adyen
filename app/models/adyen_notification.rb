@@ -89,10 +89,12 @@ class AdyenNotification < ActiveRecord::Base
 
     # If no reference take the last payment in the associated order where the
     # response_code was nil.
-    order
-      .payments
-      .where(source_type: "Spree::Adyen::HppSource", response_code: nil)
-      .last
+    if order
+      order
+        .payments
+        .where(source_type: "Spree::Adyen::HppSource", response_code: nil)
+        .last
+    end
   end
 
   # Returns true if this notification is an AUTHORISATION notification
