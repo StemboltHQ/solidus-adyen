@@ -126,4 +126,60 @@ RSpec.describe "Notification processing", type: :request do
       end
     end
   end
+
+  context "no psp reference in redirect" do
+    describe "full redirect, auth, capture flow", truncation: true do
+      let(:checkout_params) do
+        {
+          "merchantReference" => "R207199925",
+          "skinCode" => "xxxxxxxx",
+          "shopperLocale" => "en",
+          "paymentMethod" => "amex",
+          "authResult" => "AUTHORISED",
+          "merchantReturnData" => "adKbcFeXxOVE76UJRDF88g|#{payment_method.id}",
+          "merchantSig" => "SBdhua18U+8xkPmK/a/8VprF230="
+        }
+      end
+
+      it "adds in psp reference to payment" do
+        authorize_request = lambda do
+          post "/adyen/notify", auth_params, headers
+          expect(response).to have_http_status :ok
+          expect(response.body).to eq "[accepted]"
+        end
+
+        redirect_request = lambda do
+          get "/checkout/payment/adyen", checkout_params, headers
+          expect(response).to have_http_status :redirect
+        end
+
+        capture_request = lambda do
+          expect do
+            post "/adyen/notify", capture_params, headers
+          end.
+          to change { order.payments.last.reload.state }.
+          from("processing").
+          to("completed")
+        end
+
+        VCR.use_cassette "adyen capture" do
+          expect do
+            # these come in at the same time
+            [
+              Thread.new(&authorize_request),
+              Thread.new(&redirect_request)
+            ].map(&:join)
+            # typically get a duplicate auth notification
+            authorize_request.call
+          end.
+          to change { order.payments.count }.by(1).
+          and change { order.reload.state}.to("complete").
+          and change { AdyenNotification.count }.by(1)
+
+          capture_request.call
+          expect(order.payments.first.response_code).to eq "7914483013255061"
+        end
+      end
+    end
+  end
 end
