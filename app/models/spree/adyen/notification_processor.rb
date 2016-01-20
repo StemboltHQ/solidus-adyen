@@ -89,6 +89,13 @@ module Spree
 
       # normal event is defined as just AUTHORISATION
       def handle_normal_event
+        # Payment may not have psp_reference. Add this from notification if it
+        # doesn't have one.
+        unless self.payment.response_code
+          payment.response_code = notification.psp_reference
+          payment.save
+        end
+
         if notification.auto_captured?
           complete_payment!
 

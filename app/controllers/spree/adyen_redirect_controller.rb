@@ -52,13 +52,21 @@ module Spree
     end
 
     # If an authorization notification is received before the redirection the
-    # payment is created there.In this case we just need to assign the addition
+    # payment is created there. In this case we just need to assign the addition
     # parameters received about the source.
     #
     # We do this because there is a chance that we never get redirected back
     # so we need to make sure we complete the payment and order.
     def confirm_order_already_completed
-      payment = @order.payments.find_by!(response_code: psp_reference)
+      if psp_reference
+        payment = @order.payments.find_by!(response_code: psp_reference)
+      else
+        # If no psp_reference is present but the order is complete then the
+        # notification must have completed the order and created the payment.
+        # Therefore select the last Adyen payment.
+        payment =
+          @order.payments.where(source_type: "Spree::Adyen::HppSource").last
+      end
 
       payment.source.update(source_params)
 
