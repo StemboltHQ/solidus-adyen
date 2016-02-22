@@ -2,6 +2,7 @@ source "http://rubygems.org"
 
 gem "solidus"
 gem "solidus_auth_devise", "~> 1.2.0"
+gem 'pry-byebug'
 
 group :test do
   gem "database_cleaner"

@@ -21,3 +21,4 @@ en:
         method only supports manual refunds.
         Please attempt to refund this payment through the Adyen customer area
         or contact an Adyen representative to assist.
+  restricted_brand_codes: "Restricted Brand Codes (comma delimited, no spaces)"
