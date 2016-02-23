@@ -67,11 +67,14 @@ module Spree
 
         def form_payment_methods_and_urls response, order, payment_method
           response.fetch("paymentMethods").map do |brand|
+            next unless payment_method_allows_brand_code?(payment_method, brand['brandCode'])
+
             issuers = brand.fetch("issuers", []).map do |issuer|
               form_issuer(issuer, order, payment_method, brand)
             end
+
             form_payment_method(brand, order, payment_method, issuers)
-          end
+          end.compact
         end
 
         def form_issuer issuer, order, payment_method, brand
@@ -110,6 +113,12 @@ module Spree
             merge(order_params order).
             merge(payment_method_params payment_method).
             merge(merchant_return_data: merchant_return_data)
+        end
+
+        def payment_method_allows_brand_code? payment_method, brand_code
+          return true if payment_method.restricted_brand_codes.empty?
+
+          payment_method.restricted_brand_codes.include?(brand_code)
         end
 
         # TODO set this in the adyen config
