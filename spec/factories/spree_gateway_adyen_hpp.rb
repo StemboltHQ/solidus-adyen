@@ -10,6 +10,10 @@ FactoryGirl.define do
       days_to_ship: 3
     )
 
+    trait :with_restricted_brand_codes do
+      preferred_restricted_brand_codes 'paypal'
+    end
+
     trait :env_configured do
       preferred_test_mode true
       preferred_days_to_ship 1
