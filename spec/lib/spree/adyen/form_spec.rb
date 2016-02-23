@@ -171,7 +171,7 @@ RSpec.describe Spree::Adyen::Form do
       end
     end
 
-    context 'when payment_method specifies restricted brand_codes' do
+    context "when payment_method specifies restricted brand_codes" do
       let(:adyen_response) {
         {
           "paymentMethods" => [
@@ -188,7 +188,7 @@ RSpec.describe Spree::Adyen::Form do
 
       let(:payment_method) { create(:hpp_gateway, :with_restricted_brand_codes) }
 
-      it 'will only return paypal brand_code' do
+      it "will only return paypal brand_code" do
         expect(subject).to eq [
           {
             name: "PayPal",
