@@ -65,7 +65,7 @@ module Spree
           Form.url(server, endpoint)
         end
 
-        def form_payment_methods_and_urls(response, order, payment_method)
+        def form_payment_methods_and_urls response, order, payment_method
           response.fetch("paymentMethods").map do |brand|
             next unless payment_method_allows_brand_code?(payment_method, brand['brandCode'])
 
@@ -115,7 +115,7 @@ module Spree
             merge(merchant_return_data: merchant_return_data)
         end
 
-        def payment_method_allows_brand_code?(payment_method, brand_code)
+        def payment_method_allows_brand_code? payment_method, brand_code
           return true if payment_method.restricted_brand_codes.empty?
 
           payment_method.restricted_brand_codes.include?(brand_code)
