@@ -7,6 +7,7 @@ module Spree
     preference :api_username, :string
     preference :api_password, :string
     preference :merchant_account, :string
+    preference :restricted_brand_codes, :string, default: ''
 
     def merchant_account
       ENV["ADYEN_MERCHANT_ACCOUNT"] || preferred_merchant_account
@@ -71,6 +72,10 @@ module Spree
       handle_response(
         provider.refund_payment(psp_reference, amount),
         psp_reference)
+    end
+
+    def restricted_brand_codes
+      preferred_restricted_brand_codes.split(',').compact.uniq
     end
 
     private
