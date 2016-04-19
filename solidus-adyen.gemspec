@@ -29,7 +29,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "rspec-rails", "~> 3.3"
   spec.add_development_dependency "rspec-activemodel-mocks"
-  spec.add_development_dependency "factory_girl"
   spec.add_development_dependency "shoulda-matchers"
 
   spec.add_development_dependency "simplecov"
@@ -45,5 +44,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "capybara"
   spec.add_development_dependency "poltergeist"
   spec.add_development_dependency "launchy"
-  spec.add_development_dependency "database_cleaner"
 end
