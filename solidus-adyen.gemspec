@@ -22,10 +22,19 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "solidus_core", "~> 1.1"
   spec.add_runtime_dependency "bourbon"
 
+  spec.add_development_dependency "solidus"
+  spec.add_development_dependency "solidus_auth_devise", "~>1.2.0"
+
   spec.add_development_dependency "sass-rails", "~> 4.0.2"
   spec.add_development_dependency "coffee-rails"
 
+  spec.add_development_dependency "sqlite3"
+  spec.add_development_dependency "mysql2"
   spec.add_development_dependency "pg"
+
+  spec.add_development_dependency "timecop"
+  spec.add_development_dependency "webmock"
+  spec.add_development_dependency "vcr"
 
   spec.add_development_dependency "rspec-rails", "~> 3.3"
   spec.add_development_dependency "rspec-activemodel-mocks"
