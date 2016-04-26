@@ -1,0 +1,44 @@
+<%= image_tag 'credit_cards/credit_card.gif', :id => 'credit-card-image' %>
+
+<% content_for :head do %>
+  <%= javascript_include_tag "https://test.adyen.com/hpp/cse/js/#{payment_method.cse_token}.shtml" %>
+  <%= javascript_include_tag "spree/checkout/payment/adyen_encrypted_credit_card" %>
+<% end %>
+
+<% param_prefix = "payment_source[#{payment_method.id}]" %>
+
+<div class="field">
+  <%= label_tag nil, Spree.t(:name_on_card) %><span class="required">*</span><br />
+  <%= text_field_tag nil, "#{@order.billing_firstname} #{@order.billing_lastname}", { autocomplete: "off", size: 20, id: nil, data_encrypted_name: "holderName"} %>
+</div>
+
+<div class="field" data-hook="card_number">
+  <%= label_tag nil, Spree.t(:card_number) %><span class="required">*</span><br />
+  <%= text_field_tag nil, nil, size: 20, autocomplete: "off", data_encrypted_name: "number" %>
+  &nbsp;
+</div>
+
+<div class="field" data-hook="card_expiration_month">
+  <%= label_tag nil, Spree.t(:expiration) %><span class="required">*</span><br />
+  <%= text_field_tag nil, nil, class: "required cardExpiryMonth", id: nil, placeholder: "MM", autocomplete: "off", maxlength: 2, size: 2, data_encrypted_name: "expiryMonth" %>
+</div>
+
+<div class="field" data-hook="card_expiration_year">
+  <%= label_tag nil, Spree.t(:expiration) %><span class="required">*</span><br />
+  <%= text_field_tag nil, nil, class: "required cardExpiryYear", id: nil, placeholder: "YYYY", autocomplete: "off", maxlength: 4, size: 4, data_encrypted_name: "expiryYear" %>
+</div>
+
+<div class="field" data-hook="card_code">
+  <%= label_tag "card_code", Spree.t(:card_code) %><span class="required">*</span><br />
+  <%= text_field_tag nil, nil, class: 'required cardCode', size: 5, data_encrypted_name: "cvc" %>
+  <%= link_to "(#{Spree.t(:what_is_this)})", spree.cvv_path, :target => '_blank', "data-hook" => "cvv_link", :id => "cvv_link" %>
+</div>
+
+<%= hidden_field_tag nil, Time.current.iso8601, data_encrypted_name: "generationTime" %>
+<%= hidden_field_tag "#{param_prefix}[gateway_payment_profile_id]" %>
+
+<% if @order.bill_address %>
+  <%= fields_for "#{param_prefix}[address_attributes]", @order.bill_address do |f| %>
+    <%= render :partial => 'spree/address/form_hidden', :locals => { :form => f } %>
+  <% end %>
+<% end %>
