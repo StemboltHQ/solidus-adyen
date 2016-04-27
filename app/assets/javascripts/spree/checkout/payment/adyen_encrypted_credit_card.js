@@ -2,7 +2,7 @@ Spree.createEncryptedAdyenForm = function(paymentMethodId) { 
   var checkout_form = document.getElementById("checkout_form_payment")
     // See adyen.encrypt.simple.html for details on the options to use
   var options = {
-    name: "payment_source[" + paymentMethodId + "][encrypted_credit_card_data]",
+    name: "payment_source[" + paymentMethodId + "][encrypted_data]",
     // We want the validations only to fire when we hit the submit button
     enableValidations : false,
     // If there's other payment methods, they need to be able to submit
@@ -30,8 +30,10 @@ Spree.detachAdyenFormSubmit = function() {
 }
 
 Spree.handleAdyenFormSubmit = function(e) {
-  alert("Submit button clicked");
-  e.stopImmediatePropagation();
-  e.preventDefault();
-  return false;
+  if (!Spree.encryptedAdyenForm.isValid()) {
+    alert("Your credit card data is invalid.");
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    return false;
+  }
 }
