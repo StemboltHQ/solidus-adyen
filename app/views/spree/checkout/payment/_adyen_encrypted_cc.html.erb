@@ -14,23 +14,23 @@
 
 <div class="adyen-encrypted-cc field" data-hook="card_number">
   <%= label_tag nil, Spree.t(:card_number) %><span class="required">*</span><br />
-  <%= text_field_tag nil, nil, size: 20, autocomplete: "off", class: "cardNumber", "data-encrypted-name" => "number" %>
+  <%= text_field_tag nil, nil, size: 20, autocomplete: "off", id: "card_number", class: "cardNumber", "data-encrypted-name" => "number" %>
   &nbsp;
 </div>
 
 <div class="adyen-encrypted-cc field" data-hook="card_expiration_month">
   <%= label_tag nil, Spree.t(:expiration) %><span class="required">*</span><br />
-  <%= text_field_tag nil, nil, class: "required cardExpiryMonth", id: nil, placeholder: "MM", autocomplete: "off", maxlength: 2, size: 2, "data-encrypted-name" => "expiryMonth" %>
+  <%= text_field_tag nil, nil, class: "required cardExpiryMonth", id: "expiry_month", placeholder: "MM", autocomplete: "off", maxlength: 2, size: 2, "data-encrypted-name" => "expiryMonth" %>
 </div>
 
 <div class="adyen-encrypted-cc field" data-hook="card_expiration_year">
   <%= label_tag nil, Spree.t(:expiration) %><span class="required">*</span><br />
-  <%= text_field_tag nil, nil, class: "required cardExpiryYear", id: nil, placeholder: "YYYY", autocomplete: "off", maxlength: 4, size: 4, "data-encrypted-name" => "expiryYear" %>
+  <%= text_field_tag nil, nil, class: "required cardExpiryYear", id: "expiry_year", placeholder: "YYYY", autocomplete: "off", maxlength: 4, size: 4, "data-encrypted-name" => "expiryYear" %>
 </div>
 
 <div class="adyen-encrypted-cc field" data-hook="card_code">
   <%= label_tag "card_code", Spree.t(:card_code) %><span class="required">*</span><br />
-  <%= text_field_tag nil, nil, class: 'required cardCode', size: 5, "data-encrypted-name" => "cvc" %>
+  <%= text_field_tag nil, nil, id: "verification_value", class: 'required cardCode', size: 5, "data-encrypted-name" => "cvc" %>
   <%= link_to "(#{Spree.t(:what_is_this)})", spree.cvv_path, :target => '_blank', "data-hook" => "cvv_link", :id => "cvv_link" %>
 </div>
 
