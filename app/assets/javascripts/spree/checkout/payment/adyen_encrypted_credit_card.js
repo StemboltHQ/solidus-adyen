@@ -6,7 +6,7 @@ Spree.createEncryptedAdyenForm = function(paymentMethodId) { 
       name: "payment_source[" + paymentMethodId + "][encrypted_credit_card_data]",
       enableValidations : true,
       // If there's other payment methods, they need to be able to submit
-      submitButtonAlwaysEnabled: true,
+      submitButtonAlwaysEnabled: false,
       disabledValidClass: true
     };
     // Create the form.
