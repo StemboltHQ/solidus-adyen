@@ -37,6 +37,8 @@ Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].each {|f| require f }
 FactoryGirl.definition_file_paths = %w{./spec/factories}
 FactoryGirl.find_definitions
 
+Capybara.javascript_driver = :selenium
+
 RSpec.configure do |config|
   RSpec::Matchers.define_negated_matcher :keep, :change
 
