@@ -7,7 +7,8 @@ end
 
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
-
+require 'dotenv'
+Dotenv.load
 require "spree"
 
 begin

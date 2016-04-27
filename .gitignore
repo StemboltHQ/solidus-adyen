@@ -23,3 +23,5 @@ spec/dummy
 config/credentials.yml
 
 spec/examples.txt
+
+.env
