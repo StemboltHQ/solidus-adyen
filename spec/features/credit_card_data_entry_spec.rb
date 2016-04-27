@@ -30,10 +30,37 @@ describe "Entering Credit Card Data" do
 
   context "when the adyen gateway is selected", js: true, truncation: true do
     context "and the form is not filled out" do
-      it "disables the submit button" do
+      it "displays an alert on submit and validates the form" do
         choose('Adyen Credit Card')
+        message = accept_prompt do
+          click_button('Save and Continue')
+        end
+        expect(message).to eq('Your credit card data is invalid.')
+      end
+    end
 
-        expect(page).to have_selector('#checkout_form_payment input[type="submit"][disabled]')
+    context "and the form is filled out correctly" do
+      it "submits encrypted data but no actual data" do
+        choose('Adyen Credit Card')
+        fill_in("card_number", with: "4111 1111 1111 1111")
+        fill_in("expiry_month", with: "06")
+        fill_in("expiry_year", with: "2016")
+        fill_in("verification_value", with: "737")
+        expect_any_instance_of(Spree::Gateway::AdyenCreditCard).to \
+          receive(:authorize).and_return(ActiveMerchant::Billing::Response.new(true, "successful CC payment"))
+        click_button('Save and Continue')
+        click_button('Place Order')
+        expect(page).not_to have_content("Number can't be blank")
+      end
+    end
+  end
+
+  context "when the adyen gateway is not selected", js: true, truncation: true do
+    context "and the form is not filled out" do
+      it "displays an alert on submit and validates the form" do
+        choose('Credit Card')
+        click_button('Save and Continue')
+        expect(page).to have_content("Number can't be blank")
       end
     end
   end
