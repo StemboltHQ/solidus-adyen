@@ -42,15 +42,13 @@ describe "Entering Credit Card Data" do
     context "and the form is filled out correctly" do
       it "submits encrypted data but no actual data" do
         choose('Adyen Credit Card')
-        fill_in("card_number", with: "4111 1111 1111 1111")
+        fill_in("card_number", with: "4111111111111111")
         fill_in("expiry_month", with: "06")
         fill_in("expiry_year", with: "2016")
         fill_in("verification_value", with: "737")
-        expect_any_instance_of(Spree::Gateway::AdyenCreditCard).to \
-          receive(:authorize).and_return(ActiveMerchant::Billing::Response.new(true, "successful CC payment"))
         click_button('Save and Continue')
         click_button('Place Order')
-        expect(page).not_to have_content("Number can't be blank")
+        expect(page).to have_content("Your order has been processed successfully")
       end
     end
   end
