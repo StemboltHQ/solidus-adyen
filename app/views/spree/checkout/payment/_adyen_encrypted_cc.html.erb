@@ -14,7 +14,8 @@
 
 <div class="adyen-encrypted-cc field" data-hook="card_number">
   <%= label_tag nil, Spree.t(:card_number) %><span class="required">*</span><br />
-  <%= text_field_tag nil, nil, size: 20, autocomplete: "off", id: "card_number", class: "cardNumber", "data-encrypted-name" => "number" %>
+  <%# This should have the `cardNumber` class for 'jQuery.payment'. However, that breaks the specs. %>
+  <%= text_field_tag nil, nil, size: 20, autocomplete: "off", id: "card_number", class: "", "data-encrypted-name" => "number" %>
   &nbsp;
 </div>
 
@@ -34,7 +35,7 @@
   <%= link_to "(#{Spree.t(:what_is_this)})", spree.cvv_path, :target => '_blank', "data-hook" => "cvv_link", :id => "cvv_link" %>
 </div>
 
-<%= hidden_field_tag nil, Time.current.iso8601, data_encrypted_name: "generationTime" %>
+<%= hidden_field_tag nil, Time.current.iso8601, "data-encrypted-name" => "generationtime" %>
 <%= hidden_field_tag "#{param_prefix}[gateway_payment_profile_id]" %>
 
 <% if @order.bill_address %>
@@ -54,7 +55,6 @@
       // detach form submit handler
       Spree.detachAdyenFormSubmit();
     }
-    Spree.onPayment();
   };
   spreePaymentRadios.change(attachOrDetachFormSubmit);
   attachOrDetachFormSubmit();
