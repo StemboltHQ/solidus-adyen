@@ -19,10 +19,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "adyen", "~> 1.4"
-  spec.add_runtime_dependency "solidus_core", "~> 1.1"
+  spec.add_runtime_dependency "solidus_core"
   spec.add_runtime_dependency "bourbon"
 
-  spec.add_development_dependency "sass-rails", "~> 4.0.2"
+  spec.add_development_dependency "sass-rails"
   spec.add_development_dependency "coffee-rails"
 
   spec.add_development_dependency "rspec-rails", "~> 3.3"
