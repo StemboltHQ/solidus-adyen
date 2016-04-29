@@ -324,4 +324,49 @@ describe Spree::Gateway::AdyenCreditCard do
       end
     end
   end
+
+  context "payment modifying actions" do
+    let(:gateway) { described_class.new }
+
+    include_context "mock adyen api", success: true
+
+    shared_examples "delayed gateway action" do
+      context "when the action succeeds" do
+        include_context "mock adyen api", success: true
+
+        it { is_expected.to be_a ::ActiveMerchant::Billing::Response }
+
+        it "returns the orginal psp ref as an authorization" do
+          expect(subject.authorization).to eq "9999"
+        end
+      end
+
+      context "when the action fails" do
+        include_context(
+          "mock adyen api",
+          success: false,
+          fault_message: "Should fail")
+
+        it "has a response that contains the failure message" do
+          expect(subject.success?).to be false
+          expect(subject.message).to eq "validation 167 Original pspReference required for this operation"
+        end
+      end
+    end
+
+    describe ".capture" do
+      subject { gateway.capture(2000, "9999", currency: "EUR") }
+      include_examples "delayed gateway action"
+    end
+
+    describe ".credit" do
+      subject { gateway.credit(2000, "9999", currency: "EUR") }
+      include_examples "delayed gateway action"
+    end
+
+    describe ".cancel" do
+      subject { gateway.cancel("9999") }
+      include_examples "delayed gateway action"
+    end
+  end
 end
