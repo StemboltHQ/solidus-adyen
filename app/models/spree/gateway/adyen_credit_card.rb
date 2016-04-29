@@ -37,6 +37,13 @@ module Spree
       provider_class
     end
 
+    # We need to use recurring payments so that Solidus can store card tokens and
+    # disassociate creating the card from running the payment.
+    # @see #create_profile
+    def payment_profiles_supported?
+      true
+    end
+
     def authorize(amount, card, gateway_options)
       response = provider.authorise_recurring_payment(
         gateway_options[:order_id],
@@ -53,10 +60,6 @@ module Spree
           error_code: response.refusal_reason
         }
       )
-    end
-
-    def payment_profiles_supported?
-      true
     end
 
     def create_profile(payment)
