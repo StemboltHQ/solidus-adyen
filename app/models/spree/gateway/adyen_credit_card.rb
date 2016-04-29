@@ -78,24 +78,36 @@ module Spree
     end
 
     def authorize(amount, card, gateway_options)
-      response = provider.authorise_recurring_payment(
-        gateway_options[:order_id],
-        amount_from_gateway_options(amount, gateway_options),
-        shopper_data_from_gateway_options(gateway_options),
-        card.gateway_customer_profile_id
-      )
-      active_merchant_response = ActiveMerchant::Billing::Response.new(
-        response.success?,
-        response.result_code,
-        response.params,
-        {
-          authorization: response.psp_reference,
-          error_code: response.refusal_reason
-        }
-      )
+      response = authorize_payment(amount, card, gateway_options, false)
+      active_merchant_response(response)
+    end
+
+    def purchase(amount, card, gateway_options)
+      response = authorize_payment(amount, card, gateway_options, true)
+      active_merchant_response(response)
     end
 
     private
+
+    def active_merchant_response(adyen_response)
+      ActiveMerchant::Billing::Response.new(
+        adyen_response.success?,
+        adyen_response.result_code,
+        adyen_response.params,
+        {authorization: adyen_response.psp_reference, error_code: adyen_response.refusal_reason}
+      )
+    end
+
+    def authorize_payment(amount, card, gateway_options, instant_capture = false)
+      provider.authorise_recurring_payment(
+        gateway_options[:order_id],
+        amount_from_gateway_options(amount, gateway_options),
+        shopper_data_from_gateway_options(gateway_options),
+        card.gateway_customer_profile_id,
+        nil,
+        instant_capture
+      )
+    end
 
     def shopper_data_from_gateway_options(gateway_options)
       {

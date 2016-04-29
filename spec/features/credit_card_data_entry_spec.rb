@@ -40,15 +40,38 @@ describe "Entering Credit Card Data" do
     end
 
     context "and the form is filled out correctly" do
-      it "submits encrypted data but no actual data" do
-        choose('Adyen Credit Card')
-        fill_in("card_number", with: "4111111111111111")
-        fill_in("expiry_month", with: "06")
-        fill_in("expiry_year", with: "2016")
-        fill_in("verification_value", with: "737")
-        click_button('Save and Continue')
-        click_button('Place Order')
-        expect(page).to have_content("Your order has been processed successfully")
+      context "with an authorization on complete" do
+        it "correctly processes an authorization" do
+          choose('Adyen Credit Card')
+          fill_in("card_number", with: "4111111111111111")
+          fill_in("expiry_month", with: "06")
+          fill_in("expiry_year", with: "2016")
+          fill_in("verification_value", with: "737")
+          click_button('Save and Continue')
+          click_button('Place Order')
+          expect(page).to have_content("Your order has been processed successfully")
+        end
+      end
+
+      context "with an purchase on complete" do
+        before do
+          Spree::Config[:auto_capture] = true
+        end
+
+        after do
+          Spree::Config[:auto_capture] = false
+        end
+
+        it "correctly processes an purchase" do
+          choose('Adyen Credit Card')
+          fill_in("card_number", with: "4111111111111111")
+          fill_in("expiry_month", with: "06")
+          fill_in("expiry_year", with: "2016")
+          fill_in("verification_value", with: "737")
+          click_button('Save and Continue')
+          click_button('Place Order')
+          expect(page).to have_content("Your order has been processed successfully")
+        end
       end
     end
   end
