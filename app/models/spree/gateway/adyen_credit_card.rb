@@ -1,5 +1,7 @@
 module Spree
   class Gateway::AdyenCreditCard < Gateway
+    class ClearTextCardNumberError < StandardError; end
+
     preference :api_password, :string
     preference :api_username, :string
     preference :cse_token, :string
@@ -44,6 +46,37 @@ module Spree
       true
     end
 
+    # Run a fake authorization request to store the card data with Adyen, then retrieve
+    # the brand new customer profile ID from them. Does nothing if the card already has
+    # a customer profile ID.
+    def create_profile(payment)
+      # We only need to do this once.
+      return if payment.source.has_payment_profile?
+      raise ClearTextCardNumberError if payment.source.number.present?
+      # Run a request for no money just to store the card data.
+      # It has to be recurring (args[4] == true).
+      provider.authorise_payment(
+        payment.order.number,
+        zero_amount(payment.order),
+        shopper_data_from_order(payment.order),
+        encrypted_card_data(payment.source),
+        true
+      )
+      # Because the above call does not return the recurring detail reference,
+      # ask Adyen for it.
+      safe_credit_card_data = get_last_credit_card_for_adyen_user(payment)
+      if safe_credit_card_data
+        payment.source.update(
+          gateway_customer_profile_id: safe_credit_card_data[:recurring_detail_reference],
+          cc_type: safe_credit_card_data[:variant],
+          last_digits: safe_credit_card_data[:card][:number],
+          month: "%02d" % safe_credit_card_data[:card][:expiry_date].month,
+          year: "%04d" % safe_credit_card_data[:card][:expiry_date].year.to_s,
+          name: safe_credit_card_data[:card][:holder_name]
+        )
+      end
+    end
+
     def authorize(amount, card, gateway_options)
       response = provider.authorise_recurring_payment(
         gateway_options[:order_id],
@@ -60,35 +93,6 @@ module Spree
           error_code: response.refusal_reason
         }
       )
-    end
-
-    def create_profile(payment)
-      # We only need to do this once.
-      return if payment.source.has_payment_profile?
-
-      # Run a request for no money just to store the card data.
-      # It has to be recurring (args[4] == true).
-      response = provider.authorise_payment(
-        payment.order.number,
-        zero_amount(payment.order),
-        shopper_data_from_order(payment.order),
-        encrypted_card_data(payment.source),
-        true
-      )
-
-      # Because the above call does not return the recurring detail reference,
-      # ask Adyen for it.
-      safe_credit_card_data = get_last_credit_card_for_adyen_user(payment)
-      if safe_credit_card_data
-        payment.source.update(
-          gateway_customer_profile_id: safe_credit_card_data[:recurring_detail_reference],
-          cc_type: safe_credit_card_data[:variant],
-          last_digits: safe_credit_card_data[:card][:number],
-          month: "%02d" % safe_credit_card_data[:card][:expiry_date].month,
-          year: "%04d" % safe_credit_card_data[:card][:expiry_date].year.to_s,
-          name: safe_credit_card_data[:card][:name]
-        )
-      end
     end
 
     private
