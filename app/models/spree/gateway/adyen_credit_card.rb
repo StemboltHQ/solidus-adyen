@@ -50,7 +50,6 @@ module Spree
         response.params,
         {
           authorization: response.psp_reference,
-          emv_authorization: response.auth_code,
           error_code: response.refusal_reason
         }
       )
