@@ -55,7 +55,7 @@ describe "Entering Credit Card Data" do
 
   context "when the adyen gateway is not selected", js: true, truncation: true do
     context "and the form is not filled out" do
-      it "displays an alert on submit and validates the form" do
+      it "submits the data from the other gateway" do
         choose('Credit Card')
         click_button('Save and Continue')
         expect(page).to have_content("Number can't be blank")
