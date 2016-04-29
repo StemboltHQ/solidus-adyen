@@ -5,6 +5,10 @@ module Spree
     preference :merchant_account, :string
     preference :cse_token, :string
 
+    def api_password
+      ENV["ADYEN_API_PASSWORD"] || preferred_api_password
+    end
+
     def api_username
       ENV["ADYEN_API_USERNAME"] || preferred_api_username
     end
@@ -27,8 +31,7 @@ module Spree
 
     def provider
       ::Adyen.configuration.api_username = api_username
-      ::Adyen.configuration.api_password =
-        (ENV["ADYEN_API_PASSWORD"] || preferred_api_password)
+      ::Adyen.configuration.api_password = api_password
       ::Adyen.configuration.default_api_params[:merchant_account] =
         merchant_account
 
