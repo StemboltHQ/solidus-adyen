@@ -87,7 +87,46 @@ module Spree
       active_merchant_response(response)
     end
 
+    def capture(amount, psp_reference, currency:, **_opts)
+      value = { currency: currency, value: amount }
+
+      handle_response(
+        provider.capture_payment(psp_reference, value),
+        psp_reference)
+    end
+
+    def cancel(psp_reference, _gateway_options = {})
+      handle_response(
+        provider.cancel_or_refund_payment(psp_reference),
+        psp_reference)
+    end
+
+    def credit(amount, psp_reference, currency:, **_opts)
+      amount = { currency: currency, value: amount }
+
+      handle_response(
+        provider.refund_payment(psp_reference, amount),
+        psp_reference)
+    end
+
     private
+
+    def message response
+      if response.success?
+        JSON.pretty_generate(response.params)
+      else
+        response.fault_message
+      end
+    end
+
+    def handle_response response, original_reference
+      ActiveMerchant::Billing::Response.new(
+        response.success?,
+        message(response),
+        {},
+        authorization: original_reference
+      )
+    end
 
     def active_merchant_response(adyen_response)
       ActiveMerchant::Billing::Response.new(
