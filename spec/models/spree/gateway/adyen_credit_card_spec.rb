@@ -70,4 +70,29 @@ describe Spree::Gateway::AdyenCreditCard do
       it { is_expected.to eq("SOMETHING") }
     end
   end
+
+  describe 'api_password' do
+    subject { described_class.new.api_password }
+
+    context "with no preference set" do
+      before { ENV["ADYEN_API_PASSWORD"] = nil }
+
+      it { is_expected.to eq(nil) }
+
+      context "with an environment key set" do
+        before { ENV["ADYEN_API_PASSWORD"] = "SUPERPASSWORD" }
+        after { ENV["ADYEN_API_PASSWORD"] = nil}
+
+        it { is_expected.to eq("SUPERPASSWORD") }
+      end
+    end
+
+    context "with a preference set" do
+      subject do
+        described_class.new(preferred_api_password: "SECRETPASSWORD").api_password
+      end
+
+      it { is_expected.to eq("SECRETPASSWORD") }
+    end
+  end
 end
