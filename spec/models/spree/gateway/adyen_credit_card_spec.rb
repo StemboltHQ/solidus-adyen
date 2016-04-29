@@ -45,4 +45,29 @@ describe Spree::Gateway::AdyenCreditCard do
       it { is_expected.to eq("SOMETHING") }
     end
   end
+
+  describe 'api_username' do
+    subject { described_class.new.api_username }
+
+    context "with no preference set" do
+      before { ENV["ADYEN_API_USERNAME"] = nil }
+
+      it { is_expected.to eq(nil) }
+
+      context "with an environment key set" do
+        before { ENV["ADYEN_API_USERNAME"] = "SUPERTOKEN" }
+        after { ENV["ADYEN_API_USERNAME"] = nil}
+
+        it { is_expected.to eq("SUPERTOKEN") }
+      end
+    end
+
+    context "with a preference set" do
+      subject do
+        described_class.new(preferred_api_username: "SOMETHING").api_username
+      end
+
+      it { is_expected.to eq("SOMETHING") }
+    end
+  end
 end
