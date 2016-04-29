@@ -101,6 +101,107 @@ describe Spree::Gateway::AdyenCreditCard do
     it { is_expected.to be true }
   end
 
+  describe 'create_profile' do
+    let(:order) { build_stubbed(:order)}
+    let(:gateway) { described_class.new }
+    let(:payment) { build_stubbed(:payment, source: card, order: order) }
+
+    subject { gateway.create_profile(payment) }
+
+    context "when the card already has a customer profile" do
+      let(:card) { build_stubbed(:credit_card, gateway_customer_profile_id: "APROFILE") }
+
+      it "does no calls and returns nil" do
+        expect(gateway.provider).not_to receive(:authorize_payment)
+        expect(subject).to be nil
+      end
+    end
+
+    context "when the card has no customer profile yet" do
+      let(:order) do
+        build_stubbed(
+          :order,
+          user_id: 5565,
+          email: "hello@mydomain.com",
+          last_ip_address: "1.2.3.4",
+          number: "MYORDERNUMBER",
+          currency: "RUB"
+        )
+      end
+
+      let(:card) { build_stubbed(:credit_card, number: nil, encrypted_data: "HARDENCRYPTEDDATA") }
+      let(:card_list) { Adyen::API::RecurringService::ListResponse.new(nil) }
+      it "authorizes a payment with zero dollars in the correct currency" do
+        expect(gateway.provider).to receive(:authorise_payment).with(
+          "MYORDERNUMBER",
+          { value: 0, currency: "RUB" },
+          { reference: 5565, email: "hello@mydomain.com", ip: "1.2.3.4", statement: "MYORDERNUMBER"},
+          { encrypted: { json: "HARDENCRYPTEDDATA" } },
+          true
+        )
+        expect(card_list).to receive(:details).and_return([])
+        expect(gateway.provider).to receive(:list_recurring_details).with(5565).and_return(card_list)
+        subject
+      end
+
+      context "and the card is valid" do
+        let(:card) { create(:credit_card, last_digits: "", number: "", encrypted_data: "OHSOENCRYPTED") }
+
+        let(:registered_card_details) do
+          {
+            recurring_detail_reference: "CARDIDATADYEN",
+            variant: "visa",
+            card: {
+              expiry_date: Date.new(2015, 06, 30),
+              holder_name: "Johnny Doe",
+              number: "1111"
+            }
+          }
+        end
+
+        before do
+          expect(gateway.provider).to receive(:authorise_payment)
+          expect(gateway.provider).to receive(:list_recurring_details).with(5565).and_return(card_list)
+          expect(card_list).to receive(:details).and_return([registered_card_details])
+        end
+
+        it "it populates the credit card object with a customer profile" do
+          expect { subject }.to change { card.gateway_customer_profile_id }.to("CARDIDATADYEN")
+        end
+
+        it "populates the credit card object with a credit card type" do
+          expect { subject }.to change { card.cc_type }.to("visa")
+        end
+
+        it "populates the credit card object with the last digits" do
+          expect { subject }.to change { card.last_digits }.to("1111")
+        end
+
+        it "populates the credit card with a month" do
+          expect { subject }.to change { card.month }.to("06")
+        end
+
+        it "populates the credit card with a year" do
+          expect { subject }.to change { card.year }.to("2015")
+        end
+
+        it "populates the credit card with a name" do
+          expect { subject }.to change { card.name }.to("Johnny Doe")
+        end
+      end
+
+      context "and the card is submitted unencrypted" do
+        let(:card) { build(:credit_card, number: "4111 1111 1111 1111") }
+        let(:payment) { build(:payment, source: card) }
+
+        subject { gateway.create_profile(payment) }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(described_class::ClearTextCardNumberError)
+        end
+      end
+    end
+  end
 
   describe 'authorize' do
     let(:gateway) { described_class.new }
