@@ -96,6 +96,12 @@ describe Spree::Gateway::AdyenCreditCard do
     end
   end
 
+  describe 'payment_profiles_supported?' do
+    subject { described_class.new.payment_profiles_supported? }
+    it { is_expected.to be true }
+  end
+
+
   describe 'authorize' do
     let(:gateway) { described_class.new }
     let(:adyen_response) { Adyen::API::PaymentService::AuthorisationResponse.new(nil) }
@@ -129,7 +135,7 @@ describe Spree::Gateway::AdyenCreditCard do
         }
       end
 
-      it "calls the Adyen service with the right options" do
+      it "calls the Adyen service with the right options and returns the correct object" do
         expect(gateway.provider).to receive(:authorise_recurring_payment).with(
           "R423936067-5D5ZHURX",
           { value: 2000, currency: "USD" },
