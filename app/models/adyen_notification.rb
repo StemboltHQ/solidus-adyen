@@ -92,7 +92,13 @@ class AdyenNotification < ActiveRecord::Base
     if order
       order
         .payments
-        .where(source_type: "Spree::Adyen::HppSource", response_code: nil)
+        .joins(:payment_method)
+        .where(
+          spree_payment_methods: {
+            type: ["Spree::Gateway::AdyenHPP", "Spree::Gateway::AdyenCreditCard"]
+          },
+          response_code: nil
+        )
         .last
     end
   end
