@@ -73,6 +73,9 @@ VCR.configure do |c|
   c.ignore_localhost = true
   c.cassette_library_dir = "spec/cassettes"
   c.hook_into :webmock
+  c.filter_sensitive_data('<ADYEN_API_PASSWORD>') { Rack::Utils.escape(ENV["ADYEN_API_PASSWORD"]) }
+  c.filter_sensitive_data('<ADYEN_API_USERNAME>') { Rack::Utils.escape(ENV["ADYEN_API_USERNAME"]) }
+  c.filter_sensitive_data('<ADYEN_MERCHANT_ACCOUNT>') { ENV["ADYEN_MERCHANT_ACCOUNT"] }
 end
 
 Shoulda::Matchers.configure do |config|
