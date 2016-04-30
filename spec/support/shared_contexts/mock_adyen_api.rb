@@ -1,6 +1,6 @@
-shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: ""|
+shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: "", klass: Spree::Gateway::AdyenHPP |
   before do
-    allow_any_instance_of(described_class).
+    allow_any_instance_of(klass).
       to receive(:provider).
       and_return provider
   end
