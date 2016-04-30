@@ -1,32 +1,12 @@
 module Spree
   # Gateway for Adyen Hosted Payment Pages solution
   class Gateway::AdyenHPP < Gateway
+    include Spree::Gateway::AdyenGateway
+
     preference :skin_code, :string
     preference :shared_secret, :string
     preference :days_to_ship, :integer, default: 1
-    preference :api_username, :string
-    preference :api_password, :string
-    preference :merchant_account, :string
     preference :restricted_brand_codes, :string, default: ''
-
-    def merchant_account
-      ENV["ADYEN_MERCHANT_ACCOUNT"] || preferred_merchant_account
-    end
-
-    def provider_class
-      ::Adyen::API
-    end
-
-    def provider
-      ::Adyen.configuration.api_username =
-        (ENV["ADYEN_API_USERNAME"] || preferred_api_username)
-      ::Adyen.configuration.api_password =
-        (ENV["ADYEN_API_PASSWORD"] || preferred_api_password)
-      ::Adyen.configuration.default_api_params[:merchant_account] =
-        merchant_account
-
-      provider_class
-    end
 
     def method_type
       "adyen"
@@ -52,49 +32,8 @@ module Spree
       ActiveMerchant::Billing::Response.new(true, "successful hpp payment")
     end
 
-    def capture(amount, psp_reference, currency:, **_opts)
-      value = { currency: currency, value: amount }
-
-      handle_response(
-        provider.capture_payment(psp_reference, value),
-        psp_reference)
-    end
-
-    def cancel(psp_reference, _gateway_options = {})
-      handle_response(
-        provider.cancel_or_refund_payment(psp_reference),
-        psp_reference)
-    end
-
-    def credit(amount, psp_reference, currency:, **_opts)
-      amount = { currency: currency, value: amount }
-
-      handle_response(
-        provider.refund_payment(psp_reference, amount),
-        psp_reference)
-    end
-
     def restricted_brand_codes
       preferred_restricted_brand_codes.split(',').compact.uniq
-    end
-
-    private
-
-    def handle_response response, original_reference
-      ActiveMerchant::Billing::Response.new(
-        response.success?,
-        message(response),
-        {},
-        authorization: original_reference
-      )
-    end
-
-    def message response
-      if response.success?
-        JSON.pretty_generate(response.params)
-      else
-        response.fault_message
-      end
     end
   end
 end
