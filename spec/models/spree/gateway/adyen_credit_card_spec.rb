@@ -349,7 +349,7 @@ describe Spree::Gateway::AdyenCreditCard do
 
         it "has a response that contains the failure message" do
           expect(subject.success?).to be false
-          expect(subject.message).to eq "validation 167 Original pspReference required for this operation"
+          expect(subject.message).to eq "Should fail"
         end
       end
     end
