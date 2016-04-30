@@ -2,41 +2,15 @@ module Spree
   class Gateway::AdyenCreditCard < Gateway
     class ClearTextCardNumberError < StandardError; end
 
-    preference :api_password, :string
-    preference :api_username, :string
+    include Spree::Gateway::AdyenGateway
     preference :cse_token, :string
-    preference :merchant_account, :string
-
-    def api_password
-      ENV["ADYEN_API_PASSWORD"] || preferred_api_password
-    end
-
-    def api_username
-      ENV["ADYEN_API_USERNAME"] || preferred_api_username
-    end
 
     def cse_token
       ENV["ADYEN_CSE_TOKEN"] || preferred_cse_token
     end
 
-    def merchant_account
-      ENV["ADYEN_MERCHANT_ACCOUNT"] || preferred_merchant_account
-    end
-
     def method_type
       "adyen_encrypted_cc"
-    end
-
-    def provider_class
-      ::Adyen::API
-    end
-
-    def provider
-      ::Adyen.configuration.api_username = api_username
-      ::Adyen.configuration.api_password = api_password
-      ::Adyen.configuration.default_api_params[:merchant_account] = merchant_account
-
-      provider_class
     end
 
     # We need to use recurring payments so that Solidus can store card tokens and
@@ -79,63 +53,15 @@ module Spree
 
     def authorize(amount, card, gateway_options)
       response = authorize_payment(amount, card, gateway_options, false)
-      active_merchant_response(response)
+      handle_response(response)
     end
 
     def purchase(amount, card, gateway_options)
       response = authorize_payment(amount, card, gateway_options, true)
-      active_merchant_response(response)
-    end
-
-    def capture(amount, psp_reference, currency:, **_opts)
-      value = { currency: currency, value: amount }
-
-      handle_response(
-        provider.capture_payment(psp_reference, value),
-        psp_reference)
-    end
-
-    def cancel(psp_reference, _gateway_options = {})
-      handle_response(
-        provider.cancel_or_refund_payment(psp_reference),
-        psp_reference)
-    end
-
-    def credit(amount, psp_reference, currency:, **_opts)
-      amount = { currency: currency, value: amount }
-
-      handle_response(
-        provider.refund_payment(psp_reference, amount),
-        psp_reference)
+      handle_response(response)
     end
 
     private
-
-    def message response
-      if response.success?
-        JSON.pretty_generate(response.params)
-      else
-        response.fault_message
-      end
-    end
-
-    def handle_response response, original_reference
-      ActiveMerchant::Billing::Response.new(
-        response.success?,
-        message(response),
-        {},
-        authorization: original_reference
-      )
-    end
-
-    def active_merchant_response(adyen_response)
-      ActiveMerchant::Billing::Response.new(
-        adyen_response.success?,
-        adyen_response.result_code,
-        adyen_response.params,
-        {authorization: adyen_response.psp_reference, error_code: adyen_response.refusal_reason}
-      )
-    end
 
     def authorize_payment(amount, card, gateway_options, instant_capture = false)
       provider.authorise_recurring_payment(

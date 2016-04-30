@@ -218,11 +218,9 @@ describe Spree::Gateway::AdyenCreditCard do
     let(:card) { stub_model(Spree::CreditCard, gateway_customer_profile_id: "CARDIDATADYEN") }
 
     before do
-      expect(adyen_response).to receive(:success?) { true }
-      expect(adyen_response).to receive(:result_code) { adyen_params[:result_code] }
-      expect(adyen_response).to receive(:params) { adyen_params }
+      expect(adyen_response).to receive(:success?).at_least(:once) { true }
+      expect(adyen_response).to receive(:params).at_least(:once) { adyen_params }
       expect(adyen_response).to receive(:psp_reference) { adyen_params[:psp_reference] }
-      expect(adyen_response).to receive(:refusal_reason) { adyen_params[:refusal_reason] }
     end
 
     context "when payment is successful" do
@@ -248,7 +246,15 @@ describe Spree::Gateway::AdyenCreditCard do
 
         response = gateway.authorize(2000, card, gateway_options)
         expect(response.success?).to be true
-        expect(response.message).to eq("Authorised")
+        expect(response.message).to eq(
+          JSON.pretty_generate({
+            "psp_reference" => "BEAUTIFULREFERENCE",
+            "result_code" => "Authorised",
+            "auth_code" => "ISSUER_AUTH",
+            "additional_data" => {},
+            "refusal_reason" => ""
+          })
+        )
         expect(response.params).to eq(
           {
             "psp_reference" => "BEAUTIFULREFERENCE",
@@ -259,7 +265,7 @@ describe Spree::Gateway::AdyenCreditCard do
           }
         )
         expect(response.authorization).to eq("BEAUTIFULREFERENCE")
-        expect(response.error_code).to eq("")
+        expect(response.error_code).to be_nil
       end
     end
   end
@@ -279,11 +285,9 @@ describe Spree::Gateway::AdyenCreditCard do
     let(:card) { stub_model(Spree::CreditCard, gateway_customer_profile_id: "CARDIDATADYEN") }
 
     before do
-      expect(adyen_response).to receive(:success?) { true }
-      expect(adyen_response).to receive(:result_code) { adyen_params[:result_code] }
-      expect(adyen_response).to receive(:params) { adyen_params }
+      expect(adyen_response).to receive(:success?).at_least(:once) { true }
+      expect(adyen_response).to receive(:params).at_least(:once) { adyen_params }
       expect(adyen_response).to receive(:psp_reference) { adyen_params[:psp_reference] }
-      expect(adyen_response).to receive(:refusal_reason) { adyen_params[:refusal_reason] }
     end
 
     context "when payment is successful" do
@@ -309,7 +313,15 @@ describe Spree::Gateway::AdyenCreditCard do
 
         response = gateway.purchase(2000, card, gateway_options)
         expect(response.success?).to be true
-        expect(response.message).to eq("Authorised")
+        expect(response.message).to eq(
+          JSON.pretty_generate({
+            "psp_reference" => "BEAUTIFULREFERENCE",
+            "result_code" => "Authorised",
+            "auth_code" => "ISSUER_AUTH",
+            "additional_data" => {},
+            "refusal_reason" => ""
+          })
+        )
         expect(response.params).to eq(
           {
             "psp_reference" => "BEAUTIFULREFERENCE",
@@ -320,7 +332,7 @@ describe Spree::Gateway::AdyenCreditCard do
           }
         )
         expect(response.authorization).to eq("BEAUTIFULREFERENCE")
-        expect(response.error_code).to eq("")
+        expect(response.error_code).to be nil
       end
     end
   end
