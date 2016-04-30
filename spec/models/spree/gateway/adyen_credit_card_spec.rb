@@ -328,11 +328,11 @@ describe Spree::Gateway::AdyenCreditCard do
   context "payment modifying actions" do
     let(:gateway) { described_class.new }
 
-    include_context "mock adyen api", success: true
+    include_context "mock adyen api", success: true, klass: described_class
 
     shared_examples "delayed gateway action" do
       context "when the action succeeds" do
-        include_context "mock adyen api", success: true
+        include_context "mock adyen api", success: true, klass: described_class
 
         it { is_expected.to be_a ::ActiveMerchant::Billing::Response }
 
@@ -345,7 +345,9 @@ describe Spree::Gateway::AdyenCreditCard do
         include_context(
           "mock adyen api",
           success: false,
-          fault_message: "Should fail")
+          fault_message: "Should fail",
+          klass: described_class
+        )
 
         it "has a response that contains the failure message" do
           expect(subject.success?).to be false
