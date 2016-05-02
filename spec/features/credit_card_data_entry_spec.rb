@@ -39,6 +39,20 @@ describe "Entering Credit Card Data" do
       end
     end
 
+    context "and the form is filled out formally correctly, but with an invalid card" do
+      it "provides a meaningful error message" do
+        VCR.use_cassette "Credit Card not accepted", record: :new_episodes do
+          choose('Adyen Credit Card')
+          fill_in("card_number", with: "4111111111111111")
+          fill_in("expiry_month", with: "05")
+          fill_in("expiry_year", with: "2019")
+          fill_in("verification_value", with: "747")
+          click_button('Save and Continue')
+          expect(page).to have_content("The credit card data you have entered is invalid.")
+        end
+      end
+    end
+
     context "and the form is filled out correctly" do
       context "with an authorization on complete" do
         it "correctly processes an authorization" do

@@ -11,6 +11,7 @@ en:
           Reason: "Reason"
           amount: "Amount"
   solidus-adyen:
+    credit_card_data_refused: "The credit card data you have entered is invalid."
     payment:
       failure: "Action failed, check reason for more information."
       success: "Action succeeded."
