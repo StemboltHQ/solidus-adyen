@@ -36,7 +36,7 @@ module Spree
         encrypted_card_data(payment.source),
         true
       )
-      raise Spree::Core::GatewayError.new(I18n.t(:credit_card_data_refused, scope: 'solidus-adyen')) if response.refused?
+      raise Spree::Core::GatewayError.new(I18n.t(:credit_card_data_refused, scope: 'solidus-adyen')) unless response.success?
       # Because the above call does not return the recurring detail reference,
       # ask Adyen for it.
       safe_credit_cards = get_last_credit_card_for_adyen_user(payment)
