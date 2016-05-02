@@ -65,6 +65,10 @@ RSpec.configure do |config|
   end
 end
 
+ENV["ADYEN_API_PASSWORD"] ||= "fake_api_password"
+ENV["ADYEN_API_USERNAME"] ||= "fake_api_username"
+ENV["ADYEN_MERCHANT_ACCOUNT"] ||= "fake_api_merchant_account"
+
 VCR.configure do |c|
   # c.allow_http_connections_when_no_cassette = true
   c.ignore_localhost = true

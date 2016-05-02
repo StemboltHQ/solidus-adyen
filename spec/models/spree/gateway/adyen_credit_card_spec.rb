@@ -21,17 +21,17 @@ describe Spree::Gateway::AdyenCreditCard do
     it { is_expected.to eq(Spree::CreditCard) }
   end
 
-  describe 'cse_token' do
-    subject { described_class.new.cse_token }
+  describe 'cse_library_location' do
+    subject { described_class.new.cse_library_location }
 
     context "with no preference set" do
-      before { ENV["ADYEN_CSE_TOKEN"] = nil }
+      before { ENV["ADYEN_CSE_LIBRARY_LOCATION"] = nil }
 
-      it { is_expected.to eq(nil) }
+      it { is_expected.to eq("test-adyen-encrypt.js") }
 
       context "with an environment key set" do
-        before { ENV["ADYEN_CSE_TOKEN"] = "SUPERTOKEN" }
-        after { ENV["ADYEN_CSE_TOKEN"] = nil}
+        before { ENV["ADYEN_CSE_LIBRARY_LOCATION"] = "SUPERTOKEN" }
+        after { ENV["ADYEN_CSE_LIBRARY_LOCATION"] = nil}
 
         it { is_expected.to eq("SUPERTOKEN") }
       end
@@ -39,7 +39,7 @@ describe Spree::Gateway::AdyenCreditCard do
 
     context "with a preference set" do
       subject do
-        described_class.new(preferred_cse_token: "SOMETHING").cse_token
+        described_class.new(preferred_cse_library_location: "SOMETHING").cse_library_location
       end
 
       it { is_expected.to eq("SOMETHING") }
