@@ -28,12 +28,3 @@ Spree.detachAdyenFormSubmit = function() {
   checkout_form.unbind("submit")
   checkout_form.submit(Spree.disableSaveOnClick)
 }
-
-Spree.handleAdyenFormSubmit = function(e) {
-  if (!Spree.encryptedAdyenForm.isValid()) {
-    alert("Your credit card data is invalid.");
-    e.stopImmediatePropagation();
-    e.preventDefault();
-    return false;
-  }
-}

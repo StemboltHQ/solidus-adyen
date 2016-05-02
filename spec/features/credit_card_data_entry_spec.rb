@@ -35,7 +35,7 @@ describe "Entering Credit Card Data" do
         message = accept_prompt do
           click_button('Save and Continue')
         end
-        expect(message).to eq('Your credit card data is invalid.')
+        expect(message).to eq("The credit card data you have entered is invalid.")
       end
     end
 
