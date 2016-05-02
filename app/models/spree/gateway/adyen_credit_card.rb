@@ -6,7 +6,7 @@ module Spree
     preference :cse_library_location, :string
 
     def cse_library_location
-      ENV["ADYEN_CSE_LIBRARY_LOCATION"] || preferred_cse_library_location.presence || "test-adyen-encrypt.js"
+      ENV["ADYEN_CSE_LIBRARY_LOCATION"] || preferred_cse_library_location
     end
 
     def method_type
