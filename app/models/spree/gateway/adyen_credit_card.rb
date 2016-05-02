@@ -3,10 +3,10 @@ module Spree
     class ClearTextCardNumberError < StandardError; end
 
     include Spree::Gateway::AdyenGateway
-    preference :cse_token, :string
+    preference :cse_library_location, :string
 
-    def cse_token
-      ENV["ADYEN_CSE_TOKEN"] || preferred_cse_token
+    def cse_library_location
+      ENV["ADYEN_CSE_LIBRARY_LOCATION"] || preferred_cse_library_location.presence || "test-adyen-encrypt.js"
     end
 
     def method_type
