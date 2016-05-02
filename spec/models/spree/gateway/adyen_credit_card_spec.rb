@@ -135,12 +135,12 @@ describe Spree::Gateway::AdyenCreditCard do
         expect(gateway.provider).to receive(:authorise_payment).with(
           "MYORDERNUMBER",
           { value: 0, currency: "RUB" },
-          { reference: 5565, email: "hello@mydomain.com", ip: "1.2.3.4", statement: "MYORDERNUMBER"},
+          { reference: "MYORDERNUMBER", email: "hello@mydomain.com", ip: "1.2.3.4", statement: "MYORDERNUMBER"},
           { encrypted: { json: "HARDENCRYPTEDDATA" } },
           true
-        )
+        ).and_return(OpenStruct.new(success?: true))
         expect(card_list).to receive(:details).and_return([])
-        expect(gateway.provider).to receive(:list_recurring_details).with(5565).and_return(card_list)
+        expect(gateway.provider).to receive(:list_recurring_details).with("MYORDERNUMBER").and_return(card_list)
         subject
       end
 
@@ -160,8 +160,8 @@ describe Spree::Gateway::AdyenCreditCard do
         end
 
         before do
-          expect(gateway.provider).to receive(:authorise_payment)
-          expect(gateway.provider).to receive(:list_recurring_details).with(5565).and_return(card_list)
+          expect(gateway.provider).to receive(:authorise_payment).and_return(OpenStruct.new(success?: true))
+          expect(gateway.provider).to receive(:list_recurring_details).with("MYORDERNUMBER").and_return(card_list)
           expect(card_list).to receive(:details).and_return([registered_card_details])
         end
 
@@ -238,7 +238,7 @@ describe Spree::Gateway::AdyenCreditCard do
         expect(gateway.provider).to receive(:authorise_recurring_payment).with(
           "R423936067-5D5ZHURX",
           { value: 2000, currency: "USD" },
-          { reference: 1, email: "spree@example.com", ip: "1.2.3.4", statement: "R423936067-5D5ZHURX" },
+          { reference: "R423936067", email: "spree@example.com", ip: "1.2.3.4", statement: "R423936067-5D5ZHURX" },
           "CARDIDATADYEN",
           nil,
           false
@@ -305,7 +305,7 @@ describe Spree::Gateway::AdyenCreditCard do
         expect(gateway.provider).to receive(:authorise_recurring_payment).with(
           "R423936067-5D5ZHURX",
           { value: 2000, currency: "USD" },
-          { reference: 1, email: "spree@example.com", ip: "1.2.3.4", statement: "R423936067-5D5ZHURX" },
+          { reference: "R423936067", email: "spree@example.com", ip: "1.2.3.4", statement: "R423936067-5D5ZHURX" },
           "CARDIDATADYEN",
           nil,
           true
