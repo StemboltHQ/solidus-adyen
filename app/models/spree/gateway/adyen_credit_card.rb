@@ -29,16 +29,19 @@ module Spree
       raise ClearTextCardNumberError if payment.source.number.present?
       # Run a request for no money just to store the card data.
       # It has to be recurring (args[4] == true).
-      provider.authorise_payment(
+      response = provider.authorise_payment(
         payment.order.number,
         zero_amount(payment.order),
         shopper_data_from_order(payment.order),
         encrypted_card_data(payment.source),
         true
       )
+      raise Spree::Core::GatewayError.new(I18n.t(:credit_card_data_refused, scope: 'solidus-adyen')) if response.refused?
       # Because the above call does not return the recurring detail reference,
       # ask Adyen for it.
-      safe_credit_card_data = get_last_credit_card_for_adyen_user(payment)
+      safe_credit_cards = get_last_credit_card_for_adyen_user(payment)
+      # Adyen returns nil if there's no safe cards, rather than an empty Array.
+      safe_credit_card_data = safe_credit_cards.try!(:last)
       if safe_credit_card_data
         payment.source.update(
           gateway_customer_profile_id: safe_credit_card_data[:recurring_detail_reference],
@@ -76,7 +79,7 @@ module Spree
 
     def shopper_data_from_gateway_options(gateway_options)
       {
-        reference: gateway_options[:customer_id],
+        reference: gateway_options[:order_id].split("-").first,
         email: gateway_options[:email],
         ip: gateway_options[:ip],
         statement: gateway_options[:order_id]
@@ -84,7 +87,7 @@ module Spree
     end
 
     def get_last_credit_card_for_adyen_user(payment)
-      provider.list_recurring_details(payment.order.user_id).details.last
+      provider.list_recurring_details(payment.order.number).details
     end
 
     def zero_amount(order)
@@ -111,7 +114,7 @@ module Spree
 
     def shopper_data_from_order(order)
       {
-        reference: order.user_id,
+        reference: order.number,
         email: order.email,
         ip: order.last_ip_address,
         statement: order.number
