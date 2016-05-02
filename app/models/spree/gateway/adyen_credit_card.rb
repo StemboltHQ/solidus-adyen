@@ -30,7 +30,7 @@ module Spree
       # Run a request for no money just to store the card data.
       # It has to be recurring (args[4] == true).
       response = provider.authorise_payment(
-        payment.order.number,
+        reference_number_from_order(payment.order),
         zero_amount(payment.order),
         shopper_data_from_order(payment.order),
         encrypted_card_data(payment.source),
@@ -39,7 +39,7 @@ module Spree
       raise Spree::Core::GatewayError.new(I18n.t(:credit_card_data_refused, scope: 'solidus-adyen')) unless response.success?
       # Because the above call does not return the recurring detail reference,
       # ask Adyen for it.
-      safe_credit_cards = get_last_credit_card_for_adyen_user(payment)
+      safe_credit_cards = get_safe_cards(payment.order)
       # Adyen returns nil if there's no safe cards, rather than an empty Array.
       safe_credit_card_data = safe_credit_cards.try!(:last)
       if safe_credit_card_data
@@ -66,6 +66,14 @@ module Spree
 
     private
 
+    def reference_number_from_order(order)
+      order.user_id || order.number
+    end
+
+    def reference_number_from_gateway_options(gateway_options)
+      gateway_options[:customer_id] || gateway_options[:order_id].split("-").first
+    end
+
     def authorize_payment(amount, card, gateway_options, instant_capture = false)
       provider.authorise_recurring_payment(
         gateway_options[:order_id],
@@ -79,15 +87,17 @@ module Spree
 
     def shopper_data_from_gateway_options(gateway_options)
       {
-        reference: gateway_options[:order_id].split("-").first,
+        reference: reference_number_from_gateway_options(gateway_options),
         email: gateway_options[:email],
         ip: gateway_options[:ip],
         statement: gateway_options[:order_id]
       }
     end
 
-    def get_last_credit_card_for_adyen_user(payment)
-      provider.list_recurring_details(payment.order.number).details
+    def get_safe_cards(order)
+      provider.list_recurring_details(
+        reference_number_from_order(order)
+      ).details
     end
 
     def zero_amount(order)
@@ -114,7 +124,7 @@ module Spree
 
     def shopper_data_from_order(order)
       {
-        reference: order.number,
+        reference: reference_number_from_order(order),
         email: order.email,
         ip: order.last_ip_address,
         statement: order.number
