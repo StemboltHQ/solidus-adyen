@@ -45,6 +45,15 @@
 <% end %>
 
 <script type="text/javascript">
+  Spree.handleAdyenFormSubmit = function(e) {
+    if (!Spree.encryptedAdyenForm.isValid()) {
+      alert( "<%= t('solidus-adyen.credit_card_data_refused') %>");
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      return false;
+    }
+  }
+
   Spree.encryptedAdyenForm = Spree.createEncryptedAdyenForm(<%= payment_method.id %>);
   var spreePaymentRadios = $("#checkout_form_payment input[type='radio']");
   var attachOrDetachFormSubmit = function() {
