@@ -14,7 +14,7 @@ group :test do
   gem "factory_girl"
   gem "timecop"
   gem "vcr"
-  gem "webmock"
+  gem "webmock", "~> 1.24"
 end
 
 gemspec
