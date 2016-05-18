@@ -149,8 +149,8 @@ RSpec.describe "Notification processing", type: :request do
         end
 
         redirect_request = lambda do
-          get "/checkout/payment/adyen", checkout_params, headers
-          expect(response).to have_http_status :redirect
+          response_code = get "/checkout/payment/adyen", checkout_params, headers
+          expect(response_code).to eq 302
         end
 
         capture_request = lambda do
