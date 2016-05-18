@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 group :development, :test do
   gem "solidus"
-  gem "solidus_auth_devise", "~> 1.2.0"
+  gem "solidus_auth_devise"
 
   gem "pg"
   gem "mysql2"

@@ -11,7 +11,7 @@ RSpec.describe Spree::Adyen::HppSource do
     create :hpp_source,
       psp_reference: "999999999",
       merchant_reference: "R11111111",
-      payment: create(:hpp_payment)
+      payment: create(:hpp_payment, amount: 1)
   end
 
   describe ".actions" do
