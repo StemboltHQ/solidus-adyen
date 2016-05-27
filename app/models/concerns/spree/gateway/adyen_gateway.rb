@@ -48,7 +48,9 @@ module Spree
       )
     end
 
-    def credit(amount, psp_reference, currency:, **_opts)
+    def credit(amount, source = nil, psp_reference, currency: nil, **options)
+      # in the case of a "refund", we don't have the full gateway_options
+      currency ||= options[:originator].payment.currency
       amount = { currency: currency, value: amount }
 
       handle_response(
