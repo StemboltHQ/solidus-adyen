@@ -50,6 +50,12 @@
       alert( "<%= t('solidus-adyen.credit_card_data_refused') %>");
       e.stopImmediatePropagation();
       e.preventDefault();
+      // Re-enable the submit button if validations fail
+      // This undoes what the event handler inside Spree.disableSaveOnClick does
+      $("form.edit_order").find(":submit", ":image")
+        .attr("disabled", false)
+        .addClass("primary")
+        .removeClass("disabled")
       return false;
     }
   }

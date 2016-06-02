@@ -16,15 +16,9 @@ Spree.createEncryptedAdyenForm = function(paymentMethodId) { 
 };
 
 Spree.attachAdyenFormSubmit = function() {
-  var checkout_form = $("#checkout_form_payment");
-
-  // Unbind all other events from submit button
-  checkout_form.unbind("submit")
-  checkout_form.submit(Spree.handleAdyenFormSubmit)
+  $("#checkout_form_payment").submit(Spree.handleAdyenFormSubmit)
 }
 
 Spree.detachAdyenFormSubmit = function() {
-  var checkout_form = $("#checkout_form_payment");
-  checkout_form.unbind("submit")
-  checkout_form.submit(Spree.disableSaveOnClick)
+  $("#checkout_form_payment").unbind("submit", Spree.handleAdyenFormSubmit)
 }
