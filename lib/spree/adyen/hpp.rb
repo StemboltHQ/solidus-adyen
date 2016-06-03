@@ -122,7 +122,7 @@ module Spree
 
         # TODO set this in the adyen config
         def default_params
-          { session_validity: 10.minutes.from_now,
+          { session_validity: 10.minutes.from_now.utc,
             recurring: false }
         end
 
