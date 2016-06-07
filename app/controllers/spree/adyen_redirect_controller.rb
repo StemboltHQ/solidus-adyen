@@ -75,6 +75,7 @@ module Spree
 
     def redirect_to_order
       flash.notice = Spree.t(:order_processed_successfully)
+      flash['order_completed'] = true
       redirect_to order_path(@order)
     end
 
