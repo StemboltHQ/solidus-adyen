@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe Spree::Adyen::Form do
-  let(:order) { create :order, total: 39.98 }
+  let(:order) { create :order, total: 39.98, guest_token: "1234" }
   let(:payment_method) { create :hpp_gateway, preferences: preferences }
   let(:preferences){
     {server: "test",
@@ -14,6 +14,51 @@ RSpec.describe Spree::Adyen::Form do
      days_to_ship: 3}
   }
   let(:locale) { I18n.locale.to_s.gsub("-", "_") }
+
+  describe "#configuration" do
+    subject { described_class.configuration }
+
+    it { is_expected.to be_a Spree::Adyen::Form::Configuration }
+
+    context "when no custom form params class is specified" do
+      it "uses the default class" do
+        expect(subject.params_class).to eq Spree::Adyen::Form::Params
+      end
+    end
+
+    context "when a custom form params class is specified" do
+      before do
+        class CustomClass < Spree::Adyen::Form::Params
+          def default_params
+            { session_validity: 1.minute.from_now.utc,
+              foo: "bar"
+            }
+          end
+        end
+
+        Spree::Adyen::Form.configure do |config|
+          config.params_class = CustomClass
+        end
+      end
+
+      # Reset the configuration for other tests
+      after do
+        Spree::Adyen::Form.configure do |config|
+          config.params_class = Spree::Adyen::Form::Params
+        end
+      end
+
+      it "uses the custom class" do
+        expect(subject.params_class).to eq CustomClass
+      end
+
+      it "returns the correct params" do
+        params_config = subject.params_class.new(order, payment_method)
+        expect(params_config.params).
+          to include({ "foo" => "bar" })
+      end
+    end
+  end
 
   describe "directory_url" do
     let(:expected) do

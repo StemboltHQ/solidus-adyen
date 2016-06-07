@@ -7,6 +7,13 @@ module Spree
       UrlHelper = Object.new.extend ActionView::Helpers::UrlHelper
 
       class << self
+        attr_accessor :configuration
+
+        def configure
+          self.configuration ||= Spree::Adyen::Form::Configuration.new
+          yield(configuration)
+        end
+
         def payment_methods_from_directory order, payment_method
           payment_methods(order, payment_method)
         end
@@ -42,11 +49,12 @@ module Spree
 
         def endpoint_url endpoint, order, payment_method, opts = {}
           base = URI::parse(url payment_method, endpoint)
+          params_config = configuration.params_class.new(order, payment_method)
 
           URI::HTTPS.build(
             host: base.host,
             path: base.path,
-            query: params(order, payment_method).merge(opts).to_query)
+            query: params_config.params.merge(opts).to_query)
         end
 
         private
@@ -102,46 +110,10 @@ module Spree
           }
         end
 
-        def params order, payment_method
-          merchant_return_data = [
-            order.guest_token,
-            payment_method.id
-          ].
-          join("|")
-
-          Form.flat_payment_parameters default_params.
-            merge(order_params order).
-            merge(payment_method_params payment_method).
-            merge(merchant_return_data: merchant_return_data)
-        end
-
         def payment_method_allows_brand_code? payment_method, brand_code
           return true if payment_method.restricted_brand_codes.empty?
 
           payment_method.restricted_brand_codes.include?(brand_code)
-        end
-
-        # TODO set this in the adyen config
-        def default_params
-          { session_validity: 10.minutes.from_now.utc,
-            recurring: false }
-        end
-
-        def order_params order
-          { currency_code: order.currency,
-            merchant_reference: order.number.to_s,
-            country_code: order.billing_address.country.iso,
-            payment_amount: (order.total * 100).to_int,
-            shopper_locale: I18n.locale.to_s.gsub("-", "_")
-          }
-        end
-
-        def payment_method_params payment_method
-          { merchant_account: payment_method.merchant_account,
-            skin_code: payment_method.skin_code,
-            shared_secret: payment_method.shared_secret,
-            ship_before_date: payment_method.ship_before_date
-          }
         end
       end
     end

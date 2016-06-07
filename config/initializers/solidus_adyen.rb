@@ -6,3 +6,7 @@ Rails.application.config.assets.precompile += %w(
 Rails.application.config.assets.precompile += %w(
   test-adyen-encrypt.js
 ) if Rails.env.test?
+
+Spree::Adyen::Form.configure do |config|
+  config.params_class = Spree::Adyen::Form::Params
+end
