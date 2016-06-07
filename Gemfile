@@ -17,7 +17,7 @@ group :test do
   gem "timecop"
   gem "vcr"
   gem "webmock", "~> 1.24"
-  gem "selenium-webdriver"
+  gem "poltergeist"
 end
 
 gemspec
