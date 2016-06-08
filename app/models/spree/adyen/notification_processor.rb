@@ -34,21 +34,19 @@ module Spree
       def process!
         return notification if order.nil?
 
-        Spree::OrderMutex.with_lock!(order) do
-          if should_create_payment?
-            self.payment = create_missing_payment
-          end
+        if should_create_payment?
+          self.payment = create_missing_payment
+        end
 
-          if !notification.success?
-            handle_failure
+        if !notification.success?
+          handle_failure
 
-          elsif notification.modification_event?
-            handle_modification_event
+        elsif notification.modification_event?
+          handle_modification_event
 
-          elsif notification.normal_event?
-            handle_normal_event
+        elsif notification.normal_event?
+          handle_normal_event
 
-          end
         end
 
         return notification
