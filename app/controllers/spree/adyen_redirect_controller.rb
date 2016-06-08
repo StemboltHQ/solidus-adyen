@@ -19,6 +19,9 @@ module Spree
           confirm_order_incomplete
         end
       end
+
+    rescue Spree::OrderMutex::LockFailed
+      render :confirm
     end
 
     private

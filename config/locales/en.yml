@@ -11,6 +11,9 @@ en:
           Reason: "Reason"
           amount: "Amount"
   solidus-adyen:
+    redirection:
+      you_are_being_redirected: 'You are being redirected'
+      please_click_here: 'Please <a href="%{link}">click here</a> if your browser does not redirect you.'
     payment:
       failure: "Action failed, check reason for more information."
       success: "Action succeeded."
