@@ -14,7 +14,7 @@ module Spree
       end
 
       accept
-    rescue ActiveRecord::RecordNotUnique, ArguementError
+    rescue ActiveRecord::RecordNotUnique, ::ArguementError
       # Notification is a duplicate, ignore it and return a success.
       accept
     rescue Spree::OrderMutex::LockFailed
