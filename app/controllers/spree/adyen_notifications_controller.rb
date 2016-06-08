@@ -7,18 +7,17 @@ module Spree
     def notify
       notification = AdyenNotification.build(params)
 
-      # prevent alteration to associated payment while we're handling the action
-      Spree::OrderMutex.with_lock!(notification.order) do
-        notification.save!
-
-        Spree::Adyen::NotificationProcessor.new(notification).process!
+      if notification.order.present?
+        process_order_notification!(notification)
+      else
+        process_notification!(notification)
       end
 
       accept
-    rescue ActiveRecord::RecordNotUnique
+    rescue ActiveRecord::RecordNotUnique, ArguementError
       # Notification is a duplicate, ignore it and return a success.
       accept
-    rescue Spree::OrderMutex::LockFailed, ArguementError
+    rescue Spree::OrderMutex::LockFailed
       refuse
     end
 
@@ -29,6 +28,17 @@ module Spree
         username == ENV["ADYEN_NOTIFY_USER"] &&
           password == ENV["ADYEN_NOTIFY_PASSWD"]
       end
+    end
+
+    def process_order_notification!(notification)
+      Spree::OrderMutex.with_lock!(notification.order) do
+        process_notification!(notification)
+      end
+    end
+
+    def process_notification!(notification)
+      notification.save!
+      Spree::Adyen::NotificationProcessor.new(notification).process!
     end
 
     private
