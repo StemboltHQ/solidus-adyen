@@ -12,7 +12,7 @@ module Spree
       # This and the notification processing need to have a lock on the order
       # as they both decide what to do based on whether or not the order is
       # complete.
-      @order.with_lock do
+      Spree::OrderMutex.with_lock!(@order) do
         if @order.complete?
           confirm_order_already_completed
         else

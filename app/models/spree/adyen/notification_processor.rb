@@ -34,7 +34,7 @@ module Spree
       def process!
         return notification if order.nil?
 
-        order.with_lock do
+        Spree::OrderMutex.with_lock!(order) do
           if should_create_payment?
             self.payment = create_missing_payment
           end

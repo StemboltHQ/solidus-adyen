@@ -14,6 +14,8 @@ module Spree
     rescue ActiveRecord::RecordNotUnique
       # Notification is a duplicate, ignore it and return a success.
       accept
+    rescue Spree::OrderMutex::LockFailed, ArguementError
+      refuse
     end
 
     protected
@@ -28,6 +30,10 @@ module Spree
     private
     def accept
       render text: "[accepted]"
+    end
+
+    def refuse
+      render text: "[refused]"
     end
   end
 end
