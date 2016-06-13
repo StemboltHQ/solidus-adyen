@@ -88,12 +88,6 @@ RSpec.describe "Notification processing", type: :request do
 
   describe "full redirect, auth, capture flow", truncation: true do
     it "creates a payment, completes order, captures payment" do
-      authorize_request = lambda do
-        post "/adyen/notify", auth_params, headers
-        expect(response).to have_http_status :ok
-        expect(response.body).to eq "[accepted]"
-      end
-
       redirect_request = lambda do
         get "/checkout/payment/adyen", checkout_params, headers
         expect(response).to have_http_status :redirect
@@ -112,11 +106,11 @@ RSpec.describe "Notification processing", type: :request do
         expect do
           # these come in at the same time
           [
-            Thread.new(&authorize_request),
+            Thread.new { authorize_request },
             Thread.new(&redirect_request)
           ].map(&:join)
           # typically get a duplicate auth notification
-          authorize_request.call
+          authorize_request
         end.
         to change { order.payments.count }.by(1).
         and change { order.reload.state}.to("complete").
@@ -142,12 +136,6 @@ RSpec.describe "Notification processing", type: :request do
       end
 
       it "adds in psp reference to payment" do
-        authorize_request = lambda do
-          post "/adyen/notify", auth_params, headers
-          expect(response).to have_http_status :ok
-          expect(response.body).to eq "[accepted]"
-        end
-
         redirect_request = lambda do
           response_code = get "/checkout/payment/adyen", checkout_params, headers
           expect(response_code).to eq 302
@@ -166,11 +154,11 @@ RSpec.describe "Notification processing", type: :request do
           expect do
             # these come in at the same time
             [
-              Thread.new(&authorize_request),
+              Thread.new { authorize_request },
               Thread.new(&redirect_request)
             ].map(&:join)
             # typically get a duplicate auth notification
-            authorize_request.call
+            authorize_request
           end.
           to change { order.payments.count }.by(1).
           and change { order.reload.state}.to("complete").
@@ -181,5 +169,11 @@ RSpec.describe "Notification processing", type: :request do
         end
       end
     end
+  end
+
+  def authorize_request
+    post "/adyen/notify", auth_params, headers
+    expect(response).to have_http_status :ok
+    expect(response.body).to eq "[accepted]"
   end
 end
