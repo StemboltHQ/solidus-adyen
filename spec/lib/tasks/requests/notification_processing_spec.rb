@@ -88,11 +88,6 @@ RSpec.describe "Notification processing", type: :request do
 
   describe "full redirect, auth, capture flow", truncation: true do
     it "creates a payment, completes order, captures payment" do
-      redirect_request = lambda do
-        get "/checkout/payment/adyen", checkout_params, headers
-        expect(response).to have_http_status :redirect
-      end
-
       capture_request = lambda do
         expect do
           post "/adyen/notify", capture_params, headers
@@ -107,7 +102,7 @@ RSpec.describe "Notification processing", type: :request do
           # these come in at the same time
           [
             Thread.new { authorize_request },
-            Thread.new(&redirect_request)
+            Thread.new { redirect_request }
           ].map(&:join)
           # typically get a duplicate auth notification
           authorize_request
@@ -136,11 +131,6 @@ RSpec.describe "Notification processing", type: :request do
       end
 
       it "adds in psp reference to payment" do
-        redirect_request = lambda do
-          response_code = get "/checkout/payment/adyen", checkout_params, headers
-          expect(response_code).to eq 302
-        end
-
         capture_request = lambda do
           expect do
             post "/adyen/notify", capture_params, headers
@@ -155,7 +145,7 @@ RSpec.describe "Notification processing", type: :request do
             # these come in at the same time
             [
               Thread.new { authorize_request },
-              Thread.new(&redirect_request)
+              Thread.new { redirect_request }
             ].map(&:join)
             # typically get a duplicate auth notification
             authorize_request
@@ -175,5 +165,10 @@ RSpec.describe "Notification processing", type: :request do
     post "/adyen/notify", auth_params, headers
     expect(response).to have_http_status :ok
     expect(response.body).to eq "[accepted]"
+  end
+
+  def redirect_request
+    response_code = get "/checkout/payment/adyen", checkout_params, headers
+    expect(response_code).to eq 302
   end
 end
