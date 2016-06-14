@@ -41,18 +41,17 @@ module Spree
         end
 
         def endpoint_url endpoint, order, payment_method, opts = {}
-          adyen_request = hpp_request order, payment_method
-          parameters = adyen_request.flat_payment_parameters.merge(opts)
+          adyen_request = hpp_request order, payment_method, opts
 
-          URI::parse(adyen_request.url(endpoint) + '?' + parameters.map { |(k, v)|
+          URI::parse(adyen_request.url(endpoint) + '?' + adyen_request.flat_payment_parameters.map { |(k, v)|
             "#{CGI.escape(k)}=#{CGI.escape(v)}"
           }.join('&'))
         end
 
         private
-        def hpp_request order, payment_method
+        def hpp_request order, payment_method, opts
           server = payment_method.preferences.fetch(:server)
-          parameters = params(order, payment_method)
+          parameters = params(order, payment_method).merge(opts)
 
           HPP::Request.new(parameters, environment: server,
                                        skin: { skin_code: payment_method.skin_code },
