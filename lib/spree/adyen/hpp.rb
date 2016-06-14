@@ -20,7 +20,7 @@ module Spree
         end
 
         def directory_url order, payment_method
-          request("directory", order, payment_method).payment_methods_url
+          endpoint_url "directory", order, payment_method
         end
 
         def details_url order, payment_method, brand_code
@@ -41,11 +41,15 @@ module Spree
         end
 
         def endpoint_url endpoint, order, payment_method, opts = {}
-          request(endpoint, order, payment_method, opts = {}).url(endpoint)
+          adyen_request = hpp_request order, payment_method
+
+          adyen_request.url(:directory) + '?' + adyen_request.flat_payment_parameters.map { |(k, v)|
+            "#{CGI.escape(k)}=#{CGI.escape(v)}"
+          }.join('&')
         end
 
         private
-        def request endpoint, order, payment_method, opts = {}
+        def hpp_request order, payment_method, opts = {}
           server = payment_method.preferences.fetch(:server)
           parameters = params(order, payment_method).merge(opts)
 
