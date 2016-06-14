@@ -81,7 +81,7 @@ module Spree
     end
 
     def check_signature
-      unless ::Adyen::Form.redirect_signature_check(params, @payment_method.shared_secret)
+      unless ::Adyen::HPP::Signature.verify(params, @payment_method.shared_secret)
         raise "Payment Method not found."
       end
     end
