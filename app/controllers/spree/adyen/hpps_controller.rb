@@ -10,7 +10,7 @@ module Spree
       layout false
 
       def directory
-        @brands = Adyen::Form.payment_methods_from_directory(
+        @brands = Spree::Adyen::HPP.payment_methods_from_directory(
           @order,
           @payment_method)
 

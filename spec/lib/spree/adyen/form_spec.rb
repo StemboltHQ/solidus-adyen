@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Spree::Adyen::Form do
+RSpec.describe Spree::Adyen::HPP do
   let(:order) { create :order, total: 39.98 }
   let(:payment_method) { create :hpp_gateway, preferences: preferences }
   let(:preferences){

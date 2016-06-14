@@ -2,7 +2,7 @@ require "json"
 
 module Spree
   module Adyen
-    module Form
+    module HPP
       HPP = ::Adyen::HPP
       UrlHelper = Object.new.extend ActionView::Helpers::UrlHelper
 

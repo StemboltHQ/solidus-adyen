@@ -10,7 +10,7 @@ RSpec.describe Spree::Adyen::HppsController, type: :controller do
       payment_url: "www.test-payment-url.com/amex"}] }
 
     before do
-      allow(Spree::Adyen::Form).to receive(:payment_methods_from_directory).
+      allow(Spree::Adyen::HPP).to receive(:payment_methods_from_directory).
         with(order, payment_method).
         and_return(parsed_directory_response)
     end
@@ -33,7 +33,7 @@ RSpec.describe Spree::Adyen::HppsController, type: :controller do
         format: :json }
 
       it { is_expected.to have_http_status :ok }
-      
+
       it "renders a json response" do
         subject
         expect(response.body).to eq parsed_directory_response.to_json
