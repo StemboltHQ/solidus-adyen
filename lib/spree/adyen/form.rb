@@ -3,7 +3,7 @@ require "json"
 module Spree
   module Adyen
     module Form
-      Form = ::Adyen::Form
+      HPP = ::Adyen::HPP
       UrlHelper = Object.new.extend ActionView::Helpers::UrlHelper
 
       class << self
@@ -20,7 +20,7 @@ module Spree
         end
 
         def directory_url order, payment_method
-          endpoint_url "directory", order, payment_method
+          request("directory", order, payment_method).payment_methods_url
         end
 
         def details_url order, payment_method, brand_code
@@ -41,15 +41,19 @@ module Spree
         end
 
         def endpoint_url endpoint, order, payment_method, opts = {}
-          base = URI::parse(url payment_method, endpoint)
-
-          URI::HTTPS.build(
-            host: base.host,
-            path: base.path,
-            query: params(order, payment_method).merge(opts).to_query)
+          request(endpoint, order, payment_method, opts = {}).url(endpoint)
         end
 
         private
+        def request endpoint, order, payment_method, opts = {}
+          server = payment_method.preferences.fetch(:server)
+          parameters = params(order, payment_method).merge(opts)
+
+          HPP::Request.new(parameters, environment: server,
+                                       skin: { skin_code: payment_method.skin_code },
+                                       shared_secret: payment_method.shared_secret)
+        end
+
         def payment_methods order, payment_method
           url = directory_url(order, payment_method)
 
@@ -60,9 +64,12 @@ module Spree
           )
         end
 
-        def url payment_method, endpoint
+        def url payment_method, endpoint, parameters = {}
           server = payment_method.preferences.fetch(:server)
-          Form.url(server, endpoint)
+
+          HPP::Request.new(parameters, environment: server,
+                                       skin: { skin_code: payment_method.skin_code },
+                                       shared_secret: payment_method.shared_secret).url(endpoint)
         end
 
         def form_payment_methods_and_urls response, order, payment_method
@@ -109,7 +116,7 @@ module Spree
           ].
           join("|")
 
-          Form.flat_payment_parameters default_params.
+          default_params.
             merge(order_params order).
             merge(payment_method_params payment_method).
             merge(merchant_return_data: merchant_return_data)
@@ -142,6 +149,12 @@ module Spree
             skin_code: payment_method.skin_code,
             shared_secret: payment_method.shared_secret,
             ship_before_date: payment_method.ship_before_date
+          }
+        end
+
+        def request_url_options(payment_method)
+          { skin_code: payment_method.skin_code,
+            shared_secret: payment_method.shared_secret
           }
         end
       end

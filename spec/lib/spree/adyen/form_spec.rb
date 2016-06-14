@@ -33,7 +33,7 @@ RSpec.describe Spree::Adyen::Form do
         shopper_email: order.email
       }
 
-       ::Adyen::Form.redirect_url(redirect_params)
+      ::Adyen::HPP::Request.new(redirect_params, skin: { skin_code: 'XXXXXX' }).redirect_url
     end
 
     let(:merchant_return_data) do
