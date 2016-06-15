@@ -100,18 +100,14 @@ module Spree
     end
 
     def source_params
-      params.permit(
-        :authResult,
-        :pspReference,
-        :merchantReference,
-        :skinCode,
-        :merchantSig,
-        :paymentMethod,
-        :shopperLocale,
-        :merchantReturnData)
+      adyen_permitted_params
     end
 
     def response_params
+      adyen_permitted_params
+    end
+
+    def adyen_permitted_params
       params.permit(
         :authResult,
         :merchantReference,
