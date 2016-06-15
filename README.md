@@ -1,4 +1,7 @@
 # Solidus-Adyen [![Build Status](https://travis-ci.org/StemboltHQ/solidus-adyen.svg)](https://travis-ci.org/StemboltHQ/solidus-adyen)
+
+**NOTICE** From July 2016 Adyen will no longer support SHA1 HPP's, this extension is _not_ only compatible with the SHA256 skins.
+
 Adds support for Adyen Hosted Payment Page payments to Solidus stores using the
 [Adyen](https://github.com/wvanbergen/adyen/) gem.
 
@@ -14,7 +17,7 @@ notification is received from Adyen.
 # Installation
 Add this line to your application's Gemfile:
 ```ruby
-gem 'solidus-adyen', '~> 0.2.2'
+gem 'solidus-adyen', '~> 1.0.0'
 ```
 
 Then run:
