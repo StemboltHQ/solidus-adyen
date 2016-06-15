@@ -104,16 +104,14 @@ module Spree
         end
 
         def params order, payment_method
-          merchant_return_data = [
-            order.guest_token,
-            payment_method.id
-          ].
-          join("|")
-
           default_params.
             merge(order_params order).
             merge(payment_method_params payment_method).
-            merge(merchant_return_data: merchant_return_data)
+            merge(merchant_return_data order, payment_method)
+        end
+
+        def merchant_return_data order, payment_method
+          { merchantReturnData: [order.guest_token, payment_method.id].join("|") }
         end
 
         def payment_method_allows_brand_code? payment_method, brand_code
