@@ -145,12 +145,6 @@ module Spree
             ship_before_date: payment_method.ship_before_date
           }
         end
-
-        def request_url_options(payment_method)
-          { skin_code: payment_method.skin_code,
-            shared_secret: payment_method.shared_secret
-          }
-        end
       end
     end
   end
