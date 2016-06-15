@@ -88,41 +88,13 @@ RSpec.describe "Notification processing", type: :request do
 
   describe "full redirect, auth, capture flow", truncation: true do
     it "creates a payment, completes order, captures payment" do
-      authorize_request = lambda do
-        post "/adyen/notify", auth_params, headers
-        expect(response).to have_http_status :ok
-        expect(response.body).to eq "[accepted]"
-      end
-
-      redirect_request = lambda do
-        get "/checkout/payment/adyen", checkout_params, headers
-        expect(response).to have_http_status :redirect
-      end
-
-      capture_request = lambda do
-        expect do
-          post "/adyen/notify", capture_params, headers
-        end.
-        to change { order.payments.last.reload.state }.
-        from("processing").
-        to("completed")
-      end
-
       VCR.use_cassette "adyen capture" do
-        expect do
-          # these come in at the same time
-          [
-            Thread.new(&authorize_request),
-            Thread.new(&redirect_request)
-          ].map(&:join)
-          # typically get a duplicate auth notification
-          authorize_request.call
-        end.
+        expect { initial_authorization }.
         to change { order.payments.count }.by(1).
         and change { order.reload.state}.to("complete").
         and change { AdyenNotification.count }.by(1)
 
-        capture_request.call
+        capture_request
       end
     end
   end
@@ -142,44 +114,46 @@ RSpec.describe "Notification processing", type: :request do
       end
 
       it "adds in psp reference to payment" do
-        authorize_request = lambda do
-          post "/adyen/notify", auth_params, headers
-          expect(response).to have_http_status :ok
-          expect(response.body).to eq "[accepted]"
-        end
-
-        redirect_request = lambda do
-          response_code = get "/checkout/payment/adyen", checkout_params, headers
-          expect(response_code).to eq 302
-        end
-
-        capture_request = lambda do
-          expect do
-            post "/adyen/notify", capture_params, headers
-          end.
-          to change { order.payments.last.reload.state }.
-          from("processing").
-          to("completed")
-        end
-
         VCR.use_cassette "adyen capture" do
-          expect do
-            # these come in at the same time
-            [
-              Thread.new(&authorize_request),
-              Thread.new(&redirect_request)
-            ].map(&:join)
-            # typically get a duplicate auth notification
-            authorize_request.call
-          end.
+          expect { initial_authorization }.
           to change { order.payments.count }.by(1).
           and change { order.reload.state}.to("complete").
           and change { AdyenNotification.count }.by(1)
 
-          capture_request.call
+          capture_request
           expect(order.payments.first.response_code).to eq "7914483013255061"
         end
       end
     end
+  end
+
+  def initial_authorization
+    # these come in at the same time
+    [
+      Thread.new { authorize_request },
+      Thread.new { redirect_request }
+    ].map(&:join)
+    # typically get a duplicate auth notification
+    authorize_request
+  end
+
+  def authorize_request
+    post "/adyen/notify", auth_params, headers
+    expect(response).to have_http_status :ok
+    expect(response.body).to eq "[accepted]"
+  end
+
+  def redirect_request
+    response_code = get "/checkout/payment/adyen", checkout_params, headers
+    expect(response_code).to eq 302
+  end
+
+  def capture_request
+    expect do
+      post "/adyen/notify", capture_params, headers
+    end.
+    to change { order.payments.last.reload.state }.
+    from("processing").
+    to("completed")
   end
 end
