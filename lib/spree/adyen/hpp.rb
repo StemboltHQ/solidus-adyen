@@ -68,14 +68,6 @@ module Spree
           )
         end
 
-        def url payment_method, endpoint, parameters = {}
-          server = payment_method.preferences.fetch(:server)
-
-          HPP::Request.new(parameters, environment: server,
-                                       skin: { skin_code: payment_method.skin_code },
-                                       shared_secret: payment_method.shared_secret).url(endpoint)
-        end
-
         def form_payment_methods_and_urls response, order, payment_method
           response.fetch("paymentMethods").map do |brand|
             next unless payment_method_allows_brand_code?(payment_method, brand['brandCode'])
