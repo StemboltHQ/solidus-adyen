@@ -217,7 +217,7 @@ with the proper end point to receive notifications.
 
 # Test Credit Card Info
 
-https://www.adyen.com/home/support/knowledgebase/implementation-articles?article=kb_imp_17
+https://docs.adyen.com/support/integration#testcardnumbers
 
 # Terminology and other API information
 [More info about Adyen can be found here](https://docs.adyen.com/display/TD/3D+Secure).
