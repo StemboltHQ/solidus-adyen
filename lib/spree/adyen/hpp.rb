@@ -43,9 +43,7 @@ module Spree
         def endpoint_url endpoint, order, payment_method, opts = {}
           adyen_request = hpp_request order, payment_method, opts
 
-          URI::parse(adyen_request.url(endpoint) + '?' + adyen_request.flat_payment_parameters.map { |(k, v)|
-            "#{CGI.escape(k)}=#{CGI.escape(v)}"
-          }.join('&'))
+          URI::parse("#{adyen_request.url(endpoint)}?#{adyen_request.flat_payment_parameters.to_query}")
         end
 
         private
