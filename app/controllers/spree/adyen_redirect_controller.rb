@@ -1,5 +1,5 @@
 module Spree
-  class AdyenRedirectController < StoreController
+  class AdyenRedirectController < AdyenController
     before_filter :restore_session
     before_filter :check_signature, only: :confirm
 
