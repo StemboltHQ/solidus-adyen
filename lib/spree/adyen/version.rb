@@ -1,5 +1,5 @@
 module Spree
   module Adyen
-    VERSION = "1.0.0"
+    VERSION = "0.2.2"
   end
 end
