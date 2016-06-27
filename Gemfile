@@ -18,5 +18,3 @@ group :test do
 end
 
 gemspec
-
-gem 'adyen', github: 'wvanbergen/adyen', branch: 'hpp', ref: '9f943f8'
