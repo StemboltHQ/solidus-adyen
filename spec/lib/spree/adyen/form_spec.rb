@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Spree::Adyen::Form do
+RSpec.describe Spree::Adyen::HPP do
   let(:order) { create :order, total: 39.98 }
   let(:payment_method) { create :hpp_gateway, preferences: preferences }
   let(:preferences){
@@ -29,10 +29,11 @@ RSpec.describe Spree::Adyen::Form do
         country_code: order.billing_address.country.iso,
         merchant_return_data: merchant_return_data,
         payment_amount: 3998,
-        shopper_locale: locale
+        shopper_locale: locale,
+        shopper_email: order.email
       }
 
-       ::Adyen::Form.redirect_url(redirect_params)
+      ::Adyen::HPP::Request.new(redirect_params, skin: { skin_code: 'XXXXXX' }).redirect_url
     end
 
     let(:merchant_return_data) do
