@@ -40,6 +40,10 @@ module Spree
       # Because the above call does not return the recurring detail reference,
       # ask Adyen for it.
       safe_credit_cards = get_safe_cards(payment.order)
+      if safe_credit_cards
+        # Ensure we use the correct card we just created
+        safe_credit_cards.sort_by! { |card| card[:creation_date] }
+      end
       # Adyen returns nil if there's no safe cards, rather than an empty Array.
       safe_credit_card_data = safe_credit_cards.try!(:last)
       if safe_credit_card_data
