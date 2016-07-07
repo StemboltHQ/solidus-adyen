@@ -23,6 +23,7 @@ require "ffaker"
 require "shoulda/matchers"
 require "pry"
 require "database_cleaner"
+require "capybara/poltergeist"
 
 require "spree/testing_support/factories"
 require "spree/testing_support/controller_requests"
@@ -35,6 +36,8 @@ Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].each {|f| require f }
 
 FactoryGirl.definition_file_paths = %w{./spec/factories}
 FactoryGirl.find_definitions
+
+Capybara.javascript_driver = :poltergeist
 
 RSpec.configure do |config|
   RSpec::Matchers.define_negated_matcher :keep, :change
