@@ -80,7 +80,7 @@ module Spree
 
     def authorize_payment(amount, card, gateway_options, instant_capture = false)
       provider.authorise_recurring_payment(
-        gateway_options[:order_id],
+        gateway_options[:order_id].split("-").first,
         amount_from_gateway_options(amount, gateway_options),
         shopper_data_from_gateway_options(gateway_options),
         card.gateway_customer_profile_id,

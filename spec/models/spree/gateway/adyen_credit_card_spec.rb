@@ -236,7 +236,7 @@ describe Spree::Gateway::AdyenCreditCard do
 
       it "calls the Adyen service with the right options and returns the correct object" do
         expect(gateway.provider).to receive(:authorise_recurring_payment).with(
-          "R423936067-5D5ZHURX",
+          "R423936067",
           { value: 2000, currency: "USD" },
           { reference: 1, email: "spree@example.com", ip: "1.2.3.4", statement: "R423936067-5D5ZHURX" },
           "CARDIDATADYEN",
@@ -303,7 +303,7 @@ describe Spree::Gateway::AdyenCreditCard do
 
       it "calls the Adyen service with the right options and returns the correct object" do
         expect(gateway.provider).to receive(:authorise_recurring_payment).with(
-          "R423936067-5D5ZHURX",
+          "R423936067",
           { value: 2000, currency: "USD" },
           { reference: 1, email: "spree@example.com", ip: "1.2.3.4", statement: "R423936067-5D5ZHURX" },
           "CARDIDATADYEN",
