@@ -46,7 +46,7 @@ module Spree
       # won't actually void the payment _yet_.
       def cancel!
         if hpp_payment? || adyen_cc_payment?
-          if source.requires_manual_refund?
+          if source.respond_to?(:requires_manual_refund?) && source.requires_manual_refund?
             log_manual_refund
           else
             process { payment_method.cancel response_code }
