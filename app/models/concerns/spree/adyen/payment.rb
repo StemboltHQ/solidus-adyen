@@ -6,11 +6,11 @@ module Spree
   module Adyen
     module Payment
       extend ActiveSupport::Concern
-      include Spree::Adyen::HppCheck
+      include Spree::Adyen::PaymentCheck
 
       # capture! :: bool | error
       def capture!
-        if hpp_payment?
+        if hpp_payment? || adyen_cc_payment?
           amount = money.money.cents
           process do
             payment_method.send(
@@ -33,7 +33,7 @@ module Spree
       # of getting around the fact that Payment methods cannot specifiy these
       # methods.
       def credit! amount, options
-        if hpp_payment?
+        if hpp_payment? || adyen_cc_payment?
           process { payment_method.credit(amount, response_code, options) }
         else
           fail NotImplementedError, "Spree::Payment does not implement credit!"
@@ -45,7 +45,7 @@ module Spree
       # Borrowed from handle_void_response, this has been modified so that it
       # won't actually void the payment _yet_.
       def cancel!
-        if hpp_payment?
+        if hpp_payment? || adyen_cc_payment?
           if source.requires_manual_refund?
             log_manual_refund
           else
