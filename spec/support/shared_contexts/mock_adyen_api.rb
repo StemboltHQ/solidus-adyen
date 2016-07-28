@@ -23,6 +23,16 @@ shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: 
 
     instance_double("Adyen::API").tap do |double|
       allow(double).
+        to receive(:authorise_payment).
+        with(
+          kind_of(String),
+          hash_including(:currency, :value),
+          hash_including(:reference, :email, :ip, :statement),
+          hash_including(:encrypted)
+        ).
+        and_return(mock_response.call("authorise"))
+
+      allow(double).
         to receive(:capture_payment).
         with(
           kind_of(String),

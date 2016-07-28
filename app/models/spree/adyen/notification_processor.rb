@@ -99,9 +99,8 @@ module Spree
         if notification.auto_captured?
           complete_payment!
 
-        else
+        elsif payment.hpp_payment?
           payment.capture!
-
         end
         notification.processed!
       end

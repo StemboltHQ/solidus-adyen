@@ -8,6 +8,50 @@ module Spree
       extend ActiveSupport::Concern
       include Spree::Adyen::PaymentCheck
 
+      included do
+        after_create :authorize_payment, if: :authorizable_cc_payment?
+
+        private
+
+        # Performs and authorization call to Adyen for the payment
+        # @raise [Spree::Core::GatewayError] if the encrypted card data is missing
+        # @raise [Spree::Core::GatewayError] if the authorize call fails
+        def authorize_payment
+          unless source.encrypted_data
+            raise Spree::Core::GatewayError.new(
+              I18n.t(:missing_encrypted_data, scope: 'solidus-adyen')
+            )
+          end
+
+          response = payment_method.provider.authorise_payment(
+            order.number,
+            price_data,
+            shopper_data_from_order(order),
+            encrypted_card_data(source),
+          )
+
+          unless response.success?
+            raise Spree::Core::GatewayError.new(
+              I18n.t(:credit_card_data_refused, scope: 'solidus-adyen')
+            )
+          end
+
+          self.response_code = response.params[:psp_reference]
+          save!
+        end
+      end
+
+      # Spree::Payment#process will call purchase! for payment methods with
+      # auto_capture enabled. Since we authorize credit cards in the payment
+      # step already, we just need to capture the payment here.
+      def purchase!
+        if adyen_cc_payment?
+          capture!
+        else
+          super
+        end
+      end
+
       # capture! :: bool | error
       def capture!
         if hpp_payment? || adyen_cc_payment?
@@ -88,6 +132,36 @@ module Spree
           # want them to just return to the previous state
           gateway_error(response)
         end
+      end
+
+      # Solidus creates a $0 default payment during checkout using a previously
+      # used credit card, which we should not create an authorization for.
+      def authorizable_cc_payment?
+        adyen_cc_payment? && amount != 0
+      end
+
+      def encrypted_card_data(card)
+        {
+          encrypted: {
+            json: card.encrypted_data
+          }
+        }
+      end
+
+      def shopper_data_from_order(order)
+        {
+          reference: order.number,
+          email: order.email,
+          ip: order.last_ip_address,
+          statement: order.number
+        }
+      end
+
+      def price_data
+        {
+          value: money.cents,
+          currency: currency
+        }
       end
     end
   end
