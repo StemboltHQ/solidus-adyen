@@ -28,9 +28,21 @@ shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: 
           kind_of(String),
           hash_including(:currency, :value),
           hash_including(:reference, :email, :ip, :statement),
-          hash_including(:encrypted)
+          hash_including(:encrypted),
+          true
         ).
         and_return(mock_response.call("authorise"))
+
+      allow(double).
+        to receive(:authorise_recurring_payment).
+        with(
+          kind_of(String),
+          hash_including(:currency, :value),
+          hash_including(:reference, :email, :ip, :statement),
+          kind_of(String),
+          nil,
+          false,
+      ).and_return(mock_response.call("authorise"))
 
       allow(double).
         to receive(:capture_payment).
@@ -50,8 +62,23 @@ shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: 
         with(
           kind_of(String),
           hash_including(:currency, :value)
-        ).
-        and_return(mock_response.call("refund"))
+      ).
+      and_return(mock_response.call("refund"))
+
+      allow(double).
+        to receive(:list_recurring_details).
+        with(kind_of(String)).
+        and_return(double("recurring details", details: [
+          { creation_date: Time.parse("2016-07-29 UTC"),
+            recurring_detail_reference: "AWESOMEREFERENCE",
+            variant: "amex",
+            card: {
+              number: "0000",
+              expiry_date: Time.parse("2016-10-21 UTC"),
+              holder_name: "Batman Dananana",
+            },
+          }
+        ]))
     end
   end
 end

@@ -45,12 +45,6 @@ describe Spree::Adyen::Payment do
     context "when the payment method is an Adyen credit card" do
       let(:payment) { build :adyen_cc_payment, amount: 2000 }
 
-      context "when no encrypted credit card data is provided" do
-        it "raise a gateway error" do
-          expect { subject }.to raise_error(Spree::Core::GatewayError)
-        end
-      end
-
       context "when the source provides encrypted credit card data" do
         before do
           allow_any_instance_of(Spree::CreditCard).
@@ -58,7 +52,12 @@ describe Spree::Adyen::Payment do
         end
 
         context "when the authorization succeeds" do
-          it { is_expected.to be true }
+          it "updates the customer's payment profile" do
+            expect { subject }.
+              to change { payment.source.gateway_customer_profile_id }.
+              from(nil).
+              to("AWESOMEREFERENCE")
+          end
         end
 
         context "when the authorization fails" do
@@ -71,6 +70,22 @@ describe Spree::Adyen::Payment do
           it "raises a gateway error" do
             expect { subject }.to raise_error(Spree::Core::GatewayError)
           end
+        end
+      end
+
+      context "when the user selects a stored card" do
+        let(:payment) { build :adyen_cc_payment, source: existing_card, amount: 2000 }
+        let(:existing_card) { create :credit_card, gateway_customer_profile_id: "123ABC" }
+
+        it "authorizes a recurring payment using the existing contract" do
+          expect(provider).to receive(:authorise_recurring_payment)
+          subject
+        end
+      end
+
+      context "when no encrypted credit card data or profile is provided" do
+        it "raise a gateway error" do
+          expect { subject }.to raise_error(Spree::Core::GatewayError)
         end
       end
     end
