@@ -58,9 +58,9 @@ describe "Entering Credit Card Data" do
         it "correctly processes an authorization" do
           VCR.use_cassette "Credit Card Authorization Process", record: :new_episodes do
             choose('Adyen Credit Card')
-            fill_in("card_number", with: "4111111111111111")
-            fill_in("expiry_month", with: "06")
-            fill_in("expiry_year", with: "2016")
+            fill_in("card_number", with: "6011601160116611")
+            fill_in("expiry_month", with: "08")
+            fill_in("expiry_year", with: "2018")
             fill_in("verification_value", with: "737")
             click_button('Save and Continue')
             click_button('Place Order')
@@ -81,9 +81,9 @@ describe "Entering Credit Card Data" do
         it "correctly processes an purchase" do
           VCR.use_cassette "Credit Card Purchase Process", record: :new_episodes do
             choose('Adyen Credit Card')
-            fill_in("card_number", with: "4111111111111111")
-            fill_in("expiry_month", with: "06")
-            fill_in("expiry_year", with: "2016")
+            fill_in("card_number", with: "6011601160116611")
+            fill_in("expiry_month", with: "08")
+            fill_in("expiry_year", with: "2018")
             fill_in("verification_value", with: "737")
             click_button('Save and Continue')
             click_button('Place Order')
