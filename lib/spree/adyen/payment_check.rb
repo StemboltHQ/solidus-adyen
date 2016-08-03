@@ -7,12 +7,8 @@ module Spree
         payment.source.class == Spree::Adyen::HppSource
       end
 
-      # Always return false for now until credit card payments are updated to
-      # behave correctly. They are currently not associated with notifications
-      # properly, so they will not be transitioned out of `processing`.
       def adyen_cc_payment? payment = self
-        # payment.payment_method.class == Spree::Gateway::AdyenCreditCard
-        false
+        payment.payment_method.class == Spree::Gateway::AdyenCreditCard
       end
     end
   end

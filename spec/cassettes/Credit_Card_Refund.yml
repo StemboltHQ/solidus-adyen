@@ -1,0 +1,63 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://<ADYEN_API_USERNAME>:<ADYEN_API_PASSWORD>@pal-test.adyen.com/pal/servlet/soap/Payment
+    body:
+      encoding: UTF-8
+      string: |-
+        <?xml version="1.0"?>
+                <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                  <soap:Body>
+                                <payment:refund xmlns:payment="http://payment.services.adyen.com" xmlns:recurring="http://recurring.services.adyen.com" xmlns:common="http://common.services.adyen.com">
+                      <payment:modificationRequest>
+                        <payment:merchantAccount><ADYEN_MERCHANT_ACCOUNT></payment:merchantAccount>
+                        <payment:originalReference>8514701637548229</payment:originalReference>
+                                    <payment:modificationAmount>
+                      <common:currency>USD</common:currency>
+                      <common:value>2000</common:value>
+                    </payment:modificationAmount>
+
+                      </payment:modificationRequest>
+                    </payment:refund>
+
+                  </soap:Body>
+                </soap:Envelope>
+    headers:
+      Accept:
+      - text/xml
+      Content-Type:
+      - text/xml; charset=utf-8
+      Soapaction:
+      - authorise
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 03 Aug 2016 21:13:22 GMT
+      Server:
+      - Apache
+      Set-Cookie:
+      - JSESSIONID=92DC8C58D103E090BCAD215E16047AE1.test4e; Path=/pal/; Secure; HttpOnly
+      Last-Modified:
+      - Wed, 03 Aug 2016 21:13:22 GMT
+      Transfer-Encoding:
+      - chunked
+      Content-Type:
+      - text/xml;charset=UTF-8
+    body:
+      encoding: UTF-8
+      string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><ns1:refundResponse
+        xmlns:ns1="http://payment.services.adyen.com"><ns1:refundResult><additionalData
+        xmlns="http://payment.services.adyen.com" xsi:nil="true" /><pspReference xmlns="http://payment.services.adyen.com">8614702588023369</pspReference><response
+        xmlns="http://payment.services.adyen.com">[refund-received]</response></ns1:refundResult></ns1:refundResponse></soap:Body></soap:Envelope>
+    http_version: 
+  recorded_at: Wed, 03 Aug 2016 21:13:22 GMT
+recorded_with: VCR 3.0.1

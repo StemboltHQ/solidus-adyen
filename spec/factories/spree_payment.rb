@@ -11,4 +11,9 @@ FactoryGirl.define do
       record.source.merchant_reference = record.order.number
     end
   end
+
+  factory :adyen_cc_payment, parent: :payment do
+    association :payment_method, factory: :spree_gateway_adyen_credit_card
+    association :source, factory: :credit_card
+  end
 end
