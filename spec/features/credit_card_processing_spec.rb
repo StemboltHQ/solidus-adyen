@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'spree/testing_support/order_walkthrough'
+require 'spree/testing_support/capybara_ext'
 
 shared_context "checkout setup" do
 
@@ -18,6 +19,26 @@ shared_context "checkout setup" do
 
     visit spree.checkout_state_path(:delivery)
     click_button "Save and Continue"
+  end
+end
+
+shared_context "complete credit card payment" do
+  include_context "checkout setup"
+
+  before(:each) do
+    Spree::Config[:auto_capture] = true
+
+    VCR.use_cassette "Credit Card Purchase Process", record: :new_episodes do
+      choose('Adyen Credit Card')
+      fill_in("card_number", with: "6011601160116611")
+      fill_in("expiry_month", with: "08")
+      fill_in("expiry_year", with: "2018")
+      fill_in("verification_value", with: "737")
+      click_button('Save and Continue')
+      click_button('Place Order')
+    end
+
+    Spree::Config[:auto_capture] = false
   end
 end
 
@@ -101,6 +122,57 @@ describe "Entering Credit Card Data" do
         click_button('Save and Continue')
         expect(page).to have_content("Number can't be blank")
       end
+    end
+  end
+end
+
+describe "Refunding a credit card payment", js: true, truncation: true do
+  stub_authorization!
+  include_context "complete credit card payment"
+
+  let!(:refund_reason) { create :refund_reason, name: "Test reason" }
+  let(:order) { Spree::Order.last }
+  let(:payment) { order.payments.last }
+  let(:notification_params) do
+    {
+      "merchantAccountCode"=>"FreeRunningTechnologiesCOM",
+      "eventCode"=>"CAPTURE",
+      "success"=>"true",
+      "pspReference"=> payment.response_code,
+      "merchantReference"=> order.number,
+      "eventDate"=>"2016-08-03T17:20:23.38Z",
+      "value"=>"2000",
+    }
+  end
+
+  before(:each) do
+    # Send a fake capture notification to complete the payment
+    notification = AdyenNotification.build(notification_params)
+    notification.save!
+    Spree::Adyen::NotificationProcessor.new(notification).process!
+  end
+
+  context "when the payment is able to be refunded" do
+    it "refunds the payment successfully" do
+      visit spree.admin_order_payments_path(order)
+      expect(page).to have_selector("span.state.completed")
+      within_row(1) { click_icon :reply } # Refund uses the reply icon
+
+      VCR.use_cassette "Credit Card Refund", record: :new_episodes do
+        select2("Test reason", from: "Reason")
+        click_button("Refund")
+        expect(page).to have_content("Refund request was received")
+        expect(page).to have_selector("span.state.processing")
+      end
+    end
+  end
+
+  context "when the payment is not able to be refunded" do
+    before(:each) { payment.update_columns(amount: 0) }
+
+    it "does not allow the admin to refund it" do
+      visit spree.admin_order_payments_path(order)
+      expect(page).to_not have_selector("a.fa-reply")
     end
   end
 end
