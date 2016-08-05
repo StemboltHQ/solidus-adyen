@@ -1,0 +1,9 @@
+<script type="text/javascript">
+  setTimeout(function(){
+    window.location.reload()
+  }, 10 * 1000);
+</script>
+
+<h1><%= t('solidus-adyen.redirection.you_are_being_redirected') %></h1>
+
+<p><%= t('solidus-adyen.redirection.please_click_here', link: request.original_url) %></p>
