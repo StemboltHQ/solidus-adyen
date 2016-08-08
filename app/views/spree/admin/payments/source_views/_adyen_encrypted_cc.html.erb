@@ -1,1 +1,3 @@
 <%= render 'spree/admin/payments/source_views/gateway', payment: payment %>
+
+<%= render Spree::Adyen::Presenters::Communication.from_payment(payment) %>
