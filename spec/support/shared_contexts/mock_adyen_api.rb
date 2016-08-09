@@ -29,7 +29,10 @@ shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: 
           hash_including(:currency, :value),
           hash_including(:reference, :email, :ip, :statement),
           hash_including(:encrypted),
-          true
+          true,
+          nil,
+          false,
+          hash_including(:street, :house_number_or_name, :city, :postal_code, :state_or_province, :country)
         ).
         and_return(mock_response.call("authorise"))
 
@@ -42,6 +45,7 @@ shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: 
           kind_of(String),
           nil,
           false,
+          hash_including(:street, :house_number_or_name, :city, :postal_code, :state_or_province, :country)
       ).and_return(mock_response.call("authorise"))
 
       allow(double).

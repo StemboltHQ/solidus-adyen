@@ -137,6 +137,9 @@ module Spree
             shopper_data_from_order,
             encrypted_card_data,
             true,
+            nil,
+            false,
+            billing_address_from_order
           )
           # If the user selects an existing card, we have the profile ID
         elsif source.gateway_customer_profile_id
@@ -147,6 +150,7 @@ module Spree
             source.gateway_customer_profile_id,
             nil,
             false,
+            billing_address_from_order
           )
         else
           raise Spree::Core::GatewayError.new(
@@ -202,7 +206,19 @@ module Spree
           reference: order.user_id.to_s || order.number,
           email: order.email,
           ip: order.last_ip_address,
-          statement: order.number
+          statement: order.number,
+        }
+      end
+
+      def billing_address_from_order
+        address = order.billing_address
+        {
+          street: address.address1,
+          house_number_or_name: "NA",
+          city: address.city,
+          postal_code: address.zipcode,
+          state_or_province: address.state_text || "NA",
+          country: address.country.try(:iso),
         }
       end
 
