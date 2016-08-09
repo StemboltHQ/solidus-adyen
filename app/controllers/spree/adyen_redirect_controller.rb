@@ -22,15 +22,15 @@ module Spree
     end
 
     private
+    def handle_failed_redirect source
+      flash.notice = Spree.t(:payment_processing_failed)
+      redirect_to checkout_state_path(@order.state)
+    end
 
     def confirm_order_incomplete
       source = Adyen::HppSource.new(source_params)
 
-      unless source.authorised?
-        flash.notice = Spree.t(:payment_processing_failed)
-        redirect_to checkout_state_path(@order.state)
-        return
-      end
+      return handle_failed_redirect(source) unless source.authorised?
 
       # payment is created in a 'checkout' state so that the payment method
       # can attempt to auth it. The payment of course is already auth'd and
