@@ -20,6 +20,10 @@ module Spree
           response = authorize_new_payment
 
           unless response.success?
+            response_without_xml_querier = response.dup
+            # without this sometimes YAML.load fails later
+            response_without_xml_querier.instance_variable_set("@xml_querier", nil)
+            log_entries.create!(details: response_without_xml_querier.to_yaml)
             raise Spree::Core::GatewayError.new(
               I18n.t(:credit_card_data_refused, scope: 'solidus-adyen')
             )

@@ -67,8 +67,9 @@ describe Spree::Adyen::Payment do
             klass: Spree::Gateway::AdyenCreditCard
           )
 
-          it "raises a gateway error" do
-            expect { subject }.to raise_error(Spree::Core::GatewayError)
+          it "raises a gateway error and creates a log entry" do
+            expect { subject }.to raise_error(Spree::Core::GatewayError).
+              and change { Spree::LogEntry.count }.by(1)
           end
         end
       end
