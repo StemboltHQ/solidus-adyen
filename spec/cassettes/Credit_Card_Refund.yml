@@ -9,17 +9,17 @@ http_interactions:
         <?xml version="1.0"?>
                 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                   <soap:Body>
-                                <payment:capture xmlns:payment="http://payment.services.adyen.com" xmlns:recurring="http://recurring.services.adyen.com" xmlns:common="http://common.services.adyen.com">
+                                <payment:refund xmlns:payment="http://payment.services.adyen.com" xmlns:recurring="http://recurring.services.adyen.com" xmlns:common="http://common.services.adyen.com">
                       <payment:modificationRequest>
                         <payment:merchantAccount><ADYEN_MERCHANT_ACCOUNT></payment:merchantAccount>
-                        <payment:originalReference>7914483013255061</payment:originalReference>
+                        <payment:originalReference>8514701637548229</payment:originalReference>
                                     <payment:modificationAmount>
-                      <common:currency>EUR</common:currency>
-                      <common:value>11000</common:value>
+                      <common:currency>USD</common:currency>
+                      <common:value>2000</common:value>
                     </payment:modificationAmount>
 
                       </payment:modificationRequest>
-                    </payment:capture>
+                    </payment:refund>
 
                   </soap:Body>
                 </soap:Envelope>
@@ -40,13 +40,13 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Mon, 23 Nov 2015 18:53:15 GMT
+      - Wed, 03 Aug 2016 21:13:22 GMT
       Server:
       - Apache
       Set-Cookie:
-      - JSESSIONID=60F4E60645ADD5B702F8DA2708CB7779.test4e; Path=/pal/; Secure; HttpOnly
+      - JSESSIONID=92DC8C58D103E090BCAD215E16047AE1.test4e; Path=/pal/; Secure; HttpOnly
       Last-Modified:
-      - Mon, 23 Nov 2015 18:53:15 GMT
+      - Wed, 03 Aug 2016 21:13:22 GMT
       Transfer-Encoding:
       - chunked
       Content-Type:
@@ -54,10 +54,10 @@ http_interactions:
     body:
       encoding: UTF-8
       string: <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><ns1:captureResponse
-        xmlns:ns1="http://payment.services.adyen.com"><ns1:captureResult><additionalData
-        xmlns="http://payment.services.adyen.com" xsi:nil="true" /><pspReference xmlns="http://payment.services.adyen.com">8614483047954094</pspReference><response
-        xmlns="http://payment.services.adyen.com">[capture-received]</response></ns1:captureResult></ns1:captureResponse></soap:Body></soap:Envelope>
-    http_version:
-  recorded_at: Mon, 23 Nov 2015 18:53:15 GMT
-recorded_with: VCR 2.9.3
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soap:Body><ns1:refundResponse
+        xmlns:ns1="http://payment.services.adyen.com"><ns1:refundResult><additionalData
+        xmlns="http://payment.services.adyen.com" xsi:nil="true" /><pspReference xmlns="http://payment.services.adyen.com">8614702588023369</pspReference><response
+        xmlns="http://payment.services.adyen.com">[refund-received]</response></ns1:refundResult></ns1:refundResponse></soap:Body></soap:Envelope>
+    http_version: 
+  recorded_at: Wed, 03 Aug 2016 21:13:22 GMT
+recorded_with: VCR 3.0.1

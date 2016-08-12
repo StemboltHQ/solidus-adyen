@@ -1,3 +1,10 @@
-/*
- *=require spree/frontend
- */
+.adyen-encrypted-cc input[type="text"].valid-month,
+.adyen-encrypted-cc input[type="text"].valid-year,
+.adyen-encrypted-cc input[type="text"].valid-holderName,
+.adyen-encrypted-cc input[type="text"].valid {
+  border-color: green;
+}
+
+.adyen-encrypted-cc input[type="text"].invalid:not(:focus) {
+  border-color: red;
+}

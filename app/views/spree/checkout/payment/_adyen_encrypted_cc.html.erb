@@ -1,0 +1,76 @@
+<%= image_tag 'credit_cards/credit_card.gif', :id => 'credit-card-image' %>
+
+<% content_for :head do %>
+  <%= javascript_include_tag payment_method.cse_library_location %>
+  <%= javascript_include_tag "spree/checkout/payment/adyen_encrypted_credit_card" %>
+<% end %>
+
+<% param_prefix = "payment_source[#{payment_method.id}]" %>
+
+<div class="adyen-encrypted-cc field">
+  <%= label_tag nil, Spree.t(:name_on_card) %><span class="required">*</span><br />
+  <%= text_field_tag nil, "#{@order.billing_firstname} #{@order.billing_lastname}", { autocomplete: "off", size: 20, id: nil, "data-encrypted-name" => "holderName"} %>
+</div>
+
+<div class="adyen-encrypted-cc field" data-hook="card_number">
+  <%= label_tag nil, Spree.t(:card_number) %><span class="required">*</span><br />
+  <%# This should have the `cardNumber` class for 'jQuery.payment'. However, that breaks the specs. %>
+  <%= text_field_tag nil, nil, size: 20, autocomplete: "off", id: "card_number", class: "", "data-encrypted-name" => "number" %>
+  &nbsp;
+</div>
+
+<div class="adyen-encrypted-cc field" data-hook="card_expiration_month">
+  <%= label_tag nil, Spree.t(:expiration) %><span class="required">*</span><br />
+  <%= text_field_tag nil, nil, class: "required cardExpiryMonth", id: "expiry_month", placeholder: "MM", autocomplete: "off", maxlength: 2, size: 2, "data-encrypted-name" => "expiryMonth" %>
+</div>
+
+<div class="adyen-encrypted-cc field" data-hook="card_expiration_year">
+  <%= label_tag nil, Spree.t(:expiration) %><span class="required">*</span><br />
+  <%= text_field_tag nil, nil, class: "required cardExpiryYear", id: "expiry_year", placeholder: "YYYY", autocomplete: "off", maxlength: 4, size: 4, "data-encrypted-name" => "expiryYear" %>
+</div>
+
+<div class="adyen-encrypted-cc field" data-hook="card_code">
+  <%= label_tag "card_code", Spree.t(:card_code) %><span class="required">*</span><br />
+  <%= text_field_tag nil, nil, id: "verification_value", class: 'required cardCode', size: 5, "data-encrypted-name" => "cvc" %>
+  <%= link_to "(#{Spree.t(:what_is_this)})", spree.cvv_path, :target => '_blank', "data-hook" => "cvv_link", :id => "cvv_link" %>
+</div>
+
+<%= hidden_field_tag nil, Time.current.iso8601, "data-encrypted-name" => "generationtime" %>
+<%= hidden_field_tag "#{param_prefix}[gateway_payment_profile_id]" %>
+
+<% if @order.bill_address %>
+  <%= fields_for "#{param_prefix}[address_attributes]", @order.bill_address do |f| %>
+    <%= render :partial => 'spree/address/form_hidden', :locals => { :form => f } %>
+  <% end %>
+<% end %>
+
+<script type="text/javascript">
+  Spree.handleAdyenFormSubmit = function(e) {
+    if (!Spree.encryptedAdyenForm.isValid()) {
+      alert( "<%= t('solidus-adyen.credit_card_data_refused') %>");
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      // Re-enable the submit button if validations fail
+      // This undoes what the event handler inside Spree.disableSaveOnClick does
+      $("form.edit_order").find(":submit", ":image")
+        .attr("disabled", false)
+        .addClass("primary")
+        .removeClass("disabled")
+      return false;
+    }
+  }
+
+  Spree.encryptedAdyenForm = Spree.createEncryptedAdyenForm(<%= payment_method.id %>);
+  var spreePaymentRadios = $("#checkout_form_payment input[type='radio']");
+  var attachOrDetachFormSubmit = function() {
+    if ($("#checkout_form_payment input:radio:checked").val() == <%= payment_method.id %>) {
+      // attach form submit handler
+      Spree.attachAdyenFormSubmit();
+    } else {
+      // detach form submit handler
+      Spree.detachAdyenFormSubmit();
+    }
+  };
+  spreePaymentRadios.change(attachOrDetachFormSubmit);
+  attachOrDetachFormSubmit();
+</script>

@@ -1,19 +1,20 @@
 module Spree
-  class AdyenNotificationsController < StoreController
+  class AdyenNotificationsController < AdyenController
     skip_before_filter :verify_authenticity_token
 
     before_filter :authenticate
 
     def notify
-      notification = AdyenNotification.build(params)
-      notification.save!
+      if notification_exists?(params)
+        accept
+      else
+        notification = AdyenNotification.build(params)
+        notification.save!
 
-      # prevent alteration to associated payment while we're handling the action
-      Spree::Adyen::NotificationProcessor.new(notification).process!
-      accept
-    rescue ActiveRecord::RecordNotUnique
-      # Notification is a duplicate, ignore it and return a success.
-      accept
+        # prevent alteration to associated payment while we're handling the action
+        Spree::Adyen::NotificationProcessor.new(notification).process!
+        accept
+      end
     end
 
     protected
@@ -28,6 +29,13 @@ module Spree
     private
     def accept
       render text: "[accepted]"
+    end
+
+    def notification_exists? params
+      AdyenNotification.exists?(
+        psp_reference: params["pspReference"],
+        event_code: params["eventCode"]
+      )
     end
   end
 end
