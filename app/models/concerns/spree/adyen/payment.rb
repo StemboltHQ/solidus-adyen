@@ -19,7 +19,7 @@ module Spree
         def authorize_payment
           response = authorize_new_payment
 
-          unless response.success?
+          unless response.authorised?
             response_without_xml_querier = response.dup
             # without this sometimes YAML.load fails later
             response_without_xml_querier.instance_variable_set("@xml_querier", nil)
@@ -29,7 +29,7 @@ module Spree
             )
           end
 
-          self.response_code = response.params[:psp_reference]
+          self.response_code = response.psp_reference
           save!
           update_stored_card_data
         end
@@ -128,34 +128,26 @@ module Spree
         end
       end
 
+      def rest_client
+        ::Adyen::REST::Client.new(
+          ::Adyen.configuration.environment,
+          payment_method.api_username,
+          payment_method.api_password
+        )
+      end
+
       def authorize_new_payment
-        # If this is a new credit card we should have the encrypted data
-        if source.encrypted_data
-          response = payment_method.provider.authorise_payment(
-            order.number,
-            price_data,
-            shopper_data_from_order,
-            encrypted_card_data,
-            true,
-            nil,
-            false,
-            billing_address_from_order
-          )
-          # If the user selects an existing card, we have the profile ID
-        elsif source.gateway_customer_profile_id
-          response = payment_method.provider.authorise_recurring_payment(
-            order.number,
-            price_data,
-            shopper_data_from_order,
-            source.gateway_customer_profile_id,
-            nil,
-            false,
-            billing_address_from_order
-          )
-        else
-          raise Spree::Core::GatewayError.new(
-            I18n.t(:missing_encrypted_data, scope: 'solidus-adyen')
-          )
+        ::Adyen::REST.session(rest_client) do |client|
+          # If this is a new credit card we should have the encrypted data
+          if source.encrypted_data
+            client.authorise_recurring_payment(payment_params.merge(encrypted_card_data))
+          elsif source.gateway_customer_profile_id
+            client.reauthorise_recurring_payment(payment_params)
+          else
+            raise Spree::Core::GatewayError.new(
+              I18n.t(:missing_encrypted_data, scope: 'solidus-adyen')
+            )
+          end
         end
       end
 
@@ -170,17 +162,20 @@ module Spree
         source.update(
           gateway_customer_profile_id: safe_credit_card_data[:recurring_detail_reference],
           cc_type: safe_credit_card_data[:variant],
-          last_digits: safe_credit_card_data[:card][:number],
-          month: "%02d" % safe_credit_card_data[:card][:expiry_date].month,
-          year: "%04d" % safe_credit_card_data[:card][:expiry_date].year.to_s,
-          name: safe_credit_card_data[:card][:holder_name]
+          last_digits: safe_credit_card_data[:card_number],
+          month: "%02d" % safe_credit_card_data[:card_expiry_month],
+          year: "%04d" % safe_credit_card_data[:card_expiry_year],
+          name: safe_credit_card_data[:card_holder_name]
         )
       end
 
       def get_safe_cards
-        payment_method.provider.list_recurring_details(
-          reference_number_from_order
-        ).details
+        ::Adyen::REST.session(rest_client) do |client|
+          client.list_recurring_details({
+            merchant_account: payment_method.merchant_account,
+            shopper_reference: reference_number_from_order,
+          })
+        end.details
       end
 
       def reference_number_from_order
@@ -193,20 +188,23 @@ module Spree
         adyen_cc_payment? && amount != 0
       end
 
-      def encrypted_card_data
+      def payment_params
         {
-          encrypted: {
-            json: source.encrypted_data
-          }
+          reference: order.number,
+          merchant_account: payment_method.merchant_account,
+          amount: price_data,
+          shopper_i_p: order.last_ip_address,
+          shopper_email: order.email,
+          shopper_reference: reference_number_from_order,
+          billing_address: billing_address_from_order,
         }
       end
 
-      def shopper_data_from_order
+      def encrypted_card_data
         {
-          reference: reference_number_from_order,
-          email: order.email,
-          ip: order.last_ip_address,
-          statement: order.number,
+          additional_data: {
+            card: { encrypted: { json: source.encrypted_data } }
+          }
         }
       end
 
