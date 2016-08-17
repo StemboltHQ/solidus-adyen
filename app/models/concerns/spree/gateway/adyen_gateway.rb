@@ -68,6 +68,8 @@ module Spree
       ::Adyen::REST.session(rest_client) do |client|
         client.public_send(method, params)
       end
+    rescue ::Adyen::REST::ResponseError => error
+      raise Spree::Core::GatewayError.new(error.message)
     end
 
     def message response

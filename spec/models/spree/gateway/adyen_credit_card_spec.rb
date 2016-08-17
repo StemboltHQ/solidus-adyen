@@ -152,6 +152,17 @@ describe Spree::Gateway::AdyenCreditCard do
           expect(subject.message).to eq "Should fail"
         end
       end
+
+      context "when the action causes a server error" do
+        before do
+          allow(Adyen::REST).to receive(:session).
+            and_raise(Adyen::REST::ResponseError.new("woops"))
+        end
+
+        it "raise a gateway error with the appropriate message" do
+          expect{ subject }.to raise_error(Spree::Core::GatewayError, "API request error: woops")
+        end
+      end
     end
 
     describe ".capture" do

@@ -4,8 +4,6 @@ describe Spree::Gateway::AdyenHPP do
   let(:hpp_source) { create :hpp_source, psp_reference: "9999" }
   let(:gateway) { described_class.new }
 
-  include_context "mock adyen api", success: true
-
   shared_examples "delayed gateway action" do
     context "when the action succeeds" do
       include_context "mock adyen api", success: true
@@ -26,6 +24,17 @@ describe Spree::Gateway::AdyenHPP do
       it "has a response that contains the failure message" do
         expect(subject.success?).to be false
         expect(subject.message).to eq "Should fail"
+      end
+    end
+
+    context "when the action causes a server error" do
+      before do
+        allow(Adyen::REST).to receive(:session).
+          and_raise(Adyen::REST::ResponseError.new("woops"))
+      end
+
+      it "raise a gateway error with the appropriate message" do
+        expect{ subject }.to raise_error(Spree::Core::GatewayError, "API request error: woops")
       end
     end
   end
