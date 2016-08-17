@@ -64,6 +64,7 @@ describe Spree::Adyen::Payment do
           include_context(
             "mock adyen api",
             success: false,
+            authorised: false,
             klass: Spree::Gateway::AdyenCreditCard
           )
 
@@ -79,7 +80,7 @@ describe Spree::Adyen::Payment do
         let(:existing_card) { create :credit_card, gateway_customer_profile_id: "123ABC" }
 
         it "authorizes a recurring payment using the existing contract" do
-          expect(provider).to receive(:authorise_recurring_payment)
+          expect(client).to receive(:reauthorise_recurring_payment)
           subject
         end
       end

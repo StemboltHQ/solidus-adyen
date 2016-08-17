@@ -6,7 +6,7 @@ describe Spree::Gateway::AdyenCreditCard do
   describe 'provider_class' do
     subject { described_class.new.provider_class }
 
-    it { is_expected.to eq(Adyen::API) }
+    it { is_expected.to eq(Adyen::REST) }
   end
 
   describe 'method_type' do

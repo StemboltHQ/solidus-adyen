@@ -74,7 +74,7 @@ module Spree
       if response.success?
         JSON.pretty_generate(response.attributes)
       else
-        response.fault_message || response.params[:refusal_reason]
+        response[:refusal_reason]
       end
     end
 

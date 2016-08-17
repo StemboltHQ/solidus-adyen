@@ -19,7 +19,7 @@ module Spree
         def authorize_payment
           response = authorize_new_payment
 
-          unless response.authorised?
+          unless response.success?
             response_without_xml_querier = response.dup
             # without this sometimes YAML.load fails later
             response_without_xml_querier.instance_variable_set("@xml_querier", nil)
