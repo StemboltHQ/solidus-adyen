@@ -47,6 +47,7 @@ module Spree
       # in the case of a "refund", we don't have the full gateway_options
       currency ||= options[:originator].payment.currency
       params = payment_params(amount, currency, psp_reference)
+      params.merge!(options.slice(:additional_data)) if options[:additional_data]
 
       handle_response(
         execute_request(:refund_payment, params),

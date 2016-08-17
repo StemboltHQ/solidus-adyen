@@ -47,6 +47,24 @@ describe Spree::Gateway::AdyenHPP do
   describe ".credit" do
     subject { gateway.credit(2000, "9999", currency: "EUR") }
     include_examples "delayed gateway action"
+
+    include_context "mock adyen api", success: true
+
+    context "when additional data is provided" do
+      subject { gateway.credit(2000, "9999", currency: "EUR", additional_data: "TEST") }
+
+      it "includes them in the request" do
+        expect(client).to receive(:refund_payment).with(hash_including(:additional_data))
+        subject
+      end
+    end
+
+    context "when additional data is not provided" do
+      it "is not included in the request" do
+        expect(client).to_not receive(:refund_payment).with(hash_including(:additional_data))
+        subject
+      end
+    end
   end
 
   describe ".cancel" do
