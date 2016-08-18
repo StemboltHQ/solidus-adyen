@@ -21,7 +21,7 @@ module Spree
             return if @refund.invalid?
 
             @payment.refunds.reset # we don't want to save the refund
-            @payment.credit!(cents, currency: currency)
+            @payment.credit!(cents, @payment.gateway_options)
 
             respond
           end
