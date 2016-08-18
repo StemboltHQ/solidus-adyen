@@ -15,9 +15,7 @@ module Spree
           )
         end
 
-        describe "#from_source" do
-          subject { described_class.from_source source }
-
+        shared_examples_for 'communication_list' do
           it "builds a collection of presenters that all implement the interface" do
             expect(subject).
               to be_an(Array).
@@ -28,6 +26,19 @@ module Spree
                 and respond_to(:inbound?).
                 and respond_to(:fields))
           end
+        end
+
+        describe "#from_source" do
+          subject { described_class.from_source source }
+
+          it_behaves_like 'communication_list'
+        end
+
+        describe '#from_payment' do
+          let!(:payment) { create :credit_card_payment }
+          subject { described_class.from_payment payment }
+
+          it_behaves_like 'communication_list'
         end
 
         describe "#build" do

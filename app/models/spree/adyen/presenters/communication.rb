@@ -16,6 +16,13 @@ module Spree
             map { |x| build x }
         end
 
+        def self.from_payment payment
+          notifications = AdyenNotification.where('psp_reference = ? or original_reference = ?', payment.transaction_id, payment.transaction_id)
+          (notifications + payment.log_entries).
+            sort_by(&:created_at).
+            map { |x| build x }
+        end
+
         def self.build object
           presenter_for(object).new(object)
         end
