@@ -93,6 +93,10 @@ module Spree
 
       private
 
+      def rest_client
+        @client ||= Adyen::Client.new(payment_method)
+      end
+
       def log_manual_refund
         message = I18n.t("solidus-adyen.manual_refund.log_message")
         record_response(
@@ -125,30 +129,20 @@ module Spree
         end
       end
 
-      def rest_client
-        ::Adyen::REST::Client.new(
-          ::Adyen.configuration.environment,
-          payment_method.api_username,
-          payment_method.api_password
-        )
-      end
-
       def authorize_new_payment
-        ::Adyen::REST.session(rest_client) do |client|
-          # If this is a new credit card we should have the encrypted data
-          if source.encrypted_data
-            client.authorise_recurring_payment(payment_params.merge(encrypted_card_data))
-          elsif source.gateway_customer_profile_id
-            client.reauthorise_recurring_payment(payment_params)
-          else
-            raise Spree::Core::GatewayError.new(
-              I18n.t(:missing_encrypted_data, scope: 'solidus-adyen')
-            )
-          end
+        # If this is a new credit card we should have the encrypted data
+        if source.encrypted_data
+          rest_client.authorise_recurring_payment(payment_params.merge(encrypted_card_data))
+        elsif source.gateway_customer_profile_id
+          rest_client.reauthorise_recurring_payment(payment_params)
+        else
+          raise Spree::Core::GatewayError.new(
+            I18n.t(:missing_encrypted_data, scope: 'solidus-adyen')
+          )
         end
-      rescue ::Adyen::REST::ResponseError => error
-        log_entries.create!(details: error.to_yaml)
-        raise Spree::Core::GatewayError.new(error.message)
+      rescue Spree::Core::GatewayError => gateway_error
+        log_entries.create!(details: gateway_error.to_yaml)
+        raise gateway_error
       end
 
       def update_stored_card_data
@@ -170,12 +164,10 @@ module Spree
       end
 
       def get_safe_cards
-        ::Adyen::REST.session(rest_client) do |client|
-          client.list_recurring_details({
-            merchant_account: payment_method.merchant_account,
-            shopper_reference: reference_number_from_order,
-          })
-        end.details
+        rest_client.list_recurring_details({
+          merchant_account: payment_method.merchant_account,
+          shopper_reference: reference_number_from_order,
+        }).details
       end
 
       def reference_number_from_order

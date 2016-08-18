@@ -27,19 +27,16 @@ module Spree
     def capture(amount, psp_reference, currency:, **_opts)
       params = payment_params(amount, currency, psp_reference)
 
-      handle_response(
-        execute_request(:capture_payment, params),
-        psp_reference
-      )
+      handle_response(rest_client.capture_payment(params), psp_reference)
     end
 
     def cancel(psp_reference, _gateway_options = {})
-      params = { merchant_account: merchant_account, original_reference: psp_reference }
+      params = {
+        merchant_account: merchant_account,
+        original_reference: psp_reference
+      }
 
-      handle_response(
-        execute_request(:cancel_or_refund_payment, params),
-        psp_reference
-      )
+      handle_response(rest_client.cancel_payment(params), psp_reference)
     end
 
 
@@ -49,28 +46,13 @@ module Spree
       params = payment_params(amount, currency, psp_reference)
       params.merge!(options.slice(:additional_data)) if options[:additional_data]
 
-      handle_response(
-        execute_request(:refund_payment, params),
-        psp_reference
-      )
+      handle_response(rest_client.refund_payment(params), psp_reference)
     end
 
     private
 
     def rest_client
-      ::Adyen::REST::Client.new(
-        ::Adyen.configuration.environment,
-        api_username,
-        api_password
-      )
-    end
-
-    def execute_request method, params
-      ::Adyen::REST.session(rest_client) do |client|
-        client.public_send(method, params)
-      end
-    rescue ::Adyen::REST::ResponseError => error
-      raise Spree::Core::GatewayError.new(error.message)
+      @client ||= Adyen::Client.new(self)
     end
 
     def message response
