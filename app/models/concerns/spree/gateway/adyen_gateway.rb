@@ -25,7 +25,7 @@ module Spree
     end
 
     def capture(amount, psp_reference, currency:, **_opts)
-      params = payment_params(amount, currency, psp_reference)
+      params = modification_request(amount, currency, psp_reference)
 
       handle_response(rest_client.capture_payment(params), psp_reference)
     end
@@ -43,7 +43,7 @@ module Spree
     def credit(amount, source = nil, psp_reference, currency: nil, **options)
       # in the case of a "refund", we don't have the full gateway_options
       currency ||= options[:originator].payment.currency
-      params = payment_params(amount, currency, psp_reference)
+      params = modification_request(amount, currency, psp_reference)
       params.merge!(options.slice(:additional_data)) if options[:additional_data]
 
       handle_response(rest_client.refund_payment(params), psp_reference)
@@ -72,7 +72,7 @@ module Spree
       )
     end
 
-    def payment_params(amount, currency, psp_reference)
+    def modification_request(amount, currency, psp_reference)
       {
         merchant_account: merchant_account,
         modification_amount: { currency: currency, value: amount },
