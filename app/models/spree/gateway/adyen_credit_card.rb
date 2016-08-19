@@ -40,13 +40,17 @@ module Spree
 
     private
 
+    def new_credit_card? source
+      source.encrypted_data.present?
+    end
+
     def perform_authorization payment
       # If this is a new credit card we should have the encrypted data
-      if payment.source.encrypted_data
+      if new_credit_card?(payment.source)
         rest_client.authorise_recurring_payment(
           authorization_request(payment, true)
         )
-      elsif payment.source.gateway_customer_profile_id
+      elsif payment.source.has_payment_profile?
         rest_client.reauthorise_recurring_payment(
           authorization_request(payment, false)
         )
