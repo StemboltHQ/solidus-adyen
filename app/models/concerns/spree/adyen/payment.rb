@@ -184,7 +184,7 @@ module Spree
       end
 
       def reference_number_from_order
-        order.user_id.to_s || order.number
+        order.user_id.to_s.presence || order.number
       end
 
       # Solidus creates a $0 default payment during checkout using a previously
@@ -203,7 +203,7 @@ module Spree
 
       def shopper_data_from_order
         {
-          reference: order.user_id.to_s || order.number,
+          reference: reference_number_from_order,
           email: order.email,
           ip: order.last_ip_address,
           statement: order.number,
