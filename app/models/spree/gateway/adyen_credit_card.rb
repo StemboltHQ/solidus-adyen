@@ -1,6 +1,6 @@
 module Spree
   class Gateway::AdyenCreditCard < Gateway
-    class ClearTextCardNumberError < StandardError; end
+    class EncryptedDataError < Spree::Core::GatewayError; end
 
     include Spree::Gateway::AdyenGateway
     preference :cse_library_location, :string
@@ -55,7 +55,7 @@ module Spree
           authorization_request(payment, false)
         )
       else
-        raise Spree::Core::GatewayError.new(
+        raise EncryptedDataError.new(
           I18n.t(:missing_encrypted_data, scope: 'solidus-adyen')
         )
       end

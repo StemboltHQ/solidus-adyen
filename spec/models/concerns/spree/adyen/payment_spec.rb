@@ -87,7 +87,9 @@ describe Spree::Adyen::Payment do
 
       context "when no encrypted credit card data or profile is provided" do
         it "raise a gateway error" do
-          expect { subject }.to raise_error(Spree::Core::GatewayError)
+          expect { subject }.to(
+            raise_error(Spree::Gateway::AdyenCreditCard::EncryptedDataError)
+          )
         end
       end
     end
