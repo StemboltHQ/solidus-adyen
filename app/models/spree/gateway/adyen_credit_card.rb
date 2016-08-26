@@ -1,6 +1,7 @@
 module Spree
   class Gateway::AdyenCreditCard < Gateway
     class EncryptedDataError < Spree::Core::GatewayError; end
+    class ProfileLookupError < Spree::Core::GatewayError; end
 
     include Spree::Gateway::AdyenGateway
     preference :cse_library_location, :string
@@ -59,9 +60,6 @@ module Spree
           I18n.t(:missing_encrypted_data, scope: 'solidus-adyen')
         )
       end
-    rescue Spree::Core::GatewayError => gateway_error
-      payment.log_entries.create!(details: gateway_error.to_yaml)
-      raise gateway_error
     end
 
     def update_stored_card_data payment
@@ -83,10 +81,18 @@ module Spree
     end
 
     def get_safe_cards order
-      rest_client.list_recurring_details({
+      response = rest_client.list_recurring_details({
         merchant_account: merchant_account,
         shopper_reference: reference_number_from_order(order),
-      }).details
+      })
+
+      if response.success? && !response.gateway_response.details.blank?
+        response.gateway_response.details
+      else
+        raise ProfileLookupError.new(
+          I18n.t(:profile_lookup_failed, scope: "solidus-adyen")
+        )
+      end
     end
 
     def reference_number_from_order order

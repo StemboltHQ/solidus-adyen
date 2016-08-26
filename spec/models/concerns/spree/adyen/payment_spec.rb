@@ -3,9 +3,9 @@ require "spec_helper"
 describe Spree::Adyen::Payment do
   let(:payment) { create :hpp_payment }
 
-  shared_examples "gateway action" do |klass|
+  shared_examples "gateway action" do
     context "when the action succeeds" do
-      include_context "mock adyen api", success: true, klass: klass
+      include_context "mock adyen api", success: true
 
       it "logs the response" do
         expect{ subject }.to change{ payment.reload.log_entries.count }.by(1)
@@ -21,7 +21,6 @@ describe Spree::Adyen::Payment do
         "mock adyen api",
         success: false,
         fault_message: "Expected message",
-        klass: klass,
       )
 
       it "logs the response" do
@@ -39,7 +38,7 @@ describe Spree::Adyen::Payment do
   end
 
   describe "#after_create" do
-    include_context "mock adyen api", success: true, klass: Spree::Gateway::AdyenCreditCard
+    include_context "mock adyen api", success: true
     subject { payment.save! }
 
     context "when the payment method is an Adyen credit card" do
@@ -64,8 +63,6 @@ describe Spree::Adyen::Payment do
           include_context(
             "mock adyen api",
             success: false,
-            authorised: false,
-            klass: Spree::Gateway::AdyenCreditCard
           )
 
           it "raises a gateway error and creates a log entry" do
@@ -121,7 +118,6 @@ describe Spree::Adyen::Payment do
       include_context(
         "mock adyen api",
         success: true,
-        klass: Spree::Gateway::AdyenCreditCard
       )
 
       include_examples "gateway action", Spree::Gateway::AdyenCreditCard

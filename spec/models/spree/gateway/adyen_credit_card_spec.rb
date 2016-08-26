@@ -126,11 +126,9 @@ describe Spree::Gateway::AdyenCreditCard do
   context "payment modifying actions" do
     let(:gateway) { described_class.new }
 
-    include_context "mock adyen api", success: true, klass: described_class
-
     shared_examples "delayed gateway action" do
       context "when the action succeeds" do
-        include_context "mock adyen api", success: true, klass: described_class
+        include_context "mock adyen api", success: true
 
         it { is_expected.to be_a ::ActiveMerchant::Billing::Response }
 
@@ -143,24 +141,15 @@ describe Spree::Gateway::AdyenCreditCard do
         include_context(
           "mock adyen api",
           success: false,
-          fault_message: "Should fail",
-          klass: described_class
+          fault_message: "Something went wrong",
         )
 
-        it "has a response that contains the failure message" do
+        it "reports a failed status" do
           expect(subject.success?).to be false
-          expect(subject.message).to eq "Should fail"
-        end
-      end
-
-      context "when the action causes a server error" do
-        before do
-          allow(Adyen::REST).to receive(:session).
-            and_raise(Adyen::REST::ResponseError.new("woops"))
         end
 
-        it "raise a gateway error with the appropriate message" do
-          expect{ subject }.to raise_error(Spree::Core::GatewayError, "API request error: woops")
+        it "returns the error message" do
+          expect(subject.message).to eq "Something went wrong"
         end
       end
     end

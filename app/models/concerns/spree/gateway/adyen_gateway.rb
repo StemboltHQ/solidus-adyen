@@ -55,18 +55,10 @@ module Spree
       @client ||= Adyen::Client.new(self)
     end
 
-    def message response
-      if response.success?
-        JSON.pretty_generate(response.attributes)
-      else
-        response[:refusal_reason]
-      end
-    end
-
     def handle_response(response, original_reference = nil)
       ActiveMerchant::Billing::Response.new(
         response.success?,
-        message(response),
+        response.message,
         response.attributes,
         authorization: original_reference || response.psp_reference
       )

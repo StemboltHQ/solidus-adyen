@@ -41,10 +41,11 @@ module Spree
 
       def execute_request method, params
         ::Adyen::REST.session(client) do |client|
-          client.public_send(method, params)
+          response = client.public_send(method, params)
+          Spree::Adyen::ApiResponse.new(response)
         end
       rescue ::Adyen::REST::ResponseError => error
-        raise Spree::Core::GatewayError.new(error.message)
+        Spree::Adyen::ApiResponse.new(error)
       end
     end
   end

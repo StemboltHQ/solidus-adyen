@@ -5,34 +5,61 @@ describe Spree::Adyen::Client do
     let(:gateway) { double("gateway", api_username: "batman", api_password: "gotham") }
     let(:client) { instance_double("Adyen::REST::Client", close: true) }
     let(:mock_params) { { peter: "parker" } }
+    let(:response) { double("Mock Response", success?: true) }
 
-    subject { described_class.new(gateway) }
+    subject { described_class.new(gateway).public_send(method, mock_params) }
 
-    before { allow(subject).to receive(:client).and_return(client) }
+    before do
+      allow_any_instance_of(Spree::Adyen::Client).
+        to receive(:client).
+        and_return(client)
+      allow(client).to receive(action).and_return(response)
+    end
 
     it "calls the correct API action with the provided parameters" do
       expect(client).to receive(action).with(peter: "parker")
-      subject.public_send(method, mock_params)
+      subject
+    end
+
+    it "returns a Spree::Adyen::ApiResponse" do
+      expect(subject).to be_a Spree::Adyen::ApiResponse
     end
 
     context "when the request succeeds" do
-      let(:response) { double("Mock Response") }
-      before { allow(client).to receive(action).and_return(response) }
+      it "has a successful response status" do
+        expect(subject.success?).to eq true
+      end
 
-      it "returns the response" do
-        expect(subject.public_send(method, mock_params)).to eq response
+      it "includes the original response" do
+        expect(subject.gateway_response).to eq response
+      end
+    end
+
+    context "when the request fails" do
+      let(:response) { double("Mock Response", success?: false) }
+
+      it "has a failed response status" do
+        expect(subject.success?).to eq false
+      end
+
+      it "includes the original response" do
+        expect(subject.gateway_response).to eq response
       end
     end
 
     context "when the request raises an adyen response error" do
+      let(:error) { Adyen::REST::ResponseError.new("BOOM") }
       before do
         allow(client).to receive(action).
-          and_raise(Adyen::REST::ResponseError.new("BOOM"))
+          and_raise(error)
       end
 
-      it "raises a Spree::Core::GatewayError with the correct message" do
-        expect { subject.public_send(method, mock_params) }.
-          to raise_error(Spree::Core::GatewayError, "API request error: BOOM")
+      it "has a failed response status" do
+        expect(subject.success?).to eq false
+      end
+
+      it "includes the original error response" do
+        expect(subject.gateway_response).to eq error
       end
     end
   end
