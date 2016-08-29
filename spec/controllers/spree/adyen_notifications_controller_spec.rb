@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Spree::AdyenNotificationsController do
-  include_context "mock adyen api", success: true
+  include_context "mock adyen client", success: true
 
   routes { Spree::Core::Engine.routes }
 

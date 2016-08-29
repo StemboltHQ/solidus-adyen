@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe Spree::Admin::RefundsController do
   stub_authorization!
-  include_context "mock adyen api", success: true
+  include_context "mock adyen client", success: true
   routes { Spree::Core::Engine.routes }
 
   describe "POST create" do

@@ -5,7 +5,7 @@ describe Spree::Adyen::Payment do
 
   shared_examples "gateway action" do
     context "when the action succeeds" do
-      include_context "mock adyen api", success: true
+      include_context "mock adyen client", success: true
 
       it "logs the response" do
         expect{ subject }.to change{ payment.reload.log_entries.count }.by(1)
@@ -18,7 +18,7 @@ describe Spree::Adyen::Payment do
 
     context "when the action fails" do
       include_context(
-        "mock adyen api",
+        "mock adyen client",
         success: false,
         fault_message: "Expected message",
       )
@@ -38,7 +38,7 @@ describe Spree::Adyen::Payment do
   end
 
   describe "#after_create" do
-    include_context "mock adyen api", success: true
+    include_context "mock adyen client", success: true
     subject { payment.save! }
 
     context "when the payment method is an Adyen credit card" do
@@ -61,7 +61,7 @@ describe Spree::Adyen::Payment do
 
         context "when the authorization fails" do
           include_context(
-            "mock adyen api",
+            "mock adyen client",
             success: false,
           )
 
@@ -116,7 +116,7 @@ describe Spree::Adyen::Payment do
     context "when the payment method is an Adyen credit card" do
       let(:payment) { create :adyen_cc_payment }
       include_context(
-        "mock adyen api",
+        "mock adyen client",
         success: true,
       )
 

@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe Spree::Adyen::NotificationProcessor do
-  include_context "mock adyen api", success: true
+  include_context "mock adyen client", success: true
 
   let!(:order) do
     # spree factories suck, it's not easy to get something to payment state

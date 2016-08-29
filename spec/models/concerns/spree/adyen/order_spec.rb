@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe Spree::Order do
-  include_context "mock adyen api", success: true
+  include_context "mock adyen client", success: true
 
   describe "requires_manual_refund?" do
     subject { order.requires_manual_refund? }

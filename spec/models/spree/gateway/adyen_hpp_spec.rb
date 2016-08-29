@@ -6,7 +6,7 @@ describe Spree::Gateway::AdyenHPP do
 
   shared_examples "delayed gateway action" do
     context "when the action succeeds" do
-      include_context "mock adyen api", success: true
+      include_context "mock adyen client", success: true
 
       it { is_expected.to be_a ::ActiveMerchant::Billing::Response }
 
@@ -17,7 +17,7 @@ describe Spree::Gateway::AdyenHPP do
 
     context "when the action fails" do
       include_context(
-        "mock adyen api",
+        "mock adyen client",
         success: false,
         fault_message: "Should fail")
 
@@ -37,7 +37,7 @@ describe Spree::Gateway::AdyenHPP do
     subject { gateway.credit(2000, "9999", currency: "EUR") }
     include_examples "delayed gateway action"
 
-    include_context "mock adyen api", success: true
+    include_context "mock adyen client", success: true
 
     context "when additional data is provided" do
       subject { gateway.credit(2000, "9999", currency: "EUR", additional_data: "TEST") }

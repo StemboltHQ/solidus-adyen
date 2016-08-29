@@ -1,4 +1,4 @@
-shared_context "mock adyen api" do |success:, fault_message: "", psp_reference: "" |
+shared_context "mock adyen client" do |success:, fault_message: "", psp_reference: "" |
   before do
     allow(Spree::Adyen::Client).
       to receive(:new).
