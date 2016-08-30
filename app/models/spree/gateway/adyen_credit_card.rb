@@ -1,7 +1,22 @@
 module Spree
   class Gateway::AdyenCreditCard < Gateway
-    class EncryptedDataError < Spree::Core::GatewayError; end
-    class ProfileLookupError < Spree::Core::GatewayError; end
+    class EncryptedDataError < Spree::Core::GatewayError
+      def message
+        I18n.t(:missing_encrypted_data, scope: 'solidus-adyen')
+      end
+    end
+
+    class ProfileLookupError < Spree::Core::GatewayError
+      def message
+        I18n.t(:profile_lookup_failed, scope: 'solidus-adyen')
+      end
+    end
+
+    class InvalidDetailsError < Spree::Core::GatewayError
+      def message
+        I18n.t(:credit_card_data_refused, scope: 'solidus-adyen')
+      end
+    end
 
     include Spree::Gateway::AdyenGateway
     preference :cse_library_location, :string
@@ -29,9 +44,7 @@ module Spree
 
       unless response.success?
         payment.log_entries.create!(details: response.to_yaml)
-        raise Spree::Core::GatewayError.new(
-          I18n.t(:credit_card_data_refused, scope: 'solidus-adyen')
-        )
+        raise InvalidDetailsError
       end
 
       payment.response_code = response.psp_reference
@@ -56,9 +69,7 @@ module Spree
           authorization_request(payment, false)
         )
       else
-        raise EncryptedDataError.new(
-          I18n.t(:missing_encrypted_data, scope: 'solidus-adyen')
-        )
+        raise EncryptedDataError
       end
     end
 
@@ -89,9 +100,7 @@ module Spree
       if response.success? && !response.gateway_response.details.blank?
         response.gateway_response.details
       else
-        raise ProfileLookupError.new(
-          I18n.t(:profile_lookup_failed, scope: "solidus-adyen")
-        )
+        raise ProfileLookupError
       end
     end
 
