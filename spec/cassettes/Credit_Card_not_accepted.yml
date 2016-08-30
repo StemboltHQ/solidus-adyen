@@ -80,4 +80,39 @@ http_interactions:
         xmlns="http://payment.services.adyen.com">Refused</resultCode></ns1:paymentResult></ns1:authoriseResponse></soap:Body></soap:Envelope>
     http_version: 
   recorded_at: Mon, 02 May 2016 15:24:16 GMT
+- request:
+    method: post
+    uri: https://<ADYEN_API_USERNAME>:<ADYEN_API_PASSWORD>@pal-test.adyen.com/pal/adapter/httppost
+    body:
+      encoding: US-ASCII
+      string: paymentRequest.reference=R981703707&paymentRequest.merchantAccount=<ADYEN_MERCHANT_ACCOUNT>&paymentRequest.amount.value=2000&paymentRequest.amount.currency=USD&paymentRequest.billingAddress.street=10+Lovely+Street&paymentRequest.billingAddress.houseNumberOrName=NA&paymentRequest.billingAddress.city=Herndon&paymentRequest.billingAddress.postalCode=35005&paymentRequest.billingAddress.stateOrProvince=AL&paymentRequest.billingAddress.country=US&paymentRequest.additionalData.card.encrypted.json=adyenjs_0_1_18%24u6WAAlZ8uGGD4dphVQFdsOsmZ6vthAknRbXV7Kk8zMqgoAPh2LgARxmwhY7FFXgp8ye8wPJJz%2BWCg0lKcelv4SQeUFlN9C2kU%2Fn%2BClS1vjyLvOdRMRiloM%2FzXkFUt%2B60ZO8QsudId08ZfhDM5f%2Br5grHZ%2FlIfQYIck89xHk%2FaHEXjvKX8Ciyu3WEX%2BC12jOqvx5JHc9YqHIhY66rGpkzftURMT06XBhb807FZUrruB6QbZW6W%2BiyBLG5WJOKPXPTIMdeCVw04T5uPA1Ith9z9PKxxvr4XBWv8yHW41ZbhYPoeS7Shg5DKDy0zO9BqHLCP3%2BZr7iNCKhzJ819snK0wg%3D%3D%246iV1FGE5zBsIgNIO%2BeBB7khE8C%2B3bfCdZkAg2PiV3lvwT9GOVS6tlqC0zb9ZxQ8TkJerkSyHBlJLN3xvzNJG%2FGuGBfK0MqJUXERbe74nh8i%2FX72wos1r65rEex4HLoCAoGScDnHcv0kEAjwkT3gf08L288Iq6NnxDKchnVfLIG3ZZ1TyKEzj8DIUnx9vlia5%2F4%2FnzBoaxBUjKdO7qcxq%2B3F1lDNDnRx8XzUH%2F3lBe8D5B0OdjNbTRUTbJlpz3%2FaOzJOU8ukE7tnTmDgE43CSUaDcIqJ71MaWvtXMVDSAeK0jJCu7DRc4kYS0BqHV%2FRtV91hwSeRXCrF8%2B4g98iezO7FteIm2kUjWG7u6kJgr%2BKah3AXnHlRynuOoLw%2BVZKcIFug214QC%2FMS0gnCu4F%2BNSJ4Kf%2BN%2F9Ki4UNfWSFaCxQ8X0RytIeqO0Ar2h34gMtCcGTDKlOBup3sUUu2yLyjGdAUss7jdtvRis7PLMwckT8yUom4U1rkT158HluwFxxIBqt1W5g2iF3ozlOROheT0%2BPpGKO0OaK2c5%2BTv82kAqdoDXkQ4%2FmZj54oS1e1yCUncfMfLJLv7TNeBeF%2BR9y52Ot2y8dLZJN3ZxClWnk3AUjuoHrcsemFstjiYG5ER%2FRVgnkvQMqOCVn0M%2FAy%2B0c%2F2%2BwBzvvQSvTwlAM7pfDeS8Gra%2F33pYOZvWd69ZasXlLaVxR593Dt4eqloa657Th3uCxATujT1okRJ%2BoIAzWZUEEyXsmehGINRcLFi0AI3cio%2BzrJxfYVYcuf9ESShxv25gm1iHdlI65ZJQ6zPFPUqFU1B4cEY28vWxrnwUP2ltJnRB6bironIHzGp2sZTBB66hKWoBLOz8XtVBGY8VgP0zgtuDvx6EEOdQX0n2Z3tb6OzdxeDFho%2FaEPviJSTzCEMdk%2Bna5DYvFszqSBKzkQzzqi5q5KB0nIMkzHeckwtm6XNZkJAUTew%2BrP82hBbgmDJ19HC2IkZX%2B%2BgOwN74%2B6dcYnJidEz5VZPvWJVEIlzUzhGCo1erus7oS33akxyPJ%2BnwG%2B1Xjag%2F7QgRTjmhcSHWgFQpdPi4Qi4nQ5gKv7LglEOCuvSodhf5DOVGp2dOBl4KbXSx5KnPJLEVhu52wZ9LGNRm62qR4UHw8MBG3a6%2FvsJIXQZnvlQeF3NEKaPAtdZmnG8nOv%2FL9HQiZebOIQWW7hIELpY5dPOWq%2FUeEMXqh0O7UVnHkuAP83%2FWVSydo1ke82bIikT5zAm8EuB%2F9W%2FBuksKUx7%2Fg2wx38r5MB2tT5soqaEck2Ke6OleuGpMXyvqIyCusoo0DNifl6kPcrwJRL8TvcAoAWyRpQtaYr19i8hRCN2wuxa199kgUB2Asl27Eq%2B%2F9ISBVnkicQAmg%2FY%2Blb5bJ8a%2BtSQOcqzR2YU%2BVBOG%2FGQxE7HxhrmsWjV6OEF3pe75CvC45VjcP7v5bQMaLO7NmocQW6bN8GoTT%2BLUlr3Zk7Z8eIYnl58DofRlvxX0O5Cd39F%2BZ9klkF0UBkXRmVuXE3Crm9NbUHWyv8vQjxk%2BiMaNie08cG%2FELFVWnfnHfwwjbXryGdL4kjLYIvTr1L8WxbndmrN%2BNZdHHzQFW7ew8wnZP5EtXYWWETlzgANFwQLi22ED%2F5LH2Q7wGGSStlY01G31Qk%2F6n%2FDw1isVeu0UgG3TrueoYG4Vguu60G%2Bh17qlNn8746bQErHMsJetwFKFZt9j%2BWdYVEz2GPqPwLgL8PCRek0RTSrStV6GjZ182rlrzT91tb6R0dx1chz7wIr4TQnRxuOXT3tPnWRY6PLKnBJOrdLxzPzpN6z%2BrhjdB1%2B6rUGx63OxHkbaNlbfNxOj4WaRMw8%2FzvUwx4VVcBPkxqnkOack0tsivG180M2o2PFvp8NVG16i3%2FQeaWGtFzowgVjoQk%2F8z4i4kpV%2Fsn3RNEqh8OG3gHmsz%2FDScmFwie2eS7KHC3JTuSAosnW8bYiZAj3fFRQkf7xA%2F2Ja1mR2OlL7WHMq%2BkcYlsGwW8g5hjGoZzp5kYP%2BnlRsBa%2BmYIBfvOpRoq1QnpruehCRbHV6qzMTi7dk4OY0jxHKep%2F3PkYBRZeqMS5DkDYBYuH8uN9NcVCCajODp7o6gMHu918C5C4w%2Bxqdx3kBdI21B6zU2p3EOZ%2BRUeILYQDHuigrtGND7eyWakDyBgXuWdnTn%2F9klfhunU9SiPlkF6Kjrbqu9kb7%2BLdml392INaq%2ByFT3HF5rDLaKs6bdxAXBQh53%2Folb2qV2zoaXXeLztHdrd0Z19xfWjxEH1l%2FXSeHedhDi4XI%2BNFJdVVcKkmmLmL%2B9lFStp6ZMqYmWhPOy3IXlDqANiSHdNOiqJFXn2m6JQgLrdy5etkdFpYcI1HJZqhMtr0Kz8wy1yW7JiZ8JQzlx5%2FAYzD2j50Kr9F0DOwmgvU05tL1lN8tyvRNG5d2q5fVA1IIariGjYsGzRglB602HUOVQzoysOQ8y7v4jouuW%2BNW%2FHyUX8TRG%2Fkf1qr%2BqkM9SgQQGV3pMqUgvIsw6Uz54uGHZHZa99xndGp258jrBBjRL9oyk2VojDBkvfG33XALnRKXHfnRIlJzuuPjeAy%2BcwqJCBAFLHtgZ2H7czx3YOZgQMXXAV1Fd7de%2Ft5iwRNuxPIpxr%2FZ1TKy1VrM4L1cv%2FDS6d%2FA9rdkZB3gWGwjKDHSSIMr906bi60xhTawJES2mrBtlnbjoZjj7w%3D&paymentRequest.shopperIP=&paymentRequest.shopperEmail=spree%40example.com&paymentRequest.shopperReference=1&paymentRequest.recurring.contract=RECURRING&action=Payment.authorise
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 16 Aug 2016 23:31:50 GMT
+      Server:
+      - Apache
+      Set-Cookie:
+      - JSESSIONID=582C5DB94AE1824BAB4C451C955FE376.test3e; Path=/pal/; Secure; HttpOnly
+      Content-Length:
+      - '117'
+      Content-Type:
+      - text/plain; charset=UTF-8
+    body:
+      encoding: UTF-8
+      string: paymentResult.resultCode=Refused&paymentResult.refusalReason=CVC+Declined&paymentResult.pspReference=8514713903102276
+    http_version: 
+  recorded_at: Tue, 16 Aug 2016 23:31:50 GMT
 recorded_with: VCR 3.0.1

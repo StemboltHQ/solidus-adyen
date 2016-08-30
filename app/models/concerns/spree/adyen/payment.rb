@@ -9,29 +9,12 @@ module Spree
       include Spree::Adyen::PaymentCheck
 
       included do
-        after_create :authorize_payment, if: :authorizable_cc_payment?
+        after_create :authorize_adyen_credit_card, if: :authorizable_cc_payment?
 
         private
 
-        # Performs and authorization call to Adyen for the payment
-        # @raise [Spree::Core::GatewayError] if the encrypted card data is missing
-        # @raise [Spree::Core::GatewayError] if the authorize call fails
-        def authorize_payment
-          response = authorize_new_payment
-
-          unless response.success?
-            response_without_xml_querier = response.dup
-            # without this sometimes YAML.load fails later
-            response_without_xml_querier.instance_variable_set("@xml_querier", nil)
-            log_entries.create!(details: response_without_xml_querier.to_yaml)
-            raise Spree::Core::GatewayError.new(
-              I18n.t(:credit_card_data_refused, scope: 'solidus-adyen')
-            )
-          end
-
-          self.response_code = response.params[:psp_reference]
-          save!
-          update_stored_card_data
+        def authorize_adyen_credit_card
+          payment_method.authorize_new_payment(self)
         end
       end
 
@@ -128,105 +111,10 @@ module Spree
         end
       end
 
-      def authorize_new_payment
-        # If this is a new credit card we should have the encrypted data
-        if source.encrypted_data
-          response = payment_method.provider.authorise_payment(
-            order.number,
-            price_data,
-            shopper_data_from_order,
-            encrypted_card_data,
-            true,
-            nil,
-            false,
-            billing_address_from_order
-          )
-          # If the user selects an existing card, we have the profile ID
-        elsif source.gateway_customer_profile_id
-          response = payment_method.provider.authorise_recurring_payment(
-            order.number,
-            price_data,
-            shopper_data_from_order,
-            source.gateway_customer_profile_id,
-            nil,
-            false,
-            billing_address_from_order
-          )
-        else
-          raise Spree::Core::GatewayError.new(
-            I18n.t(:missing_encrypted_data, scope: 'solidus-adyen')
-          )
-        end
-      end
-
-      def update_stored_card_data
-        safe_credit_cards = get_safe_cards
-        return nil if safe_credit_cards.nil? || safe_credit_cards.empty?
-
-        # Ensure we use the correct card we just created
-        safe_credit_cards.sort_by! { |card| card[:creation_date] }
-        safe_credit_card_data = safe_credit_cards.last
-
-        source.update(
-          gateway_customer_profile_id: safe_credit_card_data[:recurring_detail_reference],
-          cc_type: safe_credit_card_data[:variant],
-          last_digits: safe_credit_card_data[:card][:number],
-          month: "%02d" % safe_credit_card_data[:card][:expiry_date].month,
-          year: "%04d" % safe_credit_card_data[:card][:expiry_date].year.to_s,
-          name: safe_credit_card_data[:card][:holder_name]
-        )
-      end
-
-      def get_safe_cards
-        payment_method.provider.list_recurring_details(
-          reference_number_from_order
-        ).details
-      end
-
-      def reference_number_from_order
-        order.user_id.to_s.presence || order.number
-      end
-
       # Solidus creates a $0 default payment during checkout using a previously
       # used credit card, which we should not create an authorization for.
       def authorizable_cc_payment?
         adyen_cc_payment? && amount != 0
-      end
-
-      def encrypted_card_data
-        {
-          encrypted: {
-            json: source.encrypted_data
-          }
-        }
-      end
-
-      def shopper_data_from_order
-        {
-          reference: reference_number_from_order,
-          email: order.email,
-          ip: order.last_ip_address,
-          statement: order.number,
-        }
-      end
-
-      def billing_address_from_order
-        address = order.billing_address
-        {
-          street: address.address1,
-          house_number_or_name: "NA",
-          city: address.city,
-          postal_code: address.zipcode,
-          state_or_province: address.state_text || "NA",
-          country: address.country.try(:iso),
-        }
-      end
-
-      def price_data
-        {
-          value: money.cents,
-          currency: currency
-        }
       end
     end
   end

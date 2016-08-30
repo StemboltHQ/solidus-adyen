@@ -3,9 +3,9 @@ require "spec_helper"
 describe Spree::Adyen::Payment do
   let(:payment) { create :hpp_payment }
 
-  shared_examples "gateway action" do |klass|
+  shared_examples "gateway action" do
     context "when the action succeeds" do
-      include_context "mock adyen api", success: true, klass: klass
+      include_context "mock adyen client", success: true
 
       it "logs the response" do
         expect{ subject }.to change{ payment.reload.log_entries.count }.by(1)
@@ -18,10 +18,9 @@ describe Spree::Adyen::Payment do
 
     context "when the action fails" do
       include_context(
-        "mock adyen api",
+        "mock adyen client",
         success: false,
         fault_message: "Expected message",
-        klass: klass,
       )
 
       it "logs the response" do
@@ -39,36 +38,56 @@ describe Spree::Adyen::Payment do
   end
 
   describe "#after_create" do
-    include_context "mock adyen api", success: true, klass: Spree::Gateway::AdyenCreditCard
+    include_context "mock adyen client", success: true
     subject { payment.save! }
 
     context "when the payment method is an Adyen credit card" do
       let(:payment) { build :adyen_cc_payment, amount: 2000 }
 
-      context "when the source provides encrypted credit card data" do
+      context "and the source provides encrypted credit card data" do
         before do
           allow_any_instance_of(Spree::CreditCard).
             to receive(:encrypted_data).and_return("SUPERSECRETDATA")
         end
 
         context "when the authorization succeeds" do
-          it "updates the customer's payment profile" do
-            expect { subject }.
-              to change { payment.source.gateway_customer_profile_id }.
-              from(nil).
-              to("AWESOMEREFERENCE")
+          context "and the customer profile lookup fails" do
+            before do
+              allow(client).to receive(:list_recurring_details).
+                and_return(double("Failure", success?: false))
+            end
+
+            it "raises an error indicating the failure" do
+              expect { subject }.
+                to raise_error(
+                  Spree::Gateway::AdyenCreditCard::ProfileLookupError,
+                  "There was an error retrieving the user's payment profile."
+                )
+            end
+          end
+
+          context "and the customer profile lookup succeeds" do
+            it "updates the customer's payment profile" do
+              expect { subject }.
+                to change { payment.source.gateway_customer_profile_id }.
+                from(nil).
+                to("AWESOMEREFERENCE")
+            end
           end
         end
 
         context "when the authorization fails" do
           include_context(
-            "mock adyen api",
+            "mock adyen client",
             success: false,
-            klass: Spree::Gateway::AdyenCreditCard
           )
 
-          it "raises a gateway error and creates a log entry" do
-            expect { subject }.to raise_error(Spree::Core::GatewayError).
+          it "raises a custom error and creates a log entry" do
+            expect { subject }.
+              to raise_error(
+                Spree::Gateway::AdyenCreditCard::InvalidDetailsError,
+                "The credit card data you have entered is invalid."
+              ).
               and change { Spree::LogEntry.count }.by(1)
           end
         end
@@ -79,14 +98,19 @@ describe Spree::Adyen::Payment do
         let(:existing_card) { create :credit_card, gateway_customer_profile_id: "123ABC" }
 
         it "authorizes a recurring payment using the existing contract" do
-          expect(provider).to receive(:authorise_recurring_payment)
+          expect(client).to receive(:reauthorise_recurring_payment)
           subject
         end
       end
 
       context "when no encrypted credit card data or profile is provided" do
-        it "raise a gateway error" do
-          expect { subject }.to raise_error(Spree::Core::GatewayError)
+        it "raises an error indicating the failure" do
+          expect { subject }.to(
+            raise_error(
+              Spree::Gateway::AdyenCreditCard::EncryptedDataError,
+              "There was no encrypted credit card data provided."
+            )
+          )
         end
       end
     end
@@ -116,9 +140,8 @@ describe Spree::Adyen::Payment do
     context "when the payment method is an Adyen credit card" do
       let(:payment) { create :adyen_cc_payment }
       include_context(
-        "mock adyen api",
+        "mock adyen client",
         success: true,
-        klass: Spree::Gateway::AdyenCreditCard
       )
 
       include_examples "gateway action", Spree::Gateway::AdyenCreditCard

@@ -2,7 +2,7 @@ require "spec_helper"
 
 # https://docs.adyen.com/display/TD/HPP+payment+response
 RSpec.describe Spree::AdyenRedirectController, type: :controller do
-  include_context "mock adyen api", success: true
+  include_context "mock adyen client", success: true
 
   let(:order) do
     create(

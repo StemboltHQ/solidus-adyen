@@ -31,6 +31,9 @@ module Spree
         Spree::Order.include Spree::Adyen::Order
         Spree::Admin::RefundsController.include Spree::Adyen::Admin::RefundsController
         ::Adyen::API::PaymentService.include Spree::Adyen::PaymentService
+        ::Adyen::REST::Response.include Spree::Adyen::REST::Response
+        ::Adyen::REST::AuthorisePayment::Response.include Spree::Adyen::REST::AuthorisePaymentResponse
+        ::Adyen::REST::ModifyPayment::Response.include Spree::Adyen::REST::ModifyPaymentResponse
       end
 
       config.to_prepare(&method(:activate).to_proc)

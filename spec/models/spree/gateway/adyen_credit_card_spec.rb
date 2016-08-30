@@ -6,7 +6,7 @@ describe Spree::Gateway::AdyenCreditCard do
   describe 'provider_class' do
     subject { described_class.new.provider_class }
 
-    it { is_expected.to eq(Adyen::API) }
+    it { is_expected.to eq(Adyen::REST) }
   end
 
   describe 'method_type' do
@@ -126,11 +126,9 @@ describe Spree::Gateway::AdyenCreditCard do
   context "payment modifying actions" do
     let(:gateway) { described_class.new }
 
-    include_context "mock adyen api", success: true, klass: described_class
-
     shared_examples "delayed gateway action" do
       context "when the action succeeds" do
-        include_context "mock adyen api", success: true, klass: described_class
+        include_context "mock adyen client", success: true
 
         it { is_expected.to be_a ::ActiveMerchant::Billing::Response }
 
@@ -141,15 +139,17 @@ describe Spree::Gateway::AdyenCreditCard do
 
       context "when the action fails" do
         include_context(
-          "mock adyen api",
+          "mock adyen client",
           success: false,
-          fault_message: "Should fail",
-          klass: described_class
+          fault_message: "Something went wrong",
         )
 
-        it "has a response that contains the failure message" do
+        it "reports a failed status" do
           expect(subject.success?).to be false
-          expect(subject.message).to eq "Should fail"
+        end
+
+        it "returns the error message" do
+          expect(subject.message).to eq "Something went wrong"
         end
       end
     end

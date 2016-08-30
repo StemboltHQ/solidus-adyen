@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe Spree::Adyen::HppSource do
-  include_context "mock adyen api", success: true
+  include_context "mock adyen client", success: true
 
   it { is_expected.to belong_to(:order) }
   it { is_expected.to have_one(:payment) }

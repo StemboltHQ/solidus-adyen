@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe Spree::Admin::RefundsController do
   stub_authorization!
-  include_context "mock adyen api", success: true
+  include_context "mock adyen client", success: true
   routes { Spree::Core::Engine.routes }
 
   describe "POST create" do
@@ -40,10 +40,19 @@ RSpec.describe Spree::Admin::RefundsController do
         expect(flash[:success]).to eq "Refund request was received"
       end
 
-      it "requests the refund" do
+      it "requests the refund with full gateway options" do
         expect_any_instance_of(Spree::Payment).
           to receive(:credit!).
-          with(10000, currency: "EUR")
+          with(
+            10000,
+            hash_including({
+              currency: "EUR",
+              shipping_address: order.ship_address.active_merchant_hash,
+              billing_address: order.bill_address.active_merchant_hash,
+              email: order.email,
+              customer_id: order.user_id,
+            })
+          )
         subject
       end
 

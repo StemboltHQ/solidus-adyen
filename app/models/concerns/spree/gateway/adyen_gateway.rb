@@ -21,61 +21,55 @@ module Spree
     end
 
     def provider_class
-      ::Adyen::API
-    end
-
-    def provider
-      ::Adyen.configuration.api_username = api_username
-      ::Adyen.configuration.api_password = api_password
-      ::Adyen.configuration.default_api_params[:merchant_account] = merchant_account
-
-      provider_class
+      ::Adyen::REST
     end
 
     def capture(amount, psp_reference, currency:, **_opts)
-      value = { currency: currency, value: amount }
+      params = modification_request(amount, currency, psp_reference)
 
-      handle_response(
-        provider.capture_payment(psp_reference, value),
-        psp_reference
-      )
+      handle_response(rest_client.capture_payment(params), psp_reference)
     end
 
     def cancel(psp_reference, _gateway_options = {})
-      handle_response(
-        provider.cancel_or_refund_payment(psp_reference),
-        psp_reference
-      )
+      params = {
+        merchant_account: merchant_account,
+        original_reference: psp_reference
+      }
+
+      handle_response(rest_client.cancel_payment(params), psp_reference)
     end
+
 
     def credit(amount, source = nil, psp_reference, currency: nil, **options)
       # in the case of a "refund", we don't have the full gateway_options
       currency ||= options[:originator].payment.currency
-      amount = { currency: currency, value: amount }
+      params = modification_request(amount, currency, psp_reference)
+      params.merge!(options.slice(:additional_data)) if options[:additional_data]
 
-      handle_response(
-        provider.refund_payment(psp_reference, amount),
-        psp_reference
-      )
+      handle_response(rest_client.refund_payment(params), psp_reference)
     end
 
     private
 
-    def message response
-      if response.success?
-        JSON.pretty_generate(response.params)
-      else
-        response.fault_message || response.params[:refusal_reason]
-      end
+    def rest_client
+      @client ||= Adyen::Client.new(self)
     end
 
     def handle_response(response, original_reference = nil)
       ActiveMerchant::Billing::Response.new(
         response.success?,
-        message(response),
-        response.params,
+        response.message,
+        response.attributes,
         authorization: original_reference || response.psp_reference
       )
+    end
+
+    def modification_request(amount, currency, psp_reference)
+      {
+        merchant_account: merchant_account,
+        modification_amount: { currency: currency, value: amount },
+        original_reference: psp_reference,
+      }
     end
   end
 end
