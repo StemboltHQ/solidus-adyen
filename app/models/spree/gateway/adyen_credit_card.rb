@@ -105,7 +105,7 @@ module Spree
     end
 
     def reference_number_from_order order
-      order.user_id.to_s || order.number
+      order.user_id.to_s.presence || order.number
     end
 
     def authorization_request payment, new_card
