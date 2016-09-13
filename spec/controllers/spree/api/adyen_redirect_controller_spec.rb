@@ -107,11 +107,9 @@ RSpec.describe Spree::Api::AdyenRedirectController, type: :controller do
             merchant_reference: order.number)
         end
 
-        # there will already be a payment and source created at this point
-        before do
-          source =
-            create(:hpp_source, psp_reference: psp_reference, order: order)
+        let(:source) { create(:hpp_source, psp_reference: psp_reference, order: order) }
 
+        before do
           create(:hpp_payment, source: source, order: order)
 
           order.contents.advance
