@@ -44,12 +44,15 @@ module Spree
         if complete
           respond_with(@order, default_template: 'spree/api/orders/show', status: :ok)
         else
-          respond_with(@order, default_template: 'spree/api/orders/show', status: :unprocessable_entity)
+          invalid_resource!(@order)
         end
       end
 
       def handle_failure
-        respond_with(@order, default_template: 'spree/api/orders/show', status: 422)
+        render json: {
+          error: I18n.t(:invalid_resource, scope: "spree.api"),
+          errors: { source: Spree.t(:payment_processing_failed) }
+        }, status: 422
       end
 
       def find_order
