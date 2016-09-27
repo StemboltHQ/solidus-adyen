@@ -64,6 +64,11 @@ describe Spree::Adyen::Client do
     end
   end
 
+  describe "#authorise_payment" do
+    include_examples "client API request",
+      :authorise_payment, :authorise_payment
+  end
+
   describe "#authorise_recurring_payment" do
     include_examples "client API request",
       :authorise_recurring_payment, :authorise_recurring_payment
