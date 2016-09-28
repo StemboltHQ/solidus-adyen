@@ -12,6 +12,11 @@ FactoryGirl.define do
     end
   end
 
+  factory :ratepay_payment, parent: :payment do
+    association :payment_method, factory: :ratepay_gateway
+    association :source, factory: :ratepay_source
+  end
+
   factory :adyen_cc_payment, parent: :payment do
     association :payment_method, factory: :spree_gateway_adyen_credit_card
     association :source, factory: :credit_card

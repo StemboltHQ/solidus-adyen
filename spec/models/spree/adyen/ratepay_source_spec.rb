@@ -13,4 +13,16 @@ describe Spree::Adyen::RatepaySource do
       expect(subject.date_of_birth).to eq "1983-01-02"
     end
   end
+
+  describe "#has_dob?" do
+    context "when the date of birth is set" do
+      subject { build_stubbed(:ratepay_source, :dob_provided).has_dob? }
+      it { is_expected.to be true }
+    end
+
+    context "when no date of birth is set" do
+      subject { build_stubbed(:ratepay_source).has_dob? }
+      it { is_expected.to be false }
+    end
+  end
 end

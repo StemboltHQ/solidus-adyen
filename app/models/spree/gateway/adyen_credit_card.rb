@@ -39,7 +39,7 @@ module Spree
     # Performs and authorization call to Adyen for the payment
     # @raise [Spree::Core::GatewayError] if the encrypted card data is missing
     # @raise [Spree::Core::GatewayError] if the authorize call fails
-    def authorize_new_payment payment
+    def authorise_new_payment payment
       response = perform_authorization(payment)
 
       unless response.success?

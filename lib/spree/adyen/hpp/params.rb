@@ -19,11 +19,29 @@ module Spree
             merge(merchant_return_data)
         end
 
+        def authorise_invoice(dob)
+          authorisation_request.
+            merge(shopper_details(dob)).
+            merge(address_params).
+            merge(additional_data: openinvoice_params)
+        end
+
         private
 
         def default_params
           { session_validity: 10.minutes.from_now.utc,
             recurring: false
+          }
+        end
+
+        def authorisation_request
+          {
+            merchant_account: @payment_method.merchant_account,
+            reference: @order.number,
+            amount: {
+              currency: @order.currency,
+              value: @order.display_total.money.cents
+            }
           }
         end
 
@@ -47,6 +65,53 @@ module Spree
             shared_secret: @payment_method.shared_secret,
             ship_before_date: @payment_method.ship_before_date
           }
+        end
+
+        def shopper_details dob
+          address = @order.ship_address
+          {
+            shopper_email: @order.email,
+            shopper_reference: @order.user_id.to_s.presence || @order.number,
+            shopper_name: {
+              first_name: address.firstname,
+              infix: "",
+              last_name: address.lastname,
+              gender: "UNKNOWN"
+            },
+            shopper_i_p: @order.last_ip_address,
+            shopper_country: address.country.iso,
+            date_of_birth: dob,
+            telephone_number: address.phone
+          }
+        end
+
+        def address_params
+          {
+            delivery_address: address_fields,
+            billing_address: address_fields,
+          }
+        end
+
+        # In Solidus we store the house number and street name together in
+        # address1. This splits address1 on the first space and assumes the
+        # first part is the number and the second part the street name.
+        #
+        # Since this is frequently not appropriate, this behaviour should be
+        # overridden using a custom params class (see: Spree::Adyen::HPP::Configuration)
+        def address_fields
+          address = @order.ship_address
+          house_number, street = address.address1.split(" ", 2)
+          {
+            street: street,
+            house_number_or_name: house_number,
+            city: address.city,
+            postal_code: address.zipcode,
+            country: address.country.iso,
+          }
+        end
+
+        def openinvoice_params
+          Spree::Adyen::Invoice.new(@order).request_params
         end
       end
     end

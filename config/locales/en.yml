@@ -12,6 +12,7 @@ en:
           amount: "Amount"
   solidus-adyen:
     credit_card_data_refused: "The credit card data you have entered is invalid."
+    missing_date_of_birth: "Date of birth is required for invoice transactions."
     missing_encrypted_data: "There was no encrypted credit card data provided."
     profile_lookup_failed: "There was an error retrieving the user's payment profile."
     unknown_gateway_error: "An unknown error occurred while processing your request."

@@ -18,7 +18,7 @@ shared_context "mock adyen client" do |success:, fault_message: "", psp_referenc
     ])
   end
   let(:successful_gateway_response) do
-    double("Gateway Response", success?: true)
+    double("Gateway Response", success?: true, result_code: "Authorised")
   end
 
   let(:client) do
@@ -34,6 +34,20 @@ shared_context "mock adyen client" do |success:, fault_message: "", psp_referenc
     end
 
     instance_double("Spree::Adyen::Client").tap do |double|
+      allow(double).
+        to receive(:authorise_payment).
+        with(
+          hash_including(
+            :reference,
+            :merchant_account,
+            :amount,
+            :billing_address,
+            :shopper_i_p,
+            :shopper_email,
+            :shopper_reference,
+          ),
+      ).and_return(api_response.call(successful_gateway_response))
+
       allow(double).
         to receive(:authorise_recurring_payment).
         with(
