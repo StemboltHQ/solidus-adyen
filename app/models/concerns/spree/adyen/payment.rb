@@ -22,7 +22,7 @@ module Spree
       # auto_capture enabled. Since we authorize credit cards in the payment
       # step already, we just need to capture the payment here.
       def purchase!
-        if adyen_cc_payment?
+        if adyen_cc_payment? || ratepay?
           capture!
         else
           super
@@ -31,7 +31,7 @@ module Spree
 
       # capture! :: bool | error
       def capture!
-        if hpp_payment? || adyen_cc_payment?
+        if hpp_payment? || adyen_cc_payment? || ratepay?
           amount = money.money.cents
           process do
             payment_method.send(
