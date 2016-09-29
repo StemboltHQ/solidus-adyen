@@ -10,6 +10,12 @@ module Spree
 
     include Spree::Gateway::AdyenGateway
 
+    preference :device_sid, :string
+
+    def device_sid
+      ENV["RATEPAY_DEVICE_SID"] || preferred_device_sid
+    end
+
     def method_type
       "adyen_ratepay"
     end
@@ -50,7 +56,7 @@ module Spree
         params_class.new(payment.order, self).
         authorise_invoice(payment.source.date_of_birth).
         merge({
-          device_fingerprint: "4R8Pay",
+          device_fingerprint: payment.source.device_token,
           selected_brand: "ratepay_#{payment.order.bill_address.country.iso}"
         })
 

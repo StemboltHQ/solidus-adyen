@@ -9,7 +9,7 @@ module Spree
         foreign_key: :merchant_reference,
         primary_key: :merchant_reference
 
-      attr_accessor :dob_day, :dob_month, :dob_year
+      attr_accessor :dob_day, :dob_month, :dob_year, :device_token
 
       # Formats the date of birth fields how they are accepted by Adyen
       #

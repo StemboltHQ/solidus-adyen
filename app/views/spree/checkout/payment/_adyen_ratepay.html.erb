@@ -1,5 +1,10 @@
+<!-- Ratepay requires us to generate a unique token for each device on checkout -->
+<% device_sid = payment_method.device_sid %>
+<% device_token = Digest::SHA256.hexdigest(@order.number + DateTime.now.to_s) %>
+
 <% param_prefix = "payment_source[#{payment_method.id}]" %>
 
+<%= hidden_field_tag "#{param_prefix}[device_token]", device_token %>
 <div class="adyen-ratepay field">
   <%= label_tag nil, Spree.t(:date_of_birth_day) %><span class="required">*</span><br />
   <%= text_field_tag "#{param_prefix}[dob_day]", nil,
@@ -29,3 +34,19 @@
     maxlength: 4
   %>
 </div>
+
+<!-- This JavaScript is provided by Ratepay for their device fingerprinting -->
+<script language="JavaScript">
+  var di = {
+    t:'<%= device_token %>',
+    v:'<%= device_sid %>',
+    l:'Checkout'
+  };
+</script>
+<script type="text/javascript" src="//d.ratepay.com/<%= device_sid %>/di.js"></script>
+<noscript><link rel="stylesheet" type="text/css" href="//d.ratepay.com/di.css?t=<%= device_token %>&v=<%= device_sid %>&l=Checkout"></noscript>
+<object type="application/x-shockwave-flash" data="//d.ratepay.com/<%= device_sid %>/c.swf" width="0" height="0">
+  <param name="movie" value="//d.ratepay.com/<%= device_sid %>/c.swf" />
+  <param name="flashvars" value="t=<%= device_token %>&v=<%= device_sid %>"/>
+  <param name="AllowScriptAccess" value="always"/>
+</object>
