@@ -8,6 +8,13 @@ module Spree
         class_name: "AdyenNotification",
         foreign_key: :merchant_reference,
         primary_key: :merchant_reference
+
+      attr_accessor :dob_day, :dob_month, :dob_year
+
+      # Adyen require
+      def date_of_birth
+        "#{dob_year}-#{dob_day}-#{dob_month}"
+      end
     end
   end
 end
