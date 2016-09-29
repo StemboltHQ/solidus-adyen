@@ -19,6 +19,7 @@ module Spree
       initializer "spree.solidus-adyen.payment_methods", after: "spree.register.payment_methods" do |app|
         app.config.spree.payment_methods << Gateway::AdyenHPP
         app.config.spree.payment_methods << Gateway::AdyenCreditCard
+        app.config.spree.payment_methods << Gateway::AdyenRatepay
         Spree::PermittedAttributes.source_attributes << :dob_day
         Spree::PermittedAttributes.source_attributes << :dob_month
         Spree::PermittedAttributes.source_attributes << :dob_year
