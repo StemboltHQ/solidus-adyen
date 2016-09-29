@@ -5,35 +5,38 @@
 <% param_prefix = "payment_source[#{payment_method.id}]" %>
 
 <%= hidden_field_tag "#{param_prefix}[device_token]", device_token %>
-<div class="adyen-ratepay field">
-  <%= label_tag nil, Spree.t(:date_of_birth_day) %><span class="required">*</span><br />
-  <%= text_field_tag "#{param_prefix}[dob_day]", nil,
-    class: "required",
-    autocomplete: "off",
-    size: 2,
-    maxlength: 2
-  %>
-</div>
+<fieldset>
+  <legend><%= Spree.t(:date_of_birth) %></legend>
+  <div class="adyen-ratepay field">
+    <%= label_tag nil, Spree.t(:day) %><span class="required">*</span><br />
+    <%= text_field_tag "#{param_prefix}[dob_day]", nil,
+      class: "required",
+      autocomplete: "off",
+      size: 2,
+      maxlength: 2
+    %>
+  </div>
 
-<div class="adyen-ratepay field">
-  <%= label_tag nil, Spree.t(:date_of_birth_month) %><span class="required">*</span><br />
-  <%= text_field_tag "#{param_prefix}[dob_month]", nil,
-    class: "required",
-    autocomplete: "off",
-    size: 2,
-    maxlength: 2
-  %>
-</div>
+  <div class="adyen-ratepay field">
+    <%= label_tag nil, Spree.t(:month) %><span class="required">*</span><br />
+    <%= text_field_tag "#{param_prefix}[dob_month]", nil,
+      class: "required",
+      autocomplete: "off",
+      size: 2,
+      maxlength: 2
+    %>
+  </div>
 
-<div class="adyen-ratepay field">
-  <%= label_tag nil, Spree.t(:date_of_birth_year) %><span class="required">*</span><br />
-  <%= text_field_tag "#{param_prefix}[dob_year]", nil,
-    class: "required",
-    autocomplete: "off",
-    size: 4,
-    maxlength: 4
-  %>
-</div>
+  <div class="adyen-ratepay field">
+    <%= label_tag nil, Spree.t(:year) %><span class="required">*</span><br />
+    <%= text_field_tag "#{param_prefix}[dob_year]", nil,
+      class: "required",
+      autocomplete: "off",
+      size: 4,
+      maxlength: 4
+    %>
+  </div>
+</fieldset>
 
 <!-- This JavaScript is provided by Ratepay for their device fingerprinting -->
 <script language="JavaScript">
