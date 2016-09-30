@@ -1,8 +1,14 @@
 source "https://rubygems.org"
 
+branch = ENV.fetch("SOLIDUS_BRANCH", "master")
+if branch == "master" || branch >= "v2.0"
+  gem "rails-controller-testing", group: :test
+end
+
 group :development, :test do
-  gem "solidus"
+  gem "solidus", github: 'solidusio/solidus', branch: branch
   gem "solidus_auth_devise"
+
 
   gem "pg"
   gem "mysql2"
