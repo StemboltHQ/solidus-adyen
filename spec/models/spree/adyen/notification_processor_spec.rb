@@ -3,13 +3,10 @@ require "spec_helper"
 RSpec.describe Spree::Adyen::NotificationProcessor do
   include_context "mock adyen client", success: true
 
-  let!(:order) do
-    # spree factories suck, it's not easy to get something to payment state
-    create(:order_with_line_items).tap do |order|
-      order.contents.advance
-      expect(order.state).to eq "payment"
-    end
-  end
+  let!(:order) { create :order_with_line_items }
+
+  # Push the order through to payment
+  before { while order.state != "payment"; order.next!; end }
 
   describe "#process" do
     subject { described_class.new(notification).process! }

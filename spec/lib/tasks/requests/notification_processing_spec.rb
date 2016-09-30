@@ -8,11 +8,13 @@ RSpec.describe "Notification processing", type: :request do
     ENV["ADYEN_NOTIFY_USER"] = "spree_user"
     ENV["ADYEN_NOTIFY_PASSWD"] = "1234"
 
-    order.contents.advance
-    expect(order.state).to eq "payment"
+    # push the order through to payment
+    while order.state != "payment"
+      order.next!
+    end
   end
 
-  let!(:order) { create(:order_with_line_items, number: "R207199925") }
+  let!(:order) { create :order_with_line_items, number: "R207199925" }
 
   let!(:payment_method) do
     create(
