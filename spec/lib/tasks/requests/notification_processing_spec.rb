@@ -130,22 +130,29 @@ RSpec.describe "Notification processing", type: :request do
   end
 
   def initial_authorization
+    # Each thread needs its own connection or we run into locking issues
+    ActiveRecord::Base.connection.disconnect!
+
     # these come in at the same time
     [
       Thread.new { authorize_request },
       Thread.new { redirect_request }
     ].map(&:join)
+
+    ActiveRecord::Base.establish_connection
     # typically get a duplicate auth notification
     authorize_request
   end
 
   def authorize_request
+    ActiveRecord::Base.establish_connection
     post "/adyen/notify", auth_params, headers
     expect(response).to have_http_status :ok
     expect(response.body).to eq "[accepted]"
   end
 
   def redirect_request
+    ActiveRecord::Base.establish_connection
     response_code = get "/checkout/payment/adyen", checkout_params, headers
     expect(response_code).to eq 302
   end
