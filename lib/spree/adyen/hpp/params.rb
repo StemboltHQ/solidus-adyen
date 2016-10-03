@@ -111,7 +111,7 @@ module Spree
         end
 
         def openinvoice_params
-          Spree::Adyen::Invoice.new(@order).request_params
+          Spree::Adyen::HPP.configuration.invoice_class.new(@order).request_params
         end
       end
     end
