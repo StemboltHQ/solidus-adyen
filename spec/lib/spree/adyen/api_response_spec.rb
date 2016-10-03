@@ -13,17 +13,33 @@ describe Spree::Adyen::ApiResponse do
       body: "resultCode=Refused&refusalReason=Denied&response=Modify failure",
     )
   end
+  let(:http_error) do
+    instance_double(
+      "Net::HTTPInternalServerError",
+      body: "Something went wrong"
+    )
+  end
   let(:api_success) { Adyen::REST::AuthorisePayment::Response.new(http_success) }
   let(:api_failure) { Adyen::REST::Response.new(http_failure) }
+  let(:api_error) { Adyen::REST::ResponseError.new("ERROR") }
 
   before { allow(http_success).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true) }
   before { allow(http_failure).to receive(:is_a?).with(Net::HTTPSuccess).and_return(true) }
+  before { allow(http_error).to receive(:is_a?).with(Adyen::REST::ResponseError).and_return(true) }
 
   describe "#psp_reference" do
-    subject { described_class.new(api_success).psp_reference }
+    context "when the response was a server error" do
+      subject { described_class.new(api_error).psp_reference }
 
-    it "returns the PSP reference from the API response" do
-      expect(subject).to eq "1234567890"
+      it { is_expected.to be nil }
+    end
+
+    context "when the response was not an error" do
+      subject { described_class.new(api_success).psp_reference }
+
+      it "returns the PSP reference from the API response" do
+        expect(subject).to eq "1234567890"
+      end
     end
   end
 
