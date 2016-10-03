@@ -116,7 +116,7 @@ module Spree
         shopper_i_p: payment.order.last_ip_address,
         shopper_email: payment.order.email,
         shopper_reference: reference_number_from_order(payment.order),
-        billing_address: billing_address_from_order(payment.order),
+        billing_address: billing_address_from_payment(payment),
       }
       request.merge!(encrypted_card_data(payment.source)) if new_card
 
@@ -131,8 +131,8 @@ module Spree
       }
     end
 
-    def billing_address_from_order order
-      address = order.billing_address
+    def billing_address_from_payment payment
+      address = payment.source.address
       {
         street: address.address1,
         house_number_or_name: "NA",
