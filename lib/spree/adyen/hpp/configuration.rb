@@ -2,7 +2,7 @@ module Spree
   module Adyen
     module HPP
       class Configuration
-        attr_accessor :params_class
+        attr_accessor :params_class, :invoice_class
 
         # This class allows us to provide configuration options to the
         # Spree::Adyen::HPP module. To add extra options, add an attr_accessor
@@ -14,6 +14,7 @@ module Spree
         #   end
         def initialize
           @params_class = Spree::Adyen::HPP::Params
+          @invoice_class = Spree::Adyen::Invoice
         end
       end
     end

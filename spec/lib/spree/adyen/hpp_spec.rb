@@ -58,6 +58,42 @@ RSpec.describe Spree::Adyen::HPP do
           to include({ foo: "bar" })
       end
     end
+
+    context "when no custom invoice class is specified" do
+      it "uses the default class" do
+        expect(subject.invoice_class).to eq Spree::Adyen::Invoice
+      end
+    end
+
+    context "when a custom invoice class is provided" do
+      before do
+        class InvoiceOverride < Spree::Adyen::Invoice
+          def request_params
+            { peter: "parker" }
+          end
+        end
+
+        Spree::Adyen::HPP.configure do |config|
+          config.invoice_class = InvoiceOverride
+        end
+      end
+
+      # Reset the configuration for other tests
+      after do
+        Spree::Adyen::HPP.configure do |config|
+          config.params_class = Spree::Adyen::HPP::Params
+        end
+      end
+
+      it "uses the custom class" do
+        expect(subject.invoice_class).to eq InvoiceOverride
+      end
+
+      it "returns the correct params" do
+        invoice = subject.invoice_class.new(order)
+        expect(invoice.request_params).to include({ peter: "parker" })
+      end
+    end
   end
 
   describe "directory_url" do

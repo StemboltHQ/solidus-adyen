@@ -38,7 +38,8 @@ describe Spree::Adyen::Payment do
   end
 
   describe "#after_create" do
-    include_context "mock adyen client", success: true
+    include_context("mock adyen client", success: true, psp_reference: "TRANSACTION_SUCCESS")
+
     subject { payment.save! }
 
     context "when the payment method is an Adyen credit card" do
@@ -77,10 +78,7 @@ describe Spree::Adyen::Payment do
         end
 
         context "when the authorization fails" do
-          include_context(
-            "mock adyen client",
-            success: false,
-          )
+          include_context("mock adyen client", success: false)
 
           it "raises a custom error and creates a log entry" do
             expect { subject }.
@@ -115,6 +113,50 @@ describe Spree::Adyen::Payment do
       end
     end
 
+    context "when the payment method is Ratepay" do
+      let(:payment) { build :ratepay_payment, source: ratepay, amount: 1500 }
+
+      context "and no Date of Birth was provided" do
+        let(:ratepay) { create :ratepay_source }
+
+        it "raises an error" do
+          expect { subject }.to raise_error(
+            Spree::Gateway::AdyenRatepay::MissingDateOfBirthError,
+            "Date of birth is required for invoice transactions."
+          )
+        end
+      end
+
+      context "and the date of birth is set on the source" do
+        let(:ratepay) { create :ratepay_source, :dob_provided }
+
+        context "and the authorization succeeds" do
+          it "updates the source" do
+            expect { subject }.to change { payment.source.psp_reference }.to("TRANSACTION_SUCCESS")
+          end
+
+          it "updates the payment" do
+            expect { subject }.to change { payment.response_code }.to("TRANSACTION_SUCCESS")
+          end
+        end
+
+        context "and the authorization fails" do
+          include_context(
+            "mock adyen client",
+            success: false,
+            fault_message: "Invoice rejected"
+          )
+
+          it "raises an error and creates a log entry" do
+            expect { subject }.to raise_error(
+              Spree::Gateway::AdyenRatepay::InvoiceRejectedError,
+              "Invoice rejected"
+            ).and change { Spree::LogEntry.count }.by(1)
+          end
+        end
+      end
+    end
+
     context "when the payment amount is $0" do
       let(:payment) { build :adyen_cc_payment, amount: 0 }
 
@@ -124,7 +166,7 @@ describe Spree::Adyen::Payment do
       end
     end
 
-    context "when the payment method is not an Adyen credit card" do
+    context "when the payment method should not be authorized on creation" do
       let(:payment) { build :payment, amount: 2000 }
 
       it "does not create an authorization" do

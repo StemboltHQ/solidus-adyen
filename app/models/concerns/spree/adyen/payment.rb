@@ -9,12 +9,12 @@ module Spree
       include Spree::Adyen::PaymentCheck
 
       included do
-        after_create :authorize_adyen_credit_card, if: :authorizable_cc_payment?
+        after_create :authorise_on_create, if: :should_authorise?
 
         private
 
-        def authorize_adyen_credit_card
-          payment_method.authorize_new_payment(self)
+        def authorise_on_create
+          payment_method.authorise_new_payment(self)
         end
       end
 
@@ -22,7 +22,7 @@ module Spree
       # auto_capture enabled. Since we authorize credit cards in the payment
       # step already, we just need to capture the payment here.
       def purchase!
-        if adyen_cc_payment?
+        if adyen_cc_payment? || ratepay?
           capture!
         else
           super
@@ -31,7 +31,7 @@ module Spree
 
       # capture! :: bool | error
       def capture!
-        if hpp_payment? || adyen_cc_payment?
+        if hpp_payment? || adyen_cc_payment? || ratepay?
           amount = money.money.cents
           process do
             payment_method.send(
@@ -113,8 +113,8 @@ module Spree
 
       # Solidus creates a $0 default payment during checkout using a previously
       # used credit card, which we should not create an authorization for.
-      def authorizable_cc_payment?
-        adyen_cc_payment? && amount != 0
+      def should_authorise?
+        (adyen_cc_payment? || ratepay?) && amount != 0
       end
     end
   end
