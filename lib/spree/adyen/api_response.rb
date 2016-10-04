@@ -12,6 +12,7 @@ module Spree
       end
 
       def psp_reference
+        return nil if error_response?
         @gateway_response[:psp_reference]
       end
 
