@@ -7,6 +7,7 @@ module Spree
         PRESENTERS = [
           ::Spree::Adyen::Presenters::Communications::AdyenNotification,
           ::Spree::Adyen::Presenters::Communications::HppSource,
+          ::Spree::Adyen::Presenters::Communications::RatepaySource,
           ::Spree::Adyen::Presenters::Communications::LogEntry
         ].freeze
 
