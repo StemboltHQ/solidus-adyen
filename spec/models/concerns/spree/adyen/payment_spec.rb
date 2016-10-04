@@ -43,12 +43,28 @@ describe Spree::Adyen::Payment do
     subject { payment.save! }
 
     context "when the payment method is an Adyen credit card" do
-      let(:payment) { build :adyen_cc_payment, amount: 2000 }
+      let(:payment) { build :adyen_cc_payment, amount: 2000, source: visa }
+      let(:visa) { build :credit_card, address: home }
+      let(:home) { build :address, address1: "123 Fake Street", city: "Gotham", zipcode: "42421" }
 
       context "and the source provides encrypted credit card data" do
         before do
           allow_any_instance_of(Spree::CreditCard).
             to receive(:encrypted_data).and_return("SUPERSECRETDATA")
+        end
+
+        it "calls authorise_payment with the source address" do
+          expect(client).to receive(:authorise_recurring_payment).
+            with hash_including(
+              billing_address: {
+                street: "123 Fake Street",
+                house_number_or_name: "NA",
+                city: "Gotham",
+                postal_code: "42421",
+                state_or_province: "AL",
+                country: "US"
+              })
+          subject
         end
 
         context "when the authorization succeeds" do
