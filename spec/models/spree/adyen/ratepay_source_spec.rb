@@ -10,7 +10,7 @@ describe Spree::Adyen::RatepaySource do
 
   describe "#date_of_birth" do
     it "returns the formatted date of birth" do
-      expect(subject.date_of_birth).to eq "1983-01-02"
+      expect(subject.date_of_birth).to eq "1983-02-01"
     end
   end
 
