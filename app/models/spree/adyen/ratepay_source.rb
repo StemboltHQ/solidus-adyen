@@ -13,9 +13,9 @@ module Spree
 
       # Formats the date of birth fields how they are accepted by Adyen
       #
-      # @return [String] The DOB in the format yyyy-dd-mm
+      # @return [String] The DOB in the format yyyy-mm-dd
       def date_of_birth
-        "#{dob_year}-#{dob_day}-#{dob_month}"
+        "#{dob_year}-#{dob_month}-#{dob_day}"
       end
 
       # Checks if all the date of birth fields have been set
