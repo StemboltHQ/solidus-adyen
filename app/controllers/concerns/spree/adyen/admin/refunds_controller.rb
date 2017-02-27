@@ -6,7 +6,7 @@ module Spree
         include Spree::Adyen::PaymentCheck
 
         included do
-          before_filter :adyen_create, only: [:create]
+          before_action :adyen_create, only: [:create]
         end
 
         def adyen_create

@@ -1,9 +1,9 @@
 module Spree
   class AdyenRedirectController < AdyenController
-    before_filter :restore_session
-    before_filter :check_signature, only: :confirm
+    before_action :restore_session
+    before_action :check_signature, only: :confirm
 
-    skip_before_filter :verify_authenticity_token
+    skip_before_action :verify_authenticity_token
 
     # This is the entry point after an Adyen HPP payment is completed
     def confirm
