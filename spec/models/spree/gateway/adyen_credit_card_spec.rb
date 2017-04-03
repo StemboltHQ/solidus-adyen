@@ -124,9 +124,11 @@ describe Spree::Gateway::AdyenCreditCard do
   end
 
   context "payment modifying actions" do
-    let(:gateway) { described_class.new }
+    let!(:payment) { create(:payment, response_code: "9999") }
+    let(:preferences) { { store_merchant_account_map: { payment.order.store.code => "myadyenaccount" } } }
+    let(:gateway) { described_class.new(preferences: preferences) }
 
-    shared_examples "delayed gateway action" do
+    shared_examples "delayed gateway action" do |action|
       context "when the action succeeds" do
         include_context "mock adyen client", success: true
 
@@ -134,6 +136,12 @@ describe Spree::Gateway::AdyenCreditCard do
 
         it "returns the orginal psp ref as an authorization" do
           expect(subject.authorization).to eq "9999"
+        end
+
+        it "includes the correct merchant account in the request" do
+          expect(client).to receive("#{action}_payment").
+            with(hash_including(merchant_account: "myadyenaccount"))
+          subject
         end
       end
 
@@ -156,17 +164,17 @@ describe Spree::Gateway::AdyenCreditCard do
 
     describe ".capture" do
       subject { gateway.capture(2000, "9999", currency: "EUR") }
-      include_examples "delayed gateway action"
+      include_examples "delayed gateway action", "capture"
     end
 
     describe ".credit" do
       subject { gateway.credit(2000, "9999", currency: "EUR") }
-      include_examples "delayed gateway action"
+      include_examples "delayed gateway action", "refund"
     end
 
     describe ".cancel" do
       subject { gateway.cancel("9999") }
-      include_examples "delayed gateway action"
+      include_examples "delayed gateway action", "cancel"
     end
   end
 end

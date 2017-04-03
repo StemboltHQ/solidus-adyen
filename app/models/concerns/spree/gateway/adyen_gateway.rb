@@ -6,6 +6,7 @@ module Spree
       preference :api_password, :string
       preference :api_username, :string
       preference :merchant_account, :string
+      preference :store_merchant_account_map, :hash, default: {}
     end
 
     def api_password
@@ -20,6 +21,13 @@ module Spree
       ENV["ADYEN_MERCHANT_ACCOUNT"] || preferred_merchant_account
     end
 
+    def account_locator
+      SolidusAdyen::AccountLocator.new(
+        preferred_store_merchant_account_map,
+        merchant_account
+      )
+    end
+
     def provider_class
       ::Adyen::REST
     end
@@ -32,7 +40,7 @@ module Spree
 
     def cancel(psp_reference, _gateway_options = {})
       params = {
-        merchant_account: merchant_account,
+        merchant_account: account_locator.by_reference(psp_reference),
         original_reference: psp_reference
       }
 
@@ -66,7 +74,7 @@ module Spree
 
     def modification_request(amount, currency, psp_reference)
       {
-        merchant_account: merchant_account,
+        merchant_account: account_locator.by_reference(psp_reference),
         modification_amount: { currency: currency, value: amount },
         original_reference: psp_reference,
       }

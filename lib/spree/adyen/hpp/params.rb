@@ -36,7 +36,7 @@ module Spree
 
         def authorisation_request
           {
-            merchant_account: @payment_method.merchant_account,
+            merchant_account: @payment_method.account_locator.by_order(@order),
             reference: @order.number,
             amount: {
               currency: @order.currency,
@@ -60,7 +60,7 @@ module Spree
         end
 
         def payment_method_params
-          { merchant_account: @payment_method.merchant_account,
+          { merchant_account: @payment_method.account_locator.by_order(@order),
             skin_code: @payment_method.skin_code,
             shared_secret: @payment_method.shared_secret,
             ship_before_date: @payment_method.ship_before_date
