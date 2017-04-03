@@ -93,7 +93,7 @@ module Spree
 
     def get_safe_cards order
       response = rest_client.list_recurring_details({
-        merchant_account: merchant_account,
+        merchant_account: account_locator.by_order(order),
         shopper_reference: reference_number_from_order(order),
       })
 
@@ -111,7 +111,7 @@ module Spree
     def authorization_request payment, new_card
       request = {
         reference: payment.order.number,
-        merchant_account: merchant_account,
+        merchant_account: account_locator.by_order(payment.order),
         amount: price_data(payment),
         shopper_i_p: payment.order.last_ip_address,
         shopper_email: payment.order.email,
