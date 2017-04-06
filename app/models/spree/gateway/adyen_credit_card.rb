@@ -117,6 +117,10 @@ module Spree
         shopper_email: payment.order.email,
         shopper_reference: reference_number_from_order(payment.order),
         billing_address: billing_address_from_payment(payment),
+        browser_info: {
+          user_agent: payment.request_env["HTTP_USER_AGENT"],
+          accept_header: payment.request_env["HTTP_ACCEPT"]
+        }
       }
       request.merge!(encrypted_card_data(payment.source)) if new_card
 
