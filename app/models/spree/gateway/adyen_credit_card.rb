@@ -42,14 +42,19 @@ module Spree
     def authorise_new_payment payment
       response = perform_authorization(payment)
 
-      unless response.success?
+      if response.redirect?
+        payment.adyen_api_response = response
+        payment.response_code = response.psp_reference
+        payment.save!
+      elsif response.success?
+        payment.response_code = response.psp_reference
+        payment.save!
+        update_stored_card_data(payment)
+      else
         payment.log_entries.create!(details: response.to_yaml)
         raise InvalidDetailsError
       end
 
-      payment.response_code = response.psp_reference
-      payment.save!
-      update_stored_card_data(payment)
     end
 
     private
