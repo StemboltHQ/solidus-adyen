@@ -36,6 +36,17 @@ module Spree
       ActiveMerchant::Billing::Response.new(true, "dummy authorization response")
     end
 
+    def perform_authorization_3d(payment, redirect_response_params)
+      response = rest_client.authorise_payment_3dsecure(authorization_3d_request(payment, redirect_response_params))
+      unless response.success?
+        payment.log_entries.create!(details: response.to_yaml)
+        raise InvalidDetailsError
+      end
+      payment.response_code = response.psp_reference
+      payment.save!
+      update_stored_card_data(payment)
+    end
+
     # Performs and authorization call to Adyen for the payment
     # @raise [Spree::Core::GatewayError] if the encrypted card data is missing
     # @raise [Spree::Core::GatewayError] if the authorize call fails
@@ -111,6 +122,27 @@ module Spree
 
     def reference_number_from_order order
       order.user_id.to_s.presence || order.number
+    end
+
+    def authorization_3d_request payment, redirect_response_params
+      {
+        reference: payment.order.number,
+        merchant_account: merchant_account,
+        amount: price_data(payment),
+        shopper_i_p: payment.order.last_ip_address,
+        shopper_email: payment.order.email,
+        shopper_reference: reference_number_from_order(payment.order),
+        billing_address: billing_address_from_payment(payment),
+        md: redirect_response_params["MD"],
+        pa_response: redirect_response_params["PaRes"],
+        browser_info: {
+          user_agent: payment.request_env["HTTP_USER_AGENT"],
+          accept_header: payment.request_env["HTTP_ACCEPT"]
+        },
+        recurring: {
+          contract: "RECURRING"
+        }
+      }
     end
 
     def authorization_request payment, new_card
