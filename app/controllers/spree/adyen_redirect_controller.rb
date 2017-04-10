@@ -1,6 +1,6 @@
 module Spree
   class AdyenRedirectController < AdyenController
-    before_action :restore_session
+    before_action :restore_session, only: :confirm
     before_action :check_signature, only: :confirm
 
     skip_before_action :verify_authenticity_token
@@ -19,6 +19,16 @@ module Spree
           confirm_order_incomplete
         end
       end
+    end
+
+    def authorise3d
+      payment = Spree::Payment.find_by(number: params[:payment_reference])
+      order = payment.order
+      payment_method = payment.payment_method
+      payment.request_env = request.env
+      payment_method.perform_authorization_3d(payment, adyen_3d_params)
+      order.next
+      redirect_to checkout_state_path(order.state)
     end
 
     private
@@ -105,6 +115,12 @@ module Spree
 
     def response_params
       adyen_permitted_params
+    end
+
+    # We receive `MD`, a session identifier, and `PaRes`, an
+    # authentication response, from Adyen after 3d secure redirect
+    def adyen_3d_params
+      params.permit(:MD, :PaRes)
     end
 
     def adyen_permitted_params
