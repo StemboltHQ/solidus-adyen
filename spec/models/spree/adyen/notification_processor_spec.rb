@@ -152,10 +152,33 @@ RSpec.describe Spree::Adyen::NotificationProcessor do
             create(:notification, :auth, order: order)
           end
 
-          it "creates a payment" do
-            expect { subject }.
-              to change { order.payments.count }.
-              to 1
+          context "creates a payment" do
+            it do
+              expect { subject }.
+                to change { order.payments.count }.
+                to 1
+            end
+
+            it "is store specific" do
+              store_specific_payment_method = create(:spree_gateway_adyen_hpp)
+
+              order.store.payment_methods << store_specific_payment_method
+
+              _other_payment_method = create(:spree_gateway_adyen_hpp)
+
+              expect(
+                subject.order.payments.last.payment_method
+              ).to eq(store_specific_payment_method)
+            end
+
+            it "is default" do
+              other_payment_method = create(:spree_gateway_adyen_hpp)
+
+              expect(
+                subject.order.payments.last.payment_method
+              ).to eq(other_payment_method)
+            end
+
           end
 
           it "completes the order" do

@@ -132,7 +132,7 @@ module Spree
           amount: notification.money.dollars,
           # We have no idea what payment method they used, this will be
           # updated when/if they get redirected
-          payment_method: Spree::Gateway::AdyenHPP.last,
+          payment_method: payment_method_for(order),
           response_code: notification.psp_reference,
           source: source,
           order: order
@@ -141,6 +141,12 @@ module Spree
         order.contents.advance
         order.complete
         payment
+      end
+
+      def payment_method_for(order)
+        order.store.payment_methods.where(type: 'Spree::Gateway::AdyenHPP', active: true).last!
+      rescue
+        Spree::Gateway::AdyenHPP.last
       end
 
       def should_create_payment?
