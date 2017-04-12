@@ -125,7 +125,7 @@ module Spree
     end
 
     def authorization_3d_request payment, redirect_response_params
-      {
+      request = {
         reference: payment.order.number,
         merchant_account: merchant_account,
         amount: price_data(payment),
@@ -135,14 +135,14 @@ module Spree
         billing_address: billing_address_from_payment(payment),
         md: redirect_response_params["MD"],
         pa_response: redirect_response_params["PaRes"],
-        browser_info: {
-          user_agent: payment.request_env["HTTP_USER_AGENT"],
-          accept_header: payment.request_env["HTTP_ACCEPT"]
-        },
         recurring: {
           contract: "RECURRING"
         }
       }
+
+      request.merge!(browser_info(payment.request_env)) if payment.request_env
+
+      request
     end
 
     def authorization_request payment, new_card
@@ -153,15 +153,21 @@ module Spree
         shopper_i_p: payment.order.last_ip_address,
         shopper_email: payment.order.email,
         shopper_reference: reference_number_from_order(payment.order),
-        billing_address: billing_address_from_payment(payment),
-        browser_info: {
-          user_agent: payment.request_env["HTTP_USER_AGENT"],
-          accept_header: payment.request_env["HTTP_ACCEPT"]
-        }
+        billing_address: billing_address_from_payment(payment)
       }
       request.merge!(encrypted_card_data(payment.source)) if new_card
+      request.merge!(browser_info(payment.request_env)) if payment.request_env
 
       request
+    end
+
+    def browser_info headers
+      {
+        browser_info: {
+          user_agent: headers["HTTP_USER_AGENT"],
+          accept_header: headers["HTTP_ACCEPT"]
+        }
+      }
     end
 
     def encrypted_card_data source
