@@ -1,4 +1,5 @@
 require "spec_helper"
+require "uri"
 
 describe Spree::Adyen::ApiResponse do
   let(:http_success) do
@@ -7,10 +8,23 @@ describe Spree::Adyen::ApiResponse do
       body: "resultCode=Authorised&pspReference=1234567890",
     )
   end
+  let(:http_redirect) do
+    instance_double(
+      "Net::HTTPSuccess",
+      body: URI.encode_www_form({"resultCode"=>["RedirectShopper"],
+                                 "md"=>["encryptedmd"],
+                                 "paRequest"=>["encryptedpaReq"],
+                                 "issuerUrl"=>
+                                 ["https://test.adyen.com/hpp/3d/validate.shtml"],
+                                 "pspReference"=>["1234567890"]})
+    )
+  end
   let(:http_failure) do
     instance_double(
       "Net::HTTPSuccess",
-      body: "resultCode=Refused&refusalReason=Denied&response=Modify failure",
+      body: URI.encode_www_form({"resultCode"=>["Refused"],
+                                 "refusalReason"=>["Denied"],
+                                 "response"=>["Modify failure"]})
     )
   end
   let(:http_error) do
@@ -19,6 +33,7 @@ describe Spree::Adyen::ApiResponse do
       body: "Something went wrong"
     )
   end
+  let(:api_redirect) { Adyen::REST::Response.new(http_redirect) }
   let(:api_success) { Adyen::REST::AuthorisePayment::Response.new(http_success) }
   let(:api_failure) { Adyen::REST::Response.new(http_failure) }
   let(:api_error) { Adyen::REST::ResponseError.new("ERROR") }
@@ -56,6 +71,17 @@ describe Spree::Adyen::ApiResponse do
       it "returns the response attributes" do
         expect(described_class.new(api_success).attributes).
           to eq ({ "resultCode" => "Authorised", "pspReference" =>"1234567890" })
+      end
+    end
+
+    context "when the request returns a redirect" do
+      it "returns the redirect attributes" do
+        expect(described_class.new(api_redirect).attributes).
+          to eq ({ "resultCode" => "RedirectShopper",
+                   "md" => "encryptedmd",
+                   "paRequest" => "encryptedpaReq",
+                   "pspReference" => "1234567890",
+                   "issuerUrl" => "https://test.adyen.com/hpp/3d/validate.shtml" })
       end
     end
   end
