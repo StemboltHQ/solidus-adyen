@@ -101,6 +101,26 @@ describe Spree::AdyenNotificationsController do
           to change { AdyenNotification.count }.by(1)
         end
       end
+
+      context "notification contains a long report filename" do
+        let(:params) do
+          { "reason" => "https://ca-test.adyen.com/reports/download/MerchantAccount/"\
+            "A_Client_with_a_long_merchant_account/invoice-201605000203.MerchantAccount."\
+            "A_Client_with_a_long_merchant_account-UK_WO.pdf",
+            "merchantAccountCode" => "A_Client_with_a_long_merchant_account",
+            "eventCode" => "REPORT_AVAILABLE",
+            "success" => "true",
+            "currency" => "GBP",
+            "pspReference" => "invoice-201605000203.MerchantAccount.A_Client_with_a_long_merchant_account-UK_WO.pdf",
+            "value" => "0",
+            "live" => "false",
+            "eventDate" => "2016-06-08T17:48:54.79Z" }
+        end
+
+        before { bypass_auth }
+
+        include_examples "logs the notification"
+      end
     end
 
     context "request not authenticated" do
