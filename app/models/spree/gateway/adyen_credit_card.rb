@@ -36,7 +36,7 @@ module Spree
       ActiveMerchant::Billing::Response.new(true, "dummy authorization response")
     end
 
-    def perform_authorization_3d(payment, adyen_3d_params)
+    def authorise_3d_secure_payment(payment, adyen_3d_params)
       response = rest_client.authorise_payment_3dsecure(authorization_request(payment, false, adyen_3d_params))
       handle_adyen_response(payment, response)
     end

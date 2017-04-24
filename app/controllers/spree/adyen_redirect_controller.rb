@@ -22,13 +22,17 @@ module Spree
     end
 
     def authorise3d
-      payment = Spree::Payment.find_by(number: params[:payment_reference])
-      order = payment.order
-      payment_method = payment.payment_method
-      payment.request_env = request.env
-      payment_method.perform_authorization_3d(payment, adyen_3d_params)
-      advance_to_confirm(order)
-      redirect_to checkout_state_path(order.state)
+      @payment = Spree::Payment.find_by(number: params[:payment_reference])
+      @payment.request_env = request.env
+      @order = @payment.order
+      payment_method = @payment.payment_method
+      begin
+        payment_method.authorise_3d_secure_payment(@payment, adyen_3d_params)
+        advance_to_confirm(order)
+        redirect_to checkout_state_path(@order.state)
+      rescue Spree::Gateway::AdyenCreditCard::InvalidDetailsError
+        handle_failed_redirect
+      end
     end
 
     private
@@ -42,7 +46,7 @@ module Spree
       end
     end
 
-    def handle_failed_redirect source
+    def handle_failed_redirect
       flash.notice = Spree.t(:payment_processing_failed)
       redirect_to checkout_state_path(@order.state)
     end
@@ -50,7 +54,7 @@ module Spree
     def confirm_order_incomplete
       source = Adyen::HppSource.new(source_params)
 
-      return handle_failed_redirect(source) unless source.authorised?
+      return handle_failed_redirect unless source.authorised?
 
       # payment is created in a 'checkout' state so that the payment method
       # can attempt to auth it. The payment of course is already auth'd and
