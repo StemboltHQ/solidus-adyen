@@ -27,11 +27,21 @@ module Spree
       payment_method = payment.payment_method
       payment.request_env = request.env
       payment_method.perform_authorization_3d(payment, adyen_3d_params)
-      order.next
+      advance_to_confirm(order)
       redirect_to checkout_state_path(order.state)
     end
 
     private
+
+    def advance_to_confirm(order)
+      steps = order.checkout_steps
+      return if steps.index("confirm") < (steps.index(order.state) || 0)
+
+      until order.state == "confirm"
+        order.next!
+      end
+    end
+
     def handle_failed_redirect source
       flash.notice = Spree.t(:payment_processing_failed)
       redirect_to checkout_state_path(@order.state)
