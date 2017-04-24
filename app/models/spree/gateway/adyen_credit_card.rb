@@ -36,15 +36,9 @@ module Spree
       ActiveMerchant::Billing::Response.new(true, "dummy authorization response")
     end
 
-    def perform_authorization_3d(payment, redirect_response_params)
-      response = rest_client.authorise_payment_3dsecure(authorization_3d_request(payment, redirect_response_params))
-      unless response.success?
-        payment.log_entries.create!(details: response.to_yaml)
-        raise InvalidDetailsError
-      end
-      payment.response_code = response.psp_reference
-      payment.save!
-      update_stored_card_data(payment)
+    def perform_authorization_3d(payment, adyen_3d_params)
+      response = rest_client.authorise_payment_3dsecure(authorization_request(payment, false, adyen_3d_params))
+      handle_adyen_response(payment, response)
     end
 
     # Performs and authorization call to Adyen for the payment
@@ -52,7 +46,12 @@ module Spree
     # @raise [Spree::Core::GatewayError] if the authorize call fails
     def authorise_new_payment payment
       response = perform_authorization(payment)
+      handle_adyen_response(payment, response)
+    end
 
+    private
+
+    def handle_adyen_response(payment, response)
       if response.redirect?
         payment.adyen_api_response = response
         payment.response_code = response.psp_reference
@@ -65,10 +64,7 @@ module Spree
         payment.log_entries.create!(details: response.to_yaml)
         raise InvalidDetailsError
       end
-
     end
-
-    private
 
     def new_credit_card? source
       source.encrypted_data.present?
