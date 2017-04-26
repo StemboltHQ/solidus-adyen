@@ -1,6 +1,6 @@
 module Spree
   class AdyenRedirectController < AdyenController
-    before_action :restore_session
+    before_action :restore_session, only: :confirm
     before_action :check_signature, only: :confirm
 
     skip_before_action :verify_authenticity_token
@@ -21,8 +21,32 @@ module Spree
       end
     end
 
+    def authorise3d
+      @payment = Spree::Payment.find_by(number: params[:payment_reference])
+      @payment.request_env = request.env
+      @order = @payment.order
+      payment_method = @payment.payment_method
+      begin
+        payment_method.authorise_3d_secure_payment(@payment, adyen_3d_params)
+        advance_to_confirm(order)
+        redirect_to checkout_state_path(@order.state)
+      rescue Spree::Gateway::AdyenCreditCard::InvalidDetailsError
+        handle_failed_redirect
+      end
+    end
+
     private
-    def handle_failed_redirect source
+
+    def advance_to_confirm(order)
+      steps = order.checkout_steps
+      return if steps.index("confirm") < (steps.index(order.state) || 0)
+
+      until order.state == "confirm"
+        order.next!
+      end
+    end
+
+    def handle_failed_redirect
       flash.notice = Spree.t(:payment_processing_failed)
       redirect_to checkout_state_path(@order.state)
     end
@@ -30,7 +54,7 @@ module Spree
     def confirm_order_incomplete
       source = Adyen::HppSource.new(source_params)
 
-      return handle_failed_redirect(source) unless source.authorised?
+      return handle_failed_redirect unless source.authorised?
 
       # payment is created in a 'checkout' state so that the payment method
       # can attempt to auth it. The payment of course is already auth'd and
@@ -105,6 +129,12 @@ module Spree
 
     def response_params
       adyen_permitted_params
+    end
+
+    # We receive `MD`, a session identifier, and `PaRes`, an
+    # authentication response, from Adyen after 3d secure redirect
+    def adyen_3d_params
+      params.permit(:MD, :PaRes)
     end
 
     def adyen_permitted_params

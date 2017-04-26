@@ -11,6 +11,8 @@ module Spree
       included do
         after_create :authorise_on_create, if: :should_authorise?
 
+        attr_accessor :adyen_api_response
+
         private
 
         def authorise_on_create

@@ -36,23 +36,35 @@ module Spree
       ActiveMerchant::Billing::Response.new(true, "dummy authorization response")
     end
 
+    def authorise_3d_secure_payment(payment, adyen_3d_params)
+      response = rest_client.authorise_payment_3dsecure(authorization_request(payment, false, adyen_3d_params))
+      handle_adyen_response(payment, response)
+    end
+
     # Performs and authorization call to Adyen for the payment
     # @raise [Spree::Core::GatewayError] if the encrypted card data is missing
     # @raise [Spree::Core::GatewayError] if the authorize call fails
     def authorise_new_payment payment
       response = perform_authorization(payment)
-
-      unless response.success?
-        payment.log_entries.create!(details: response.to_yaml)
-        raise InvalidDetailsError
-      end
-
-      payment.response_code = response.psp_reference
-      payment.save!
-      update_stored_card_data(payment)
+      handle_adyen_response(payment, response)
     end
 
     private
+
+    def handle_adyen_response(payment, response)
+      if response.redirect?
+        payment.adyen_api_response = response
+        payment.response_code = response.psp_reference
+        payment.save!
+      elsif response.success?
+        payment.response_code = response.psp_reference
+        payment.save!
+        update_stored_card_data(payment)
+      else
+        payment.log_entries.create!(details: response.to_yaml)
+        raise InvalidDetailsError
+      end
+    end
 
     def new_credit_card? source
       source.encrypted_data.present?
@@ -108,6 +120,27 @@ module Spree
       order.user_id.to_s.presence || order.number
     end
 
+    def authorization_3d_request payment, redirect_response_params
+      request = {
+        reference: payment.order.number,
+        merchant_account: merchant_account,
+        amount: price_data(payment),
+        shopper_i_p: payment.order.last_ip_address,
+        shopper_email: payment.order.email,
+        shopper_reference: reference_number_from_order(payment.order),
+        billing_address: billing_address_from_payment(payment),
+        md: redirect_response_params["MD"],
+        pa_response: redirect_response_params["PaRes"],
+        recurring: {
+          contract: "RECURRING"
+        }
+      }
+
+      request.merge!(browser_info(payment.request_env)) if payment.request_env
+
+      request
+    end
+
     def authorization_request payment, new_card
       request = {
         reference: payment.order.number,
@@ -116,11 +149,21 @@ module Spree
         shopper_i_p: payment.order.last_ip_address,
         shopper_email: payment.order.email,
         shopper_reference: reference_number_from_order(payment.order),
-        billing_address: billing_address_from_payment(payment),
+        billing_address: billing_address_from_payment(payment)
       }
       request.merge!(encrypted_card_data(payment.source)) if new_card
+      request.merge!(browser_info(payment.request_env)) if payment.request_env
 
       request
+    end
+
+    def browser_info headers
+      {
+        browser_info: {
+          user_agent: headers["HTTP_USER_AGENT"],
+          accept_header: headers["HTTP_ACCEPT"]
+        }
+      }
     end
 
     def encrypted_card_data source

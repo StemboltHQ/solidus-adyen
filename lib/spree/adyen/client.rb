@@ -9,6 +9,10 @@ module Spree
         execute_request(:authorise_payment, params)
       end
 
+      def authorise_payment_3dsecure params
+        execute_request(:authorise_payment_3dsecure, params)
+      end
+
       def authorise_recurring_payment params
         execute_request(:authorise_recurring_payment, params)
       end

@@ -1,4 +1,4 @@
-shared_context "mock adyen client" do |success:, fault_message: "", psp_reference: "" |
+shared_context "mock adyen client" do |success:, redirect: false, fault_message: "", psp_reference: "" |
   before do
     allow(Spree::Adyen::Client).
       to receive(:new).
@@ -26,6 +26,7 @@ shared_context "mock adyen client" do |success:, fault_message: "", psp_referenc
       instance_double(
         "Spree::Adyen::ApiResponse",
         success?: success,
+        redirect?: redirect,
         message: fault_message,
         psp_reference: psp_reference,
         attributes: { "resultCode" => "Authorised" },

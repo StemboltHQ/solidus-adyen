@@ -11,6 +11,11 @@ module Spree
         !error_response? && gateway_response.success?
       end
 
+      def redirect?
+        @gateway_response.is_a?(::Adyen::REST::AuthorisePayment::Response) &&
+          @gateway_response.attributes["paymentResult.resultCode"] == "RedirectShopper"
+      end
+
       def psp_reference
         return nil if error_response?
         @gateway_response[:psp_reference]
