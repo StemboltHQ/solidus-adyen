@@ -123,7 +123,7 @@ module Spree
     def authorization_3d_request payment, redirect_response_params
       request = {
         reference: payment.order.number,
-        merchant_account: merchant_account,
+        merchant_account: account_locator.by_order(payment.order),
         amount: price_data(payment),
         shopper_i_p: payment.order.last_ip_address,
         shopper_email: payment.order.email,
