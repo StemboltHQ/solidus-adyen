@@ -28,7 +28,7 @@ module Spree
       payment_method = @payment.payment_method
       begin
         payment_method.authorise_3d_secure_payment(@payment, adyen_3d_params)
-        advance_to_confirm(order)
+        advance_to_confirm(@order)
         redirect_to checkout_state_path(@order.state)
       rescue Spree::Gateway::AdyenCreditCard::InvalidDetailsError
         handle_failed_redirect
