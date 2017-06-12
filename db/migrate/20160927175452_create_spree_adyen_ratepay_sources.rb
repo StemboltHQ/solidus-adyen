@@ -1,4 +1,4 @@
-class CreateSpreeAdyenRatepaySources < ActiveRecord::Migration
+class CreateSpreeAdyenRatepaySources < SolidusSupport::Migration[4.2]
   def change
     create_table :spree_adyen_ratepay_sources do |t|
       t.string :auth_result

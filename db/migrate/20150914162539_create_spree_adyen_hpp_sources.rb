@@ -1,6 +1,6 @@
 # Fields come from
 # https://docs.adyen.com/display/TD/HPP+payment+response
-class CreateSpreeAdyenHppSources < ActiveRecord::Migration
+class CreateSpreeAdyenHppSources < SolidusSupport::Migration[4.2]
   def change
     create_table :spree_adyen_hpp_sources do |t|
       t.string :auth_result
