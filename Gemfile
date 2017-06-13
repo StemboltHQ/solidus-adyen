@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 branch = ENV.fetch("SOLIDUS_BRANCH", "master")
+
 if branch == "master" || branch >= "v2.0"
   gem "rails-controller-testing", group: :test
 end
@@ -11,6 +12,7 @@ elsif branch >= "v2.0"
   gem 'rails', '~> 5.0.0' # HACK: broken bundler dependency resolution
 else
   gem "rails", '~> 4.2.0' # HACK: broken bundler dependency resolution
+  gem 'rails_test_params_backport', group: :test
 end
 
 group :development, :test do

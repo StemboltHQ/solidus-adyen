@@ -18,8 +18,10 @@ RSpec.describe Spree::Adyen::HppsController, type: :controller do
     context "html response" do
       subject {
         get :directory,
-        order_id: order.id,
-        payment_method_id: payment_method.id }
+        params: {
+          order_id: order.id,
+          payment_method_id: payment_method.id
+        } }
 
       it { is_expected.to have_http_status :ok }
       it { is_expected.to render_template "directory" }
@@ -28,9 +30,12 @@ RSpec.describe Spree::Adyen::HppsController, type: :controller do
     context "json response" do
       subject {
         get :directory,
-        order_id: order.id,
-        payment_method_id: payment_method.id,
-        format: :json }
+        params: {
+          order_id: order.id,
+          payment_method_id: payment_method.id,
+          format: :json
+        }
+      }
 
       it { is_expected.to have_http_status :ok }
 

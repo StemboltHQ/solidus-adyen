@@ -6,7 +6,7 @@ RSpec.describe Spree::Admin::RefundsController do
   routes { Spree::Core::Engine.routes }
 
   describe "POST create" do
-    subject { post :create, params }
+    subject { post :create, params: params }
 
     let(:params) do
       {

@@ -20,7 +20,7 @@ RSpec.describe Spree::AdyenRedirectController, type: :controller do
   end
 
   describe "GET confirm" do
-    subject(:action) { spree_get :confirm, params }
+    subject(:action) { get :confirm, params: params }
 
     let(:psp_reference) { "8813824003752247" }
     let(:payment_method) { "amex" }
