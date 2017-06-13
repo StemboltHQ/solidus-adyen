@@ -47,7 +47,7 @@ describe Spree::AdyenNotificationsController do
   end
 
   describe "POST notify" do
-    subject { post :notify, params }
+    subject { post :notify, params: params }
 
     shared_examples "success" do
       it "acknowledges the request" do
@@ -91,10 +91,10 @@ describe Spree::AdyenNotificationsController do
 
         it "errors and creates a notification" do
           expect {
-            expect { post(:notify, params) }.
+            expect { post(:notify, params: params) }.
             to raise_error(StateMachines::InvalidTransition)
 
-            expect(post(:notify, params)).
+            expect(post(:notify, params: params)).
               to have_http_status(:ok).
               and have_attributes(body: "[accepted]")
           }.
@@ -113,9 +113,9 @@ describe Spree::AdyenNotificationsController do
 
       it "doesn't create a notification" do
         # explict call of subject to avoid memoization
-        post :notify, params
+        post :notify, params: params
 
-        expect{ post :notify, params }.
+        expect{ post :notify, params: params }.
           to_not change{ AdyenNotification.count }
       end
     end

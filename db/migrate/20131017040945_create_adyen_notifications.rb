@@ -1,5 +1,5 @@
 # @private
-class CreateAdyenNotifications < ActiveRecord::Migration
+class CreateAdyenNotifications < SolidusSupport::Migration[4.2]
   
   def self.up
     create_table :adyen_notifications do |t|

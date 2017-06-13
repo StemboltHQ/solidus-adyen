@@ -146,20 +146,20 @@ RSpec.describe "Notification processing", type: :request do
 
   def authorize_request
     ActiveRecord::Base.establish_connection
-    post "/adyen/notify", auth_params, headers
+    post "/adyen/notify", params: auth_params, headers: headers
     expect(response).to have_http_status :ok
     expect(response.body).to eq "[accepted]"
   end
 
   def redirect_request
     ActiveRecord::Base.establish_connection
-    response_code = get "/checkout/payment/adyen", checkout_params, headers
+    response_code = get "/checkout/payment/adyen", params: checkout_params, headers: headers
     expect(response_code).to eq 302
   end
 
   def capture_request
     expect do
-      post "/adyen/notify", capture_params, headers
+      post "/adyen/notify", params: capture_params, headers: headers
     end.
     to change { order.payments.last.reload.state }.
     from("processing").
