@@ -28,27 +28,20 @@ module Spree
           end
       end
 
-      # only process the notification if there is a matching payment there's a
-      # number of reasons why there may not be a matching payment such as test
-      # notifications, reports etc, we just log them and then accept
       def process!
-        return notification if order.nil?
+        if should_create_payment?
+          self.payment = create_missing_payment
+        end
 
-        order.with_lock do
-          if should_create_payment?
-            self.payment = create_missing_payment
-          end
+        if !notification.success?
+          handle_failure
 
-          if !notification.success?
-            handle_failure
+        elsif notification.modification_event?
+          handle_modification_event
 
-          elsif notification.modification_event?
-            handle_modification_event
+        elsif notification.normal_event?
+          handle_normal_event
 
-          elsif notification.normal_event?
-            handle_normal_event
-
-          end
         end
 
         return notification
