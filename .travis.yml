@@ -1,4 +1,7 @@
+sudo: false
+dist: trusty
 language: ruby
+cache: bundler
 rvm:
   - 2.2.3
 env:
