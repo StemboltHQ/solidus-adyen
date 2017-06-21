@@ -11,8 +11,11 @@ module Spree
         notification = AdyenNotification.build(params)
         notification.save!
 
-        # prevent alteration to associated payment while we're handling the action
-        Spree::Adyen::NotificationProcessor.new(notification).process!
+        # Only process the notification if we have an associated order.
+        # We might not in the case of test notifications, reports, etc.
+        notification.order.try!(:with_lock) do
+          Spree::Adyen::NotificationProcessor.new(notification).process!
+        end
         accept
       end
     end
