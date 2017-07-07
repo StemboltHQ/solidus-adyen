@@ -6,9 +6,6 @@ module Spree
         load_resource :payment_method, class: "Spree::PaymentMethod", id_param: :payment_method_id
 
         def directory
-          return render :json => {:error => "payment-method-not-found"}.to_json, :status => 404 if @payment_method.nil?
-          return render :json => {:error => "order-not-found"}.to_json, :status => 404 if @order.nil?
-
           render json: brands
         end
 

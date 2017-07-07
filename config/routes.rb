@@ -1,3 +1,9 @@
+class AdyenHppDirectoryConstraint
+  def matches?(request)
+    request.params[:payment_method_id].present? && request.params[:order_id].present?
+  end
+end
+
 Spree::Core::Engine.routes.draw do
   namespace :adyen do
     resource :hpp, only: [] do
@@ -13,7 +19,7 @@ Spree::Core::Engine.routes.draw do
 
   namespace :api, defaults: {format: 'json'} do
     namespace :adyen do
-      get 'hpp/directory', to: 'hpps#directory'
+      get 'hpp/directory', to: 'hpps#directory', constraints: AdyenHppDirectoryConstraint.new
     end
   end
 end
