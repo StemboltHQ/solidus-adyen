@@ -20,6 +20,7 @@ Spree::Core::Engine.routes.draw do
   namespace :api, defaults: {format: 'json'} do
     namespace :adyen do
       get 'hpp/directory', to: 'hpps#directory', constraints: AdyenHppDirectoryConstraint.new
+      get 'payment/confirm', to: 'redirect#confirm', as: :api_adyen_confirmation
     end
   end
 end

@@ -52,7 +52,7 @@ module Spree
         def order_params
           { currency_code: @order.currency,
             merchant_reference: @order.number.to_s,
-            country_code: @order.billing_address.country.iso,
+            country_code: (@order.billing_address.country.iso || ''),
             payment_amount: (@order.total * 100).to_int,
             shopper_locale: I18n.locale.to_s.gsub("-", "_"),
             shopper_email: @order.email,
@@ -87,8 +87,8 @@ module Spree
 
         def address_params
           {
-            delivery_address: address_fields,
-            billing_address: address_fields,
+            delivery_address: (address_fields || ''),
+            billing_address: (address_fields || ''),
           }
         end
 
