@@ -43,7 +43,7 @@ module Spree::Adyen
         ).last
       end
 
-      payment.source.update(source_params)
+      payment.source.update(@source_params)
 
       true
     end
