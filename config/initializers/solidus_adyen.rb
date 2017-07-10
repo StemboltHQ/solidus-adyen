@@ -10,3 +10,9 @@ Rails.application.config.assets.precompile += %w(
 Spree::Adyen::HPP.configure do |config|
   config.params_class = Spree::Adyen::HPP::Params
 end
+
+module Spree
+  module Adyen
+    InvalidSignatureError = Class.new(StandardError)
+  end
+end
