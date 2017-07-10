@@ -2,7 +2,7 @@ module Spree::Adyen
   # Class responsible for processing HPP order confirmations.
   class ConfirmHppPayment
 
-    def confirm(order, payment_method, source_params)
+    def self.confirm(order, payment_method, source_params)
       @order = order
       @payment_method = payment_method
       @source_params = source_params
@@ -29,7 +29,7 @@ module Spree::Adyen
     #
     # We do this because there is a chance that we never get redirected back
     # so we need to make sure we complete the payment and order.
-    def confirm_order_already_completed
+    def self.confirm_order_already_completed
       if @source_params[:pspReference]
         payment = @order
                       .payments
@@ -48,7 +48,7 @@ module Spree::Adyen
       true
     end
 
-    def confirm_order_incomplete
+    def self.confirm_order_incomplete
       source = Spree::Adyen::HppSource.new(@source_params)
 
       return false unless source.authorised?
@@ -67,7 +67,7 @@ module Spree::Adyen
       complete
     end
 
-    def complete
+    def self.complete
       @order.contents.advance
       @order.complete
     end
