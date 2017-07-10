@@ -24,7 +24,6 @@ module Spree
           )
         end
 
-        # @param [Spree::Adyen::InvalidSignatureError] error
         def handle_signature_error(error)
           render(
               json: {
@@ -34,6 +33,10 @@ module Spree
               },
               status: 422
           )
+        end
+
+        def auth_result
+          params[:authResult]
         end
 
       end
