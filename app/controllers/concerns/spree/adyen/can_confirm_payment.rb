@@ -16,8 +16,7 @@ module Spree
       # This is the entry point after an Adyen HPP payment is completed
       def confirm
         success = Spree::Adyen::ConfirmHppPayment
-                      .new(@order, @payment_method, source_params)
-                      .confirm
+                      .confirm @order, @payment_method, source_params
 
         if success
           handle_successful_payment
@@ -52,7 +51,6 @@ module Spree
         raise 'Missing method'
       end
 
-      # @param [Spree::Adyen::InvalidSignatureError] error
       def handle_signature_error(error)
         raise 'Missing method'
       end

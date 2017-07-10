@@ -2,13 +2,11 @@ module Spree::Adyen
   # Class responsible for processing HPP order confirmations.
   class ConfirmHppPayment
 
-    def initialize(order, payment_method, source_params)
+    def confirm(order, payment_method, source_params)
       @order = order
       @payment_method = payment_method
       @source_params = source_params
-    end
 
-    def confirm
       # Reload order as it might have changed since previously loading it
       # from an auth notification coming in at the same time.
       # This and the notification processing need to have a lock on the order

@@ -41,10 +41,9 @@ module Spree
       redirect_to order_path(@order)
     end
 
-    def check_signature
-      unless ::Adyen::HPP::Signature.verify(response_params, @payment_method.shared_secret)
-        raise Spree::Adyen::InvalidSignatureError, 'Signature invalid!'
-      end
+    def handle_signature_error(error)
+      flash.notice = error.message
+      redirect_to checkout_state_path(@order.state)
     end
 
     # We pass the guest token and payment method id in, pipe seperated in the
