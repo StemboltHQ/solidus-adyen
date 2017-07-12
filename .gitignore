@@ -18,7 +18,6 @@ pickle-email-*.html
 .project
 config/initializers/secret_token.rb
 
-Gemfile.lock
 spec/dummy
 config/credentials.yml
 
