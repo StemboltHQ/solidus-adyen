@@ -4,7 +4,7 @@ jobs:
     parallelism: 1
     working_directory: ~/solidus_adyen
     docker:
-      - image: circleci/ruby:2.2.0-node
+      - image: circleci/ruby:2.3.1
         environment:
           RAILS_ENV: test
     steps:
