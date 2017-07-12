@@ -1,5 +1,3 @@
-require 'solidus_adyen/account_locator'
-
 module Spree
   module Gateway::AdyenGateway
     extend ActiveSupport::Concern
@@ -24,7 +22,7 @@ module Spree
     end
 
     def account_locator
-      SolidusAdyen::AccountLocator.new(
+      Spree::Adyen::AccountLocator.new(
         preferred_store_merchant_account_map,
         merchant_account
       )
