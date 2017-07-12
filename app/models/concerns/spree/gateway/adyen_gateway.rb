@@ -1,4 +1,4 @@
-# require 'solidus_adyen/account_locator'
+require 'solidus_adyen/account_locator'
 
 module Spree
   module Gateway::AdyenGateway
