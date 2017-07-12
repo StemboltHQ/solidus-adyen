@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SolidusAdyen::AccountLocator do
+describe Spree::Adyen::AccountLocator do
   let(:account_locator) { described_class.new({ "test" => "OTHER_ACCOUNT" }, "DEFAULT_ACCOUNT") }
 
   describe "#by_reference" do

@@ -1,0 +1,48 @@
+version: 2
+jobs:
+  build:
+    parallelism: 1
+    working_directory: ~/solidus_adyen
+    docker:
+      - image: circleci/ruby:2.3.4
+        environment:
+          RAILS_ENV: test
+          SOLIDUS_BRANCH: v2.0
+    steps:
+      - checkout
+
+      # Restore bundle cache
+      - type: cache-restore
+        key: bundles-{{ checksum "Gemfile.lock" }}
+
+      # Bundle install dependencies
+      - run: bundle install --path vendor/bundle
+
+      # Store bundle cache
+      - type: cache-save
+        key: bundles-{{ checksum "Gemfile.lock" }}
+        paths:
+          - vendor/bundle
+
+      # Run tests
+      - type: shell
+        command: |
+          bundle exec rake test_app
+      - type: shell
+        command: |
+          ( cd ./spec/dummy && bundle exec rake solidus-adyen:factory_girl:lint RAILS_ENV=test )
+      - type: shell
+        command: |
+          bundle exec rspec --profile 10 \
+                            --format RspecJunitFormatter \
+                            --out /tmp/test-results/rspec.xml \
+                            --format progress \
+                            $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+
+      # Save artifacts
+      - type: store_test_results
+        path: /tmp/test-results
+
+
+
+
