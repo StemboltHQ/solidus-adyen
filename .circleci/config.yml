@@ -25,7 +25,14 @@ jobs:
 
       # Run tests
       - type: shell
-        command: bundle exec rake test_app && ( cd ./spec/dummy && bundle exec rake solidus-adyen:factory_girl:lint RAILS_ENV=test ) && bundle exec rspec
+        command: |
+          bundle exec rake test_app
+      - type: shell
+        command: |
+          ( cd ./spec/dummy && bundle exec rake solidus-adyen:factory_girl:lint RAILS_ENV=test )
+      - type: shell
+        command: |
+          bundle exec rspec
 
       # Save artifacts
       - type: store_test_results
