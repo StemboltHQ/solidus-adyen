@@ -29,7 +29,7 @@ module Spree
         private
 
         def default_params
-          { session_validity: 10.minutes.from_now.iso8601,
+          { session_validity: 10.minutes.from_now.utc,
             recurring: false
           }
         end
