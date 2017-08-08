@@ -31,6 +31,7 @@ group :test do
   gem "vcr"
   gem "webmock", "~> 1.24"
   gem "selenium-webdriver"
+  gem 'chromedriver-helper', require: false
 end
 
 gemspec
