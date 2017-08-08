@@ -42,14 +42,14 @@ shared_context "complete credit card payment" do
   end
 end
 
-describe "Entering Credit Card Data" do
+describe "Entering Credit Card Data", js: true, truncation: true do
   include_context 'checkout setup'
 
   it "shows the adyen gateway as an option" do
     expect(page).to have_content("Adyen Credit Card")
   end
 
-  context "when the adyen gateway is selected", js: true, truncation: true do
+  context "when the adyen gateway is selected" do
     context "and the form is not filled out" do
       it "displays an alert on submit and validates the form" do
         choose('Adyen Credit Card')
@@ -115,7 +115,7 @@ describe "Entering Credit Card Data" do
     end
   end
 
-  context "when the adyen gateway is not selected", js: true, truncation: true do
+  context "when the adyen gateway is not selected" do
     context "and the form is not filled out" do
       it "submits the data from the other gateway" do
         choose('Credit Card')

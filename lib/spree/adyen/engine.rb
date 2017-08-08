@@ -42,36 +42,6 @@ module Spree
       end
 
       config.to_prepare(&method(:activate).to_proc)
-      # The module eval below adds the optional billing address parameter to the
-      # authorise payment methods so that it can be included in payment requests.
-      #
-      # This should also be deleted if it gets merged into the Adyen gem.
-      config.to_prepare do
-        ::Adyen::API.module_eval do
-          def authorise_payment(reference, amount, shopper, card, enable_recurring_contract = false, fraud_offset = nil, instant_capture = false, billing_address = nil)
-            params = { :reference       => reference,
-                       :amount          => amount,
-                       :shopper         => shopper,
-                       :card            => card,
-                       :billing_address => billing_address,
-                       :recurring       => enable_recurring_contract,
-                       :fraud_offset    => fraud_offset,
-                       :instant_capture => instant_capture }
-            ::Adyen::API::PaymentService.new(params).authorise_payment
-          end
-
-          def authorise_recurring_payment(reference, amount, shopper, recurring_detail_reference = 'LATEST', fraud_offset = nil, instant_capture = false, billing_address = nil)
-            params = { :reference => reference,
-                       :amount    => amount,
-                       :shopper   => shopper,
-                       :billing_address => billing_address,
-                       :recurring_detail_reference => recurring_detail_reference,
-                       :fraud_offset => fraud_offset,
-                       :instant_capture => instant_capture }
-            ::Adyen::API::PaymentService.new(params).authorise_recurring_payment
-          end
-        end
-      end
     end
   end
 end
