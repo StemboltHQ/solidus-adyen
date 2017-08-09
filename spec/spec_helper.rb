@@ -59,6 +59,12 @@ RSpec.configure do |config|
   config.include Spree::TestingSupport::ControllerRequests, type: :controller
   config.include Spree::TestingSupport::UrlHelpers
 
+  config.when_first_matching_example_defined(type: :feature) do
+    config.before(:suite) do
+      Rails.application.precompiled_assets
+    end
+  end
+
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
   end
