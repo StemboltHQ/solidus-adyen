@@ -26,6 +26,7 @@ require "database_cleaner"
 require "capybara/poltergeist"
 
 require "spree/testing_support/factories"
+require 'spree/testing_support/capybara_ext'
 require "spree/testing_support/controller_requests"
 require "spree/testing_support/url_helpers"
 require "spree/testing_support/authorization_helpers"
@@ -38,6 +39,9 @@ FactoryGirl.definition_file_paths = %w{./spec/factories}
 FactoryGirl.find_definitions
 
 Capybara.javascript_driver = :poltergeist
+Capybara.register_driver :chrome do |app|
+  Capybara::Selenium::Driver.new(app, browser: :chrome)
+end
 
 RSpec.configure do |config|
   RSpec::Matchers.define_negated_matcher :keep, :change
@@ -55,8 +59,18 @@ RSpec.configure do |config|
   config.include Spree::TestingSupport::ControllerRequests, type: :controller
   config.include Spree::TestingSupport::UrlHelpers
 
+  config.when_first_matching_example_defined(type: :feature) do
+    config.before(:suite) do
+      Rails.application.precompiled_assets
+    end
+  end
+
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.before(:each, type: :feature, js: true) do |ex|
+    Capybara.current_driver = ex.metadata[:driver] || :poltergeist
   end
 
   config.around(:each) do |example|

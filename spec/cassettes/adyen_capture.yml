@@ -5,7 +5,7 @@ http_interactions:
     uri: https://<ADYEN_API_USERNAME>:<ADYEN_API_PASSWORD>@pal-test.adyen.com/pal/adapter/httppost
     body:
       encoding: US-ASCII
-      string: modificationRequest.merchantAccount=<ADYEN_MERCHANT_ACCOUNT>&modificationRequest.modificationAmount.currency=USD&modificationRequest.modificationAmount.value=11000&modificationRequest.originalReference=7914483013255061&action=Payment.capture
+      string: modificationRequest.merchantAccount=<ADYEN_MERCHANT_ACCOUNT>&modificationRequest.modificationAmount.currency=USD&modificationRequest.modificationAmount.value=2200&modificationRequest.originalReference=7914483013255061&action=Payment.capture
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -21,18 +21,18 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Tue, 16 Aug 2016 23:32:53 GMT
+      - Tue, 08 Aug 2017 23:29:10 GMT
       Server:
       - Apache
       Set-Cookie:
-      - JSESSIONID=9D4B58CC45D6C4A07E880368DEB565A7.test4e; Path=/pal/; Secure; HttpOnly
+      - JSESSIONID=E3CB339EE8111923C4B17E36819BAEA4.test4e; Path=/pal; Secure; HttpOnly
       Content-Length:
       - '99'
       Content-Type:
-      - text/plain; charset=UTF-8
+      - application/x-www-form-urlencoded
     body:
       encoding: UTF-8
-      string: modificationResult.pspReference=8614713903735488&modificationResult.response=%5Bcapture-received%5D
+      string: modificationResult.pspReference=8515022349507398&modificationResult.response=%5Bcapture-received%5D
     http_version: 
-  recorded_at: Tue, 16 Aug 2016 23:32:53 GMT
-recorded_with: VCR 3.0.1
+  recorded_at: Tue, 08 Aug 2017 23:29:11 GMT
+recorded_with: VCR 3.0.3
