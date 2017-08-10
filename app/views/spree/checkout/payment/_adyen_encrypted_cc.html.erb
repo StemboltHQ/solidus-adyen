@@ -61,9 +61,9 @@
   }
 
   Spree.encryptedAdyenForm = Spree.createEncryptedAdyenForm(<%= payment_method.id %>);
-  var spreePaymentRadios = $("#checkout_form_payment input[type='radio']");
+  var spreePaymentRadios = $("#payment-method-fields input[type='radio']");
   var attachOrDetachFormSubmit = function() {
-    if ($("#checkout_form_payment input:radio:checked").val() == <%= payment_method.id %>) {
+    if ($("#payment-method-fields input:radio:checked").val() == <%= payment_method.id %>) {
       // attach form submit handler
       Spree.attachAdyenFormSubmit();
     } else {
