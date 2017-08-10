@@ -20,6 +20,7 @@ module Spree
         app.config.spree.payment_methods << Gateway::AdyenHPP
         app.config.spree.payment_methods << Gateway::AdyenCreditCard
         app.config.spree.payment_methods << Gateway::AdyenRatepay
+        Spree::PermittedAttributes.source_attributes << :adyen_token
         Spree::PermittedAttributes.source_attributes << :dob_day
         Spree::PermittedAttributes.source_attributes << :dob_month
         Spree::PermittedAttributes.source_attributes << :dob_year
@@ -32,6 +33,7 @@ module Spree
       #
       # This is going to be PR'ed to Adyen and should be deleted if it gets merged.
       def self.activate
+        Spree::CreditCard.prepend Spree::CreditCard::AdyenToken
         Spree::Payment.include Spree::Adyen::Payment
         Spree::Order.include Spree::Adyen::Order
         Spree::Admin::RefundsController.include Spree::Adyen::Admin::RefundsController

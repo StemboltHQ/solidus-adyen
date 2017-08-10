@@ -36,7 +36,6 @@
 </div>
 
 <%= hidden_field_tag nil, Time.current.iso8601, "data-encrypted-name" => "generationtime" %>
-<%= hidden_field_tag "#{param_prefix}[gateway_payment_profile_id]" %>
 
 <% if @order.bill_address %>
   <%= fields_for "#{param_prefix}[address_attributes]", @order.bill_address do |f| %>

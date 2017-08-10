@@ -61,7 +61,7 @@ describe "Entering Credit Card Data", js: true, truncation: true do
     end
 
     context "and the form is filled out formally correctly, but with an invalid card" do
-      it "provides a meaningful error message" do
+      it "returns the user to payment after confirm with an error message" do
         VCR.use_cassette "Credit Card not accepted", record: :new_episodes do
           choose('Adyen Credit Card')
           fill_in("card_number", with: "4111111111111111")
@@ -69,7 +69,8 @@ describe "Entering Credit Card Data", js: true, truncation: true do
           fill_in("expiry_year", with: "2019")
           fill_in("verification_value", with: "747")
           click_button('Save and Continue')
-          expect(page).to have_content("The credit card data you have entered is invalid.")
+          click_button("Place Order")
+          expect(page).to have_content("905 Payment details are not supported")
         end
       end
     end

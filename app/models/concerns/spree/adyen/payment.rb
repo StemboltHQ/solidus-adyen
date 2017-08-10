@@ -20,11 +20,19 @@ module Spree
         end
       end
 
+      def authorize!
+        super
+        update_adyen_card_data if adyen_cc_payment?
+      end
+
       # Spree::Payment#process will call purchase! for payment methods with
       # auto_capture enabled. Since we authorize credit cards in the payment
       # step already, we just need to capture the payment here.
       def purchase!
-        if adyen_cc_payment? || ratepay?
+        if ratepay?
+          capture!
+        elsif adyen_cc_payment?
+          authorize!
           capture!
         else
           super
@@ -113,10 +121,39 @@ module Spree
         end
       end
 
-      # Solidus creates a $0 default payment during checkout using a previously
-      # used credit card, which we should not create an authorization for.
+      def update_adyen_card_data
+        safe_credit_cards = get_safe_cards
+        return nil if safe_credit_cards.nil? || safe_credit_cards.empty?
+
+        # Ensure we use the correct card we just created
+        safe_credit_cards.sort_by! { |card| card[:creation_date] }
+        safe_credit_card_data = safe_credit_cards.last
+
+        source.update(
+          gateway_customer_profile_id: safe_credit_card_data[:recurring_detail_reference],
+          cc_type: safe_credit_card_data[:variant],
+          last_digits: safe_credit_card_data[:card_number],
+          month: "%02d" % safe_credit_card_data[:card_expiry_month],
+          year: "%04d" % safe_credit_card_data[:card_expiry_year],
+          name: safe_credit_card_data[:card_holder_name]
+        )
+      end
+
+      def get_safe_cards
+        response = payment_method.rest_client.list_recurring_details({
+          merchant_account: payment_method.account_locator.by_order(order),
+          shopper_reference: order.adyen_shopper_reference
+        })
+
+        if response.success? && !response.gateway_response.details.blank?
+          response.gateway_response.details
+        else
+          log_entries.create!(details: response.to_yaml)
+        end
+      end
+
       def should_authorise?
-        (adyen_cc_payment? || ratepay?) && amount != 0
+        ratepay? && amount > 0
       end
     end
   end
