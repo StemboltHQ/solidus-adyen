@@ -78,7 +78,9 @@ module Spree
         )
       elsif payment.source.has_payment_profile?
         rest_client.reauthorise_recurring_payment(
-          authorization_request(payment, false)
+          authorization_request(payment, false).merge!(
+            selected_recurring_detail_reference: payment.source.gateway_customer_profile_id
+          )
         )
       else
         raise EncryptedDataError
