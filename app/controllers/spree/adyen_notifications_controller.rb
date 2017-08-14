@@ -31,7 +31,7 @@ module Spree
 
     private
     def accept
-      render text: "[accepted]"
+      render plain: "[accepted]"
     end
 
     def notification_exists? params
