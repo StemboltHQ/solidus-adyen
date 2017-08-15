@@ -87,6 +87,17 @@ module Spree
         end
       end
 
+      def gateway_options
+        if request_env
+          super.merge({
+            HTTP_USER_AGENT: request_env["HTTP_USER_AGENT"],
+            HTTP_ACCEPT: request_env["HTTP_ACCEPT"]
+          })
+        else
+          super
+        end
+      end
+
       private
 
       def log_manual_refund
