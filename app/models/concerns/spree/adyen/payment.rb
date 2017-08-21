@@ -9,9 +9,12 @@ module Spree
       include Spree::Adyen::PaymentCheck
 
       included do
-        after_create :authorise_on_create, if: :should_authorise?
+        has_one :redirect_response,
+          class_name: "Spree::Adyen::RedirectResponse",
+          inverse_of: :payment,
+          dependent: :destroy
 
-        attr_accessor :adyen_api_response
+        after_create :authorise_on_create, if: :should_authorise?
 
         private
 
