@@ -6,18 +6,6 @@ module Spree
       end
     end
 
-    class ProfileLookupError < Spree::Core::GatewayError
-      def message
-        I18n.t(:profile_lookup_failed, scope: 'solidus-adyen')
-      end
-    end
-
-    class InvalidDetailsError < Spree::Core::GatewayError
-      def message
-        I18n.t(:credit_card_data_refused, scope: 'solidus-adyen')
-      end
-    end
-
     class Authorize3DSecureError < Spree::Core::GatewayError
       def message
         I18n.t(:authorize_3d_failed, scope: 'solidus-adyen')
