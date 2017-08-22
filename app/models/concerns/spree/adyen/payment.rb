@@ -113,6 +113,15 @@ module Spree
         payment_method.authorise_new_payment(self)
       end
 
+      # With 3D Secure, if the user backs out and re-enters the checkout flow,
+      # we should destroy old 3DS responses to prevent accidentally using them.
+      def invalidate_old_payments
+        unless store_credit?
+          Spree::Adyen::RedirectResponse.where(payment: order.payments).destroy_all
+        end
+        super
+      end
+
       def log_manual_refund
         message = I18n.t("solidus-adyen.manual_refund.log_message")
         record_response(

@@ -38,11 +38,11 @@ describe Spree::Adyen::Payment do
   end
 
   describe "#after_create" do
-    include_context("mock adyen client", success: true, psp_reference: "TRANSACTION_SUCCESS")
-
     subject { payment.save! }
 
     context "when the payment method is Ratepay" do
+      include_context("mock adyen client", success: true, psp_reference: "TRANSACTION_SUCCESS")
+
       let(:payment) { build :ratepay_payment, source: ratepay, amount: 1500 }
 
       context "and no Date of Birth was provided" do
@@ -101,6 +101,17 @@ describe Spree::Adyen::Payment do
       it "does not create an authorization" do
         expect(payment).to_not receive(:authorize_payment)
         subject
+      end
+    end
+
+    context "when the order has previously authorized 3DS payments" do
+      let(:order) { create(:order) }
+      let(:payment) { build(:payment, order: order) }
+      let!(:payment_3ds) { create(:payment, order: order) }
+      let!(:redirect_response) { Spree::Adyen::RedirectResponse.create(payment: payment_3ds) }
+
+      it "deletes redirect responses from previous payments" do
+        expect { subject }.to change { Spree::Adyen::RedirectResponse.count }.from(1).to(0)
       end
     end
   end
