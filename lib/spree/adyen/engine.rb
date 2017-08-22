@@ -33,7 +33,7 @@ module Spree
       #
       # This is going to be PR'ed to Adyen and should be deleted if it gets merged.
       def self.activate
-        Spree::CheckoutController.include Spree::Adyen::CheckoutController
+        Spree::CheckoutController.prepend Spree::Adyen::CheckoutController
         Spree::CreditCard.prepend Spree::CreditCard::AdyenToken
         Spree::Payment.include Spree::Adyen::Payment
         Spree::Order.include Spree::Adyen::Order

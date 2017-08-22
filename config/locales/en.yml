@@ -15,6 +15,7 @@ en:
           Reason: "Reason"
           amount: "Amount"
   solidus-adyen:
+    authorize_3d_failed: "Unable to authorize 3D Secure payment."
     credit_card_data_refused: "The credit card data you have entered is invalid."
     missing_date_of_birth: "Date of birth is required for invoice transactions."
     missing_token_error: "There was no payment token provided."

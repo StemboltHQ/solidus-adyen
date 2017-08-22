@@ -1,0 +1,9 @@
+<%= form_tag @redirect_response.issuer_url, id: "adyen-3ds-form" do %>
+  <%= hidden_field_tag 'PaReq', @redirect_response.pa_request %>
+  <%= hidden_field_tag 'MD', @redirect_response.md %>
+  <%= hidden_field_tag 'TermUrl', adyen_authorise3d_url %>
+<% end %>
+
+<script>
+  document.querySelector("#adyen-3ds-form").submit();
+</script>

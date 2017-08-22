@@ -64,7 +64,7 @@ module Spree
     private
 
     def handle_response(response, original_reference = nil)
-      ActiveMerchant::Billing::Response.new(
+      Spree::Adyen::BillingResponse.new(
         response.success?,
         response.message,
         response.attributes,

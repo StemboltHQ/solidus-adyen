@@ -23,11 +23,6 @@ module Spree
         end
       end
 
-      def authorize!
-        super
-        update_adyen_card_data if adyen_cc_payment?
-      end
-
       # Spree::Payment#process will call purchase! for payment methods with
       # auto_capture enabled. Since we authorize credit cards in the payment
       # step already, we just need to capture the payment here.
@@ -101,6 +96,24 @@ module Spree
         end
       end
 
+      def update_adyen_card_data
+        safe_credit_cards = get_safe_cards
+        return nil if safe_credit_cards.nil? || safe_credit_cards.empty?
+
+        # Ensure we use the correct card we just created
+        safe_credit_cards.sort_by! { |card| card[:creation_date] }
+        safe_credit_card_data = safe_credit_cards.last
+
+        source.update(
+          gateway_customer_profile_id: safe_credit_card_data[:recurring_detail_reference],
+          cc_type: safe_credit_card_data[:variant],
+          last_digits: safe_credit_card_data[:card_number],
+          month: "%02d" % safe_credit_card_data[:card_expiry_month],
+          year: "%04d" % safe_credit_card_data[:card_expiry_year],
+          name: safe_credit_card_data[:card_holder_name]
+        )
+      end
+
       private
 
       def log_manual_refund
@@ -135,22 +148,20 @@ module Spree
         end
       end
 
-      def update_adyen_card_data
-        safe_credit_cards = get_safe_cards
-        return nil if safe_credit_cards.nil? || safe_credit_cards.empty?
-
-        # Ensure we use the correct card we just created
-        safe_credit_cards.sort_by! { |card| card[:creation_date] }
-        safe_credit_card_data = safe_credit_cards.last
-
-        source.update(
-          gateway_customer_profile_id: safe_credit_card_data[:recurring_detail_reference],
-          cc_type: safe_credit_card_data[:variant],
-          last_digits: safe_credit_card_data[:card_number],
-          month: "%02d" % safe_credit_card_data[:card_expiry_month],
-          year: "%04d" % safe_credit_card_data[:card_expiry_year],
-          name: safe_credit_card_data[:card_holder_name]
-        )
+      # The response will be a failure for redirects, which will prevent the
+      # order from completing and should allow us to transition it after
+      # the user is redirected back from the 3DS page
+      def handle_response(response, success_state, failure_state)
+        if response.is_a?(Spree::Adyen::BillingResponse) && response.redirect?
+          self.create_redirect_response!(
+            md: response.md,
+            pa_request: response.pa_request,
+            issuer_url: response.issuer_url,
+            psp_reference: response.psp_reference
+          )
+        end
+        update_adyen_card_data if adyen_cc_payment? && response.success?
+        super
       end
 
       def get_safe_cards

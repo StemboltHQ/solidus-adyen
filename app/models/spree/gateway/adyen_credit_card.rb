@@ -18,6 +18,12 @@ module Spree
       end
     end
 
+    class Authorize3DSecureError < Spree::Core::GatewayError
+      def message
+        I18n.t(:authorize_3d_failed, scope: 'solidus-adyen')
+      end
+    end
+
     include Spree::Gateway::AdyenGateway
     preference :cse_library_location, :string
 
@@ -38,10 +44,9 @@ module Spree
       )
     end
 
-    def authorise_3d_secure_payment(payment, adyen_3d_params)
-      request.merge!(browser_info(payment.request_env)) if payment.request_env
+    def authorize_3d_secure_payment(payment, adyen_3d_params)
       response = rest_client.authorise_payment_3dsecure(authorization_3d_request(payment, adyen_3d_params))
-      handle_adyen_response(payment, response)
+      handle_3ds_response(payment, response)
     end
 
     # Performs and authorization call to Adyen for the payment
@@ -53,6 +58,18 @@ module Spree
     end
 
     private
+
+    # 3DS responses result in a `failed` ActiveMerchant::Billing::Response, which
+    # will cause the payment to be in the `failed` state. To counteract this,
+    # we update the column without callbacks when we successfully authorize.
+    def handle_3ds_response(payment, response)
+      if response.success?
+        payment.update_columns(state: 'pending', response_code: response.psp_reference)
+        payment.update_adyen_card_data
+      else
+        raise Authorize3DSecureError
+      end
+    end
 
     def perform_authorization(amount, card, gateway_options)
       # If this is a new credit card we should have the encrypted data
@@ -71,27 +88,28 @@ module Spree
     end
 
     def authorization_3d_request payment, redirect_response_params
-      request = {
-        reference: payment.order.number,
-        merchant_account: account_locator.by_order(payment.order),
+      order = payment.order
+      {
+        reference: order.number,
+        merchant_account: account_locator.by_order(order),
         amount: {
           value: payment.money.cents,
           currency: payment.currency
         },
-        shopper_i_p: payment.order.last_ip_address,
-        shopper_email: payment.order.email,
+        shopper_i_p: order.last_ip_address,
+        shopper_email: order.email,
         shopper_reference: order.adyen_shopper_reference,
         billing_address: billing_address_from_source(payment.source),
         md: redirect_response_params["MD"],
         pa_response: redirect_response_params["PaRes"],
         recurring: {
           contract: "RECURRING"
+        },
+        browser_info: {
+          user_agent: payment.request_env["HTTP_USER_AGENT"],
+          accept_header: payment.request_env["HTTP_ACCEPT"]
         }
       }
-
-      request.merge!(browser_info(payment.request_env)) if payment.request_env
-
-      request
     end
 
     def authorization_request(amount, card, gateway_options)
@@ -107,15 +125,10 @@ module Spree
         shopper_i_p: order.last_ip_address,
         shopper_email: order.email,
         shopper_reference: order.adyen_shopper_reference,
-        billing_address: billing_address_from_source(card)
-      }
-    end
-
-    def browser_info headers
-      {
+        billing_address: billing_address_from_source(card),
         browser_info: {
-          user_agent: headers["HTTP_USER_AGENT"],
-          accept_header: headers["HTTP_ACCEPT"]
+          user_agent: gateway_options[:HTTP_USER_AGENT],
+          accept_header: gateway_options[:HTTP_ACCEPT]
         }
       }
     end
