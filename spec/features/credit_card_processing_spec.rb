@@ -113,6 +113,25 @@ describe "Entering Credit Card Data", js: true, truncation: true do
           end
         end
       end
+
+      context "with a card that supports 3DS" do
+        it "redirects the user to the 3DS page and completes the purchase" do
+          VCR.use_cassette "3DS Credit Card Purchase", record: :new_episodes do
+            choose("Adyen Credit Card")
+            fill_in("card_number", with: "4212345678901237")
+            fill_in("expiry_month", with: "08")
+            fill_in("expiry_year", with: "2018")
+            fill_in("verification_value", with: "737")
+            click_button('Save and Continue')
+            click_button('Place Order')
+            expect(page).to have_content("Authenticate a transaction")
+            fill_in("username", with: "user")
+            fill_in("password", with: "password")
+            click_button("Submit")
+            expect(page).to have_content("Your order has been processed successfully")
+          end
+        end
+      end
     end
   end
 
