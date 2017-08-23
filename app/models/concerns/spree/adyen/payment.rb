@@ -5,22 +5,15 @@
 module Spree
   module Adyen
     module Payment
-      extend ActiveSupport::Concern
       include Spree::Adyen::PaymentCheck
 
-      included do
-        has_one :redirect_response,
+      def self.prepended(mod)
+        mod.has_one :redirect_response,
           class_name: "Spree::Adyen::RedirectResponse",
           inverse_of: :payment,
           dependent: :destroy
 
-        after_create :authorise_on_create, if: :should_authorise?
-
-        private
-
-        def authorise_on_create
-          payment_method.authorise_new_payment(self)
-        end
+        mod.after_create :authorise_on_create, if: :should_authorise?
       end
 
       # Spree::Payment#process will call purchase! for payment methods with
@@ -115,6 +108,10 @@ module Spree
       end
 
       private
+
+      def authorise_on_create
+        payment_method.authorise_new_payment(self)
+      end
 
       def log_manual_refund
         message = I18n.t("solidus-adyen.manual_refund.log_message")

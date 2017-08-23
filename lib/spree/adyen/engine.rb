@@ -35,7 +35,7 @@ module Spree
       def self.activate
         Spree::CheckoutController.prepend Spree::Adyen::CheckoutController
         Spree::CreditCard.prepend Spree::CreditCard::AdyenToken
-        Spree::Payment.include Spree::Adyen::Payment
+        Spree::Payment.prepend Spree::Adyen::Payment
         Spree::Order.include Spree::Adyen::Order
         Spree::Admin::RefundsController.include Spree::Adyen::Admin::RefundsController
         ::Adyen::API::PaymentService.include Spree::Adyen::PaymentService
