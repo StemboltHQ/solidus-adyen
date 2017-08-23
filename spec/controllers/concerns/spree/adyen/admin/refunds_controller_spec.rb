@@ -25,6 +25,7 @@ RSpec.describe Spree::Admin::RefundsController do
     let(:payment_opts) { {state: "completed", amount: 100.0} }
 
     before do
+      allow(Spree::Payment).to receive(:find_by_id) { payment }
       payment.capture_events.create!(amount: 100.0)
     end
 
@@ -41,7 +42,7 @@ RSpec.describe Spree::Admin::RefundsController do
       end
 
       it "requests the refund with full gateway options" do
-        expect_any_instance_of(Spree::Payment).
+        expect(payment).
           to receive(:credit!).
           with(
             10000,
@@ -67,7 +68,7 @@ RSpec.describe Spree::Admin::RefundsController do
         end
 
         it "doesn't attempt to credit the payment" do
-          expect_any_instance_of(Spree::Payment).
+          expect(payment).
             to_not receive(:credit!)
           subject
         end
