@@ -32,24 +32,18 @@ module Spree
 
       payment_method.authorize_3d_secure_payment(payment, adyen_3d_params)
       payment.capture! if payment_method.auto_capture
-      complete_order
+
+      if complete
+        redirect_to_order
+      else
+        redirect_to checkout_state_path(@order.state)
+      end
 
       rescue Spree::Core::GatewayError
         handle_failed_redirect
     end
 
     private
-
-    def complete_order
-      @order.contents.advance
-      @order.complete
-
-      if @order.complete?
-        redirect_to_order
-      else
-        redirect_to checkout_state_path(@order.state)
-      end
-    end
 
     def handle_failed_redirect
       flash.notice = Spree.t(:payment_processing_failed)
