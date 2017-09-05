@@ -103,7 +103,7 @@ module Spree
           last_digits: safe_credit_card_data[:card_number],
           month: "%02d" % safe_credit_card_data[:card_expiry_month],
           year: "%04d" % safe_credit_card_data[:card_expiry_year],
-          name: safe_credit_card_data[:card_holder_name]
+          name: safe_credit_card_data[:card_holder_name].encode("utf-8", "iso-8859-1")
         )
       end
 
