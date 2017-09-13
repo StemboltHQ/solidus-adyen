@@ -5,7 +5,7 @@ http_interactions:
     uri: https://<ADYEN_API_USERNAME>:<ADYEN_API_PASSWORD>@pal-test.adyen.com/pal/adapter/httppost
     body:
       encoding: US-ASCII
-      string: modificationRequest.merchantAccount=<ADYEN_MERCHANT_ACCOUNT>&modificationRequest.modificationAmount.currency=USD&modificationRequest.modificationAmount.value=2000&modificationRequest.originalReference=8815022349345739&action=Payment.refund
+      string: modificationRequest.merchantAccount=<ADYEN_MERCHANT_ACCOUNT>&modificationRequest.modificationAmount.currency=USD&modificationRequest.modificationAmount.value=2000&modificationRequest.originalReference=8525024086731809&action=Payment.refund
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -21,18 +21,18 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Tue, 08 Aug 2017 23:29:04 GMT
+      - Thu, 10 Aug 2017 23:44:43 GMT
       Server:
       - Apache
       Set-Cookie:
-      - JSESSIONID=63EA6C7933E0B119F91CBDF5D591FD69.test4e; Path=/pal; Secure; HttpOnly
+      - JSESSIONID=04D8E2B5B231980ACFF418A7FDA9B118.test104e; Path=/pal; Secure; HttpOnly
       Content-Length:
       - '98'
       Content-Type:
       - application/x-www-form-urlencoded
     body:
       encoding: UTF-8
-      string: modificationResult.pspReference=8515022349447306&modificationResult.response=%5Brefund-received%5D
+      string: modificationResult.pspReference=8825024086839773&modificationResult.response=%5Brefund-received%5D
     http_version: 
-  recorded_at: Tue, 08 Aug 2017 23:29:04 GMT
+  recorded_at: Thu, 10 Aug 2017 23:44:43 GMT
 recorded_with: VCR 3.0.3

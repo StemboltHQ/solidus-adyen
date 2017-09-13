@@ -57,14 +57,14 @@ module Spree
       handle_response(rest_client.refund_payment(params), psp_reference)
     end
 
-    private
-
     def rest_client
       @client ||= Adyen::Client.new(self)
     end
 
+    private
+
     def handle_response(response, original_reference = nil)
-      ActiveMerchant::Billing::Response.new(
+      Spree::Adyen::BillingResponse.new(
         response.success?,
         response.message,
         response.attributes,

@@ -21,30 +21,29 @@ module Spree
       end
     end
 
+    # This is the entry point after returning from the 3DS page for credit cards
+    # that support it. MD is a unique payment session identifier returned
+    # by the card issuer.
     def authorise3d
-      @payment = Spree::Payment.find_by(number: params[:payment_reference])
-      @payment.request_env = request.env
-      @order = @payment.order
-      payment_method = @payment.payment_method
-      begin
-        payment_method.authorise_3d_secure_payment(@payment, adyen_3d_params)
-        advance_to_confirm(@order)
+      payment = Spree::Adyen::RedirectResponse.find_by(md: params[:MD]).payment
+      payment.request_env = request.env
+      payment_method = payment.payment_method
+      @order = payment.order
+
+      payment_method.authorize_3d_secure_payment(payment, adyen_3d_params)
+      payment.capture! if payment_method.auto_capture
+
+      if complete
+        redirect_to_order
+      else
         redirect_to checkout_state_path(@order.state)
-      rescue Spree::Gateway::AdyenCreditCard::InvalidDetailsError
-        handle_failed_redirect
       end
+
+      rescue Spree::Core::GatewayError
+        handle_failed_redirect
     end
 
     private
-
-    def advance_to_confirm(order)
-      steps = order.checkout_steps
-      return if steps.index("confirm") < (steps.index(order.state) || 0)
-
-      until order.state == "confirm"
-        order.next!
-      end
-    end
 
     def handle_failed_redirect
       flash.notice = Spree.t(:payment_processing_failed)

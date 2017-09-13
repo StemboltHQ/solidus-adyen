@@ -1,0 +1,108 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://<ADYEN_API_USERNAME>:<ADYEN_API_PASSWORD>@pal-test.adyen.com/pal/adapter/httppost
+    body:
+      encoding: US-ASCII
+      string: paymentRequest.reference=R585501637&paymentRequest.merchantAccount=<ADYEN_MERCHANT_ACCOUNT>&paymentRequest.amount.value=2000&paymentRequest.amount.currency=USD&paymentRequest.shopperIP=&paymentRequest.shopperEmail=spree%40example.com&paymentRequest.shopperReference=1&paymentRequest.billingAddress.street=10+Lovely+Street&paymentRequest.billingAddress.houseNumberOrName=NA&paymentRequest.billingAddress.city=Herndon&paymentRequest.billingAddress.postalCode=28988&paymentRequest.billingAddress.stateOrProvince=AL&paymentRequest.billingAddress.country=US&paymentRequest.browserInfo.userAgent=Mozilla%2F5.0+%28X11%3B+Linux+x86_64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F59.0.3071.104+Safari%2F537.36&paymentRequest.browserInfo.acceptHeader=text%2Fhtml%2Capplication%2Fxhtml%2Bxml%2Capplication%2Fxml%3Bq%3D0.9%2Cimage%2Fwebp%2Cimage%2Fapng%2C*%2F*%3Bq%3D0.8&paymentRequest.additionalData.card.encrypted.json=adyenjs_0_1_18%24OQpJQDXWjQmnMZLON%2BraplramwHcISw5XZBvTdYXoBOnhJZPxDEM4SsjjxeCQOPobY%2FEdMR4EE5WquAetCN8uw15bHXGYPbnZbkSZSs15uK%2Bef27D%2Fzz3E1Q25Waa4QqAfLdJsg0VHrKc%2B4vUagNR4TAr8uMRFaYltGN0ff2Zg0jomxsQalqNAxKZZFO%2FysB1aqAdjQYf7snwrsRyhOTLCy8n5xiYOjIVbcUpMIQdgx2rXosUoPEqWvY%2FExrkdFDfu3uOzB3H%2BiNEeRaVvW0R6SDJij8GwkorBnyMt2wVdOT8Wh6NrjV8zNIzXNnES79KjhMNYX7%2BDdql1PV%2BmSSPg%3D%3D%24c1eLIbcb59OZX4Qx815UbxqD9Dn6VCRLMm6Zizv%2FvQm44Gi%2BnRJfdZI2GQ8xSdF0GXY8yU8UtlFuPELPXKacwoK4emDZjJ%2BKvHq3OWQOsFdxovPD20oZNslxZvzbZX5VeDtGZTpDTe502ihftEFASh2TQKGqLLoBRJghf9JKeE04%2FWxzj4zhEKlmyHmlqS1n3V11ep48pl3u12dz01%2FQ3KuepSRyi5preupUuBOIVY6EEXHyUg2b2uJkdxBMxqGLlMePO%2FRPhIkqZMVhwLylR%2Fxswd3E5OdaYplNyH%2FdtMFRHIkYGBib7gGdYBAEr29jyDo9adgWrbkS3xlyDRV6UIliaobHYDhmB382mEwTLrdxN5ZuWfca2CLTZNvFego0RTDxGsJZlWWc1fxvCvF1ugId3Y%2FkjXCnugWHrLEpW62WpvxUDNv4pJ1qqN%2BPtBogpHoLX3sCTRXLd9mRSf55c0KWklG6G82xDk%2Bst9GsKCZWItkdtMZlEyvTC97E9Qk2GVJ%2BBt8byRh3jsuuTkGiUNBvZxzKSrnDHZ8TF0ZaDVT%2B7%2BidNlRJgzDNAnLg6X3wpYNkmGEPkSVigGmkPL0X9otzN5mqKYaYVnNsXvdNtxf0WUOMHbG2CnSp3TlRdijGnYgzg4MoQKYN2QdLu2AjMzMidjy2s5n7ieOYFa1mm6dt3KhLdct6Q07awpXg68TS95uKkLQ%2Bi6OWZaUqvjn%2BlJ4DcSBVl6%2ByWeuD9B2UA6gXWEz%2FzQQl4pVq2Wwbo7kyjCzyvrP8gifuh5pSSOLcoG3LMBndvqQX9v1KdrAP9lEh144X%2F13MpNbWecCWQA53H%2FZtzmPC3LrJ8HhVyVmRYnPIpJ73a%2Fv%2F0p2dQqxiy4p6pG%2F7CMOcqGe%2FFGnCuQh%2Fr8FQ0AoZqvCkbKVer7XhwjFKU1HMwMIsT6Lw4PeThM7128ZoUJKrpEjCKVQ%2BTysfOuSpeWQ%2B1%2B0g7TxXDWB2S4k6AlG021Zu6ZXh47VnGBn%2BlrcngOmPyiwdeAk1EQal2sMkrhQz1Hl44673RiBRwHLGSb0g%2FpltEVuxBO1VIVtji2Mt50vCy9OvxjBjlLYdo7t%2FHujEWbxCkMzioPiDYevrKlOvDtfDZVpjaGoeTP3wBFuaaOC7Zex67gJJqmLPkpDK%2BfhJCLFBgoIEPRKit4Ljd9ZY4JFTqSYnIvW%2FFv5DEskrBMC1MLyeT9JzzZXETEdabYX1xWmrcczZ1b8c7Z1d0RtDqyQ75pqyEKEFSkcJi43p08frKRGazbsdbo3MvCjPykRfEPKCogpI917F6oey9%2BcvOsk5TcvpErt7t0FuQgc88gRZHYPHmKqxZRhH7%2FDMpFlWRur8kHUivTQ1IL0A5X2K%2B1TfRslzcDg426zBxcIEcWitzoA8l12FTWTqVVPuwOC5A2nYzwlvZRv17Pv0O4OMYNrMpj4x5K%2BqXEkDMwpySmxMCm5umV7F%2Bggk5AfkO19zkq4GjtUesfHECanYVoZi4JY%2BIn7uAvj8eX7jxjzO%2FiNSgdSleA7SIUVhX5%2FjfXcvlSVHalZbbXLd1HIjzvtddmXuR%2Fe1m2hvaUcqn6ICRIxof69%2BxAQfptGI5BviN3fFiVWAOc3BlmcIQJxRgpXjCKdpYVu3jZu5418A921SYZJqg3vOm%2F9B0C71j9ggvdpLmWGsd5BeWer0VzxzGq9ikDgEBRR6Xydlehzvj%2FdQODWf6gMv3Gb3buPE3lmNYDlS11cBr%2Boj3j2jr%2FqUjzBA1xsZFfvhrWezXqT69VBsDycTiCnaUjIhsdPIeECyqon7V492CtntB%2B%2BhAQK0qvocQr3zuWfCaUJ3Idd2SRlVr35XOfEdLc0kIrGrvKZ1e%2Bjb6U%2Be%2FVa9Z%2BzeGQBA3jaGyLVXLWe87esC3rODGi9ec45WSJ51qtN94fW6PtlCYCDvu%2F7GDO4JrJv3rD25afXpghIFJSc%2BQikB0pd4LQr26Dns6oajDyC3IL5MJrPlaM70QsYAsSaFntchaAWWycD0wNzKla3QUiOe0FYUEh90lxsZcvKu3FPlPbZj5Q%2FgBfxt7BW8HEWk6%2FrbfYhbiQc5IBmrh8dUnPu%2F1DdAinVJZDDR4BduaHnocNVSM2izBZXoGM%2BLHytwgpb9VNzUeAzRooN1qh%2FMNXZVhhVdBPqN%2FfJsy4ajQMoDRhp%2BTw45kec%2BMBBghxHiHLsoo7RBsqBSPikTmgX1VuMyEh4JG8Y4a7OGdHsyFBvt0v7x9YSGc0HDAFqS3gQfGb1qrYJrPqf8wBg%2B82%2F%2F0Uj0pt79eQ2rJHEQk%2BoDdGFvOHdy8iY34ZyM6euDKmZd4e5i21spz8nGG21UMZ6VjR4u%2FRcPaD8Jfe7vmV8Zj3K1mAIGMMeMBeulvcxHPZxmHfQ0NkwiNXpKBtO6Oj0%3D&paymentRequest.recurring.contract=RECURRING&action=Payment.authorise
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 23 Aug 2017 16:28:40 GMT
+      Server:
+      - Apache
+      Set-Cookie:
+      - JSESSIONID=51FF65FA2A2C720D643C8BC42D7AC077.test103e; Path=/pal; Secure; HttpOnly
+      Content-Length:
+      - '1204'
+      Content-Type:
+      - application/x-www-form-urlencoded
+    body:
+      encoding: UTF-8
+      string: paymentResult.resultCode=RedirectShopper&paymentResult.md=X%2FC2Fsz%2BBtrXBXJ5LUJN%2BfG2765gSSZW52vyfmRfRtssQh65B0l%2BFhBi3fo26ESOCUQQVj55N8JeX6%2FlgZSuV4k7zDCbONE4JgCSFCmq25oqyV4N%2BtgBXOszD6v1sylwMFF2iC74wIbTSoo0yc0T9j1Zy%2Bs7SGz%2FkT%2BHoLYlGXs9uUSLoQJLVWjQ%2B4oJQDnudfoOWpRlW7Jih8ihNmalF%2BfnMf6OTpYjJPXSnNDa%2BEoOd8sHjMTIoRsuUC0%2FSKn0NHSistJoITZ9JTRM3hdkY5ozJYGp%2FdyZMNhKlZmEe1FLahIVWcJ5LwArNzH7r6TPH3HfI%2BYs2S4lOcS%2B%2FSza2lWgt3F6cjxVhkHS8PHcHzoJKHEAMIHQ26rXL0LQAvM%2FKvJGHU2yjkAnoqk5w1UMgLXEV7%2B82rESzfyedcgdQlUxFsjYPGQcnhIODeZP8MQ7kCtBiSaoOlG4zlo4XfuCwCp3OELh4S1eJ3kAREO5WJU%3D&paymentResult.paRequest=eNpVUe1uwjAMfBXGA9RJaCGrTKSOTho%2F6NiA31MVLKi0fpC2jPH0S0o7tkiRfOec7ZxxezRE8YZ0a0jhiuo6PdAo28%2FHoZQ8YJOABTPBGJfBWOE6eqeTwjOZOisLxT3mCYQBWrnRx7RoFKb69LRMFBcTP5gi9BBzMstYbalu1nke6VObGTIINxqLNCe1iz6ixUO4SOuKTExnhI5GXbZFY76V9BnCALA1n%2BrYNFUIoDuFp8scwdEI93HWrYtqW%2BaS7dVrfLgk2%2BhqL0%2Buy69V%2FOwnb5E7cwT3AvdpQ0owPmNSTEZ8GgoZusYdj2nu%2BqvdJh4J5jHL9wxWrlF0A9Y1m%2FnLoHXZUKGHXwwI6VKVBTkNwm%2BMcB978eI81Y21yRc3V2fykdlo5tztEq5KZk3hksmujAMITgr94qBfsI3%2BLf4HZJyo%2FA%3D%3D&paymentResult.issuerUrl=https%3A%2F%2Ftest.adyen.com%2Fhpp%2F3d%2Fvalidate.shtml&paymentResult.pspReference=8815035057200185
+    http_version: 
+  recorded_at: Wed, 23 Aug 2017 16:28:40 GMT
+- request:
+    method: post
+    uri: https://<ADYEN_API_USERNAME>:<ADYEN_API_PASSWORD>@pal-test.adyen.com/pal/adapter/httppost
+    body:
+      encoding: US-ASCII
+      string: paymentRequest3d.reference=R585501637&paymentRequest3d.merchantAccount=<ADYEN_MERCHANT_ACCOUNT>&paymentRequest3d.amount.value=2000&paymentRequest3d.amount.currency=USD&paymentRequest3d.shopperIP=&paymentRequest3d.shopperEmail=spree%40example.com&paymentRequest3d.shopperReference=1&paymentRequest3d.billingAddress.street=10+Lovely+Street&paymentRequest3d.billingAddress.houseNumberOrName=NA&paymentRequest3d.billingAddress.city=Herndon&paymentRequest3d.billingAddress.postalCode=28988&paymentRequest3d.billingAddress.stateOrProvince=AL&paymentRequest3d.billingAddress.country=US&paymentRequest3d.md=X%2FC2Fsz%2BBtrXBXJ5LUJN%2BfG2765gSSZW52vyfmRfRtssQh65B0l%2BFhBi3fo26ESOCUQQVj55N8JeX6%2FlgZSuV4k7zDCbONE4JgCSFCmq25oqyV4N%2BtgBXOszD6v1sylwMFF2iC74wIbTSoo0yc0T9j1Zy%2Bs7SGz%2FkT%2BHoLYlGXs9uUSLoQJLVWjQ%2B4oJQDnudfoOWpRlW7Jih8ihNmalF%2BfnMf6OTpYjJPXSnNDa%2BEoOd8sHjMTIoRsuUC0%2FSKn0NHSistJoITZ9JTRM3hdkY5ozJYGp%2FdyZMNhKlZmEe1FLahIVWcJ5LwArNzH7r6TPH3HfI%2BYs2S4lOcS%2B%2FSza2lWgt3F6cjxVhkHS8PHcHzoJKHEAMIHQ26rXL0LQAvM%2FKvJGHU2yjkAnoqk5w1UMgLXEV7%2B82rESzfyedcgdQlUxFsjYPGQcnhIODeZP8MQ7kCtBiSaoOlG4zlo4XfuCwCp3OELh4S1eJ3kAREO5WJU%3D&paymentRequest3d.paResponse=eNqtmFmTo0iSgN%2F5FWnVj5puQByS2lRpxg1CXOLmjUvciFMgfv2izKqsnOrqmZ3ZxUymwN3Dw8Mj4sPhaKRdHNN6HI5d%2FHqU4r73k%2Fgli75%2B%2BXO%2FhzEIwSBst4UgeI99eT2qxCXuf63drup73PXZrX6F%2F4D%2B2B7B77er2y5M%2FXp4PfphSwryK7xFUAw%2Fgt9uj1XcCfSrEfeDWlVE2I5ZF3dH8F18BH%2F0V8dnq19DnbPoVaGTWTaIZf3B8iJMEs2gskY8r69H8GlxjPwhft1C8A7ab5EXGP9zu%2F8ThY7gm%2FzoV7dxdfuyRvLeOjbPAYj3m3Viq%2BVnyXFNUxfX4eN1%2F3TycXeM5%2BZWx88%2BR%2FCjfQR%2FhNv49Sv06VozsFt9r9Kj4bweh6z6a5irrzf5sR%2F8Yexf3SP4rXUM%2Ffv9ldAEmiRMjpySE5X0Eq2hKkMyOjNr6%2FTfTI5xmL1Cz6DW%2F7deRJncumxIq1f43eaH4Ag%2BQwHfFvn1qGdJvQ7WxS9zVdb91y%2FpMDR%2FguA0TX9MyB%2B3LgGfCQKhA7gaRH2W%2FPblvVccCfX19nqk%2FPpWZ6FfZos%2FrBtBiof0Fr18DPg3LmEQhp4uf4%2Fn8PcQRuvfvoCfwvlfevmnwLre%2F71Pffjp6BJf4%2BeqxS%2FmRfj65bdf7mQ6S9bN%2BN8M9X2Ydw%2BWX47xq2SdrxaGEwbbD8EQeCRuuYhLTKd7si7UZ8sj%2BBHe2v6czI%2F5vxvWJpOpHsPYIq6ZedHuRV9atMtUHzL8AjphQe6LDHScB%2B95AbeJurvOzXMtYqeKh84uh6t8bKUbzA9NCVAU1p4WBuw3iUrw7fk%2BWy3n7kyP5gRs699ozEcZVs4Y3MkXPolkOZwhZI9etvsMHcDWY8iIGDBNDfY4YFECT%2BCuwFVJzogiz7fDRiriCXTNs4gzEXO%2F2DkGRcN4igR7tzNSyAzx%2FWRDgUbD8dDOe3DeCIcdFZyA4OJLsDup1DkOTxljOONZ8dWHslFZ28%2FQQotmB9pfWTWBYVJC4P6mj8pKg26MqZvZnZXZAEnd28IauwDePsW5K5flO2zKrjFPg0Oi1QOKxyytDTPZRR21075%2BfU%2F8p2QfxfjxvgoOBh1of%2FDfW%2FoY5HE4yP56SBXzKxG5cf1iCYT%2BonZZ5XePFyruhuy6noEh%2FofyyeAf1Ff5fAR%2FdvLm9VOfV0kQaHqhKOIaJ8QkkEQikFROyGRStGmRcYcJIgnNZAmaPEtaP1GaS1uaxjHTSTFoxpBIhiNgk6GSSQQ0%2B%2BJ5NppYRUmaC1NLlPmunKb4n3QPUgurcnCdEyYwchnWl8arytx1LqVEog5tEAgg0cUsLQQi0%2B4sw7dVyCBvMuNDNukLc5aI4m0QMpUoo5hmZiEuZCJbJHGTqIItbNsaAYH1TpolzaeFKN%2BVvcR%2FU37TJSZ%2FagKbfcQ6SXvOCfJtr3G3LOQZa3p0YaI19yTePAFI76FMaAxJagSdJIxK0KuBdqPWNkmIoL%2BjXAULESyRIErZFcl2h%2Fnl1Cf3idUmqjzBDuxFsMXHiEoAAtTKNBccYmQznPllMnsSThTjHMnQ4p7tjRDIh9hXUmgoiq2ceBd0aS6oA4u0OfZFfU1pFGwComVNfwfkXscrCkKh7WXUmaLppjWpD5GvwZBCkzb3brjaxEXRbTbRelYIBqM42tilyQZZ4CRx85EfFW%2FHHgR3BC6LrtYhY1zlHAuvheVS5qkHr3hwk64RVxUFh4uyasi5eLW6dNNsQFmV6geVV9e9UJ3m%2Bs7qy35cH09sAmCX86QWaqyz5ln175nvKLVatqzhmpJw9QK%2F8QdLZShErKMDOEBVIiPOxrqnhm%2Bxibh3%2Bp4iJoYgDEIG%2FrI5CWVdAIbQqPs9niqZbNodvbOVU3BZitlY8jxmbTnErz66TigD47ssI5CUoSrZAfBA3jnLUCQPpEnNIxxR2gcqaVe%2BeQrCe9PslG15W2JobnlnpPb5fZ212Ypm0QzcZjyzknBDKy9azH4GdKmV9ixeE2muZWcBE1v55M7koo396crliCEPdXwCJdJVu2T093To2O0BfYQoUbX8I8Zx2Iik1MJnwwV2mNUzlMhd8YoOpaLkcTq8QFbUnrFFr4cboUIzSx%2FEWeO5qhEpfChYKW3LlnvQRKWgI1yAqglCtYvrwOzLOiKoZqksdmLNCTU9rjw3%2B9o5WNfQJzspmOv2RFjMpA8bPBNHaUDh%2FoRn9aQlT2b9jI53yQ9Y%2FRpblLxS6bFSKauHuKviKFv7voSfsHX%2BSlT9qov86jvC%2FhN68fl6%2BhL%2Fg14s%2FTf00sPp9E6vM01ipMeWZZCRtm6yhsCSD8C34TSsi0TbWo%2BIKyvfltOIM38JlO88oRbi9K5zDaLApF%2FR6yGxf6HXUzbZ%2BV%2FpReeE9H0w0vxGL%2BkirFv%2FLXSeXgEWODK0EqpwbegT0aQ3osXP6LhyjDjrEdhW4dsrwXQy%2F0404FdI%2B5dEO7NJd1WmRWrmw8a%2Bz1hO5XtEanc7AXBvgTXsD3yiUBh1mfus0jgpUxHsIhWpW0wKqlvj1Wi00SGcrXslkyYdqj0mjIe7OqBcVLrU%2BcrT6QM9A5kxuu5h3rq0fdDLCVp0NEi7IMJ8aI60g6rj1Rg89nxEDbpyCi1TvT2yW3opHMx16C1j1srehYpJdVETcO%2Bm424PXuHCWDcYNfpwcVtnNkGzlBqh27mgn%2FPd9lGLGR9M0LkgYI5qk9aO6cDjUYPAAsOFziWMaBkwS%2BdbQpahcnOussKmwuKHSmWed4Z1nWfd2S2n9DEKroKP25tlP8ADRmZbDkK5i1DKvHk6%2BKct5prJlIoA9qi9%2B7WMebH4QNrfEU0%2BczOf16lu9h5tV3IDu9ZtLqwBr%2FkrisiAHNF54dfbQBI5NezkYYSb7po2YFhKWehh3KXywStm3k6%2BzZxdGYQwTSbVaor0%2BiYzvCOYWJbqWxfJSmDn9A4xX5BizONoSm06QZmYDQ5ComqTKeAXMs4YLqUsYdosbrkN68VllAyDKHUaDq0dGG3aPoZTmRo1UPiEL3KoZvI4Ne4g0jGwaOknwzjVONXU9DRA7G53QhvkvMfbR35aUToyhLJIJqw%2Fyo6wnQ1pb%2FYGnI7AsCvT0bWy%2FXkIDlYMRoWZuM6Qe7kxGpfNAcbMu6jkHE6sBZmMnNBkZlR8e9AKgseNvr37CEpM8S7zQxaICTYGif8HpK2Psf5F9Z%2BvrP2zku7euPZ%2FBZr4LMdS5d8Bzf8ENPoNaPwb0JqgvpRhBZeAx5VPgCXuz0DLCe0dGeFaobFDiDw7XNLAYBSJmL7Xc%2By3ku0NcsCvKPcBOcN9yD9D7l022fRfIQf8inL%2FEnIGkX9AjvkGOX4tzxwpAUyO1b21EW7LOqish8A9K0ptWuGVSQTEUXrL6UKA0Cvg1twRBCqQ9EQ89SJxW3Os0bGa3Jk7v5RA7V5RFoe7qcCpIG5qoSqzBi4qFFWmjlUQoyhKRnHPvBTftw37SDfoKSpNd6iMA2oPRQqFJ%2FSExciNrQF2sH3JC6VhL5hbp8oDCuGTUSf0%2ByaiW0U7CJyPUtB9oPaZGNDOnTus7zLqg4G5MEyDoIxdGvKaO7%2B5JkDGrgWRF7LJebbdnbBQdEJdubAd9%2B5SwHYxoaRWHYaK8ztDpCI2wLUD%2FjDy3UFDRqv2iIGpYCfYMXt2A8h2JyWiYPX6vaG2%2B6je3VO6x0nJfvAclo7Igm7GpYAOrWll0nUUA0ElcpzBXScXajjdwXXZUw5%2BXUYCSBgc2pQireyHwSQp8%2BDFBxkys1G7d0QikQTB%2FPykYb89aUiChpCLNdIw7flDtL0DQQZfQG1pvOUmt8Ol7o0NvYFmYSIdfPFKjkfZRjrXRLvFh9TOvAatozrentlbVMKkc9tuiSu8EeoyihbA7Zq4POHI3prE2itnF%2FS0vIbrrGr8e%2B8JfLR4%2FENvxG2nY5Aqtia%2BbyFj0Bt8bobNhcHpoIl1RC%2BuOeA5I7exB8%2FYVp0iQBmEwN2OST1qVz4yFEo5YWPabKbtlY60bu6lvyIliC9CKXKQF0mbtFf1rRoLtXNgAU2EisHcnkswToYDRZKHhm2VKNSETQOXQ6fmRocfdJjDb0nYDmKHJClcCkg%2BMZOM%2BYFXJVdNvQd5sdWBs5BamZdvHKlaRHErt0JUlVH4bwAHfrx0%2FngdffsW9vaJ7vmx5vOnu%2F8BxqF5bA%3D%3D&paymentRequest3d.recurring.contract=RECURRING&paymentRequest3d.browserInfo.userAgent=Mozilla%2F5.0+%28X11%3B+Linux+x86_64%29+AppleWebKit%2F537.36+%28KHTML%2C+like+Gecko%29+Chrome%2F59.0.3071.104+Safari%2F537.36&paymentRequest3d.browserInfo.acceptHeader=text%2Fhtml%2Capplication%2Fxhtml%2Bxml%2Capplication%2Fxml%3Bq%3D0.9%2Cimage%2Fwebp%2Cimage%2Fapng%2C*%2F*%3Bq%3D0.8&action=Payment.authorise3d
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 23 Aug 2017 16:28:43 GMT
+      Server:
+      - Apache
+      Set-Cookie:
+      - JSESSIONID=AF36A3E62E89A9BEE8D7A55A81497B7E.test103e; Path=/pal; Secure; HttpOnly
+      Content-Length:
+      - '108'
+      Content-Type:
+      - application/x-www-form-urlencoded
+    body:
+      encoding: UTF-8
+      string: paymentResult.resultCode=Authorised&paymentResult.pspReference=8815035057200185&paymentResult.authCode=75854
+    http_version: 
+  recorded_at: Wed, 23 Aug 2017 16:28:43 GMT
+- request:
+    method: post
+    uri: https://<ADYEN_API_USERNAME>:<ADYEN_API_PASSWORD>@pal-test.adyen.com/pal/adapter/httppost
+    body:
+      encoding: US-ASCII
+      string: recurringDetailsRequest.merchantAccount=<ADYEN_MERCHANT_ACCOUNT>&recurringDetailsRequest.shopperReference=1&recurringDetailsRequest.recurring.contract=RECURRING&action=Recurring.listRecurringDetails
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+      Content-Type:
+      - application/x-www-form-urlencoded
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 23 Aug 2017 16:28:44 GMT
+      Server:
+      - Apache
+      Set-Cookie:
+      - JSESSIONID=FD07E8B231502B758072B81B28794195.test3e; Path=/pal; Secure; HttpOnly
+      Content-Length:
+      - '4784'
+      Content-Type:
+      - application/x-www-form-urlencoded
+    body:
+      encoding: UTF-8
+      string: recurringDetailsResult.details.1.billingAddress.street=10+Lovely+Street&recurringDetailsResult.details.1.billingAddress.city=Herndon&recurringDetailsResult.details.0.card.billingAddress.stateOrProvince=CA&recurringDetailsResult.details.0.variant=mc&recurringDetailsResult.details.2.variant=discover&recurringDetailsResult.details.2.card.billingAddress.street=10+Lovely+Street&recurringDetailsResult.details.1.card.billingAddress.country=US&recurringDetailsResult.details.0.card.billingAddress.houseNumberOrName=NA&recurringDetailsResult.details.0.card.holderName=Test+User&recurringDetailsResult.details.0.firstPspReference=8525027321335997&recurringDetailsResult.details.0.alias=B531350208551470&recurringDetailsResult.details.0.card.expiryMonth=8&recurringDetailsResult.details.2.card.billingAddress.houseNumberOrName=NA&recurringDetailsResult.details.2.billingAddress.postalCode=54370-6198&recurringDetailsResult.details.0.billingAddress.stateOrProvince=CA&recurringDetailsResult.details.0.billingAddress.street=123+Fake+Street&recurringDetailsResult.details.1.aliasType=Default&recurringDetailsResult.details.1.card.billingAddress.street=10+Lovely+Street&recurringDetailsResult.details.0.billingAddress.country=US&recurringDetailsResult.details.1.billingAddress.postalCode=28988&recurringDetailsResult.details.0.billingAddress.houseNumberOrName=NA&recurringDetailsResult.details.1.card.holderName=John+Doe&recurringDetailsResult.details.1.card.billingAddress.stateOrProvince=AL&recurringDetailsResult.creationDate=2016-08-12T13%3A47%3A25%2B02%3A00&recurringDetailsResult.shopperReference=1&recurringDetailsResult.details.0.card.expiryYear=2018&recurringDetailsResult.details.0.paymentMethodVariant=mcpro&recurringDetailsResult.details.1.alias=E840075550837688&recurringDetailsResult.details.0.additionalData.cardBin=521234&recurringDetailsResult.details.2.card.expiryMonth=8&recurringDetailsResult.details.2.billingAddress.city=Herndon&recurringDetailsResult.details.2.billingAddress.houseNumberOrName=NA&recurringDetailsResult.details.0.billingAddress.postalCode=90210&recurringDetailsResult.details.2.billingAddress.street=10+Lovely+Street&recurringDetailsResult.details.0.card.billingAddress.country=US&recurringDetailsResult.details.1.variant=visa&recurringDetailsResult.details.1.paymentMethodVariant=visa&recurringDetailsResult.details.2.billingAddress.country=US&recurringDetailsResult.details.1.card.billingAddress.houseNumberOrName=NA&recurringDetailsResult.details.0.aliasType=Default&recurringDetailsResult.details.2.card.holderName=John+Doe&recurringDetailsResult.details.2.card.expiryYear=2018&recurringDetailsResult.details.2.card.billingAddress.city=Herndon&recurringDetailsResult.details.0.card.billingAddress.postalCode=90210&recurringDetailsResult.details.1.additionalData.cardBin=421234&recurringDetailsResult.details.0.card.number=1234&recurringDetailsResult.details.2.card.billingAddress.country=US&recurringDetailsResult.details.1.card.number=1237&recurringDetailsResult.details.2.card.number=6611&recurringDetailsResult.details.1.billingAddress.stateOrProvince=AL&recurringDetailsResult.details.1.card.billingAddress.postalCode=28988&recurringDetailsResult.details.1.firstPspReference=8815035057200185&recurringDetailsResult.details.1.billingAddress.houseNumberOrName=NA&recurringDetailsResult.details.2.paymentMethodVariant=discover&recurringDetailsResult.details.0.card.billingAddress.city=Los+Angeles&recurringDetailsResult.details.2.recurringDetailReference=8414725049542679&recurringDetailsResult.details.2.aliasType=Default&recurringDetailsResult.details.2.card.billingAddress.postalCode=54370-6198&recurringDetailsResult.details.2.firstPspReference=8815022349345739&recurringDetailsResult.details.2.additionalData.cardBin=601160&recurringDetailsResult.details.2.billingAddress.stateOrProvince=AL&recurringDetailsResult.details.0.card.billingAddress.street=123+Fake+Street&recurringDetailsResult.details.1.card.billingAddress.city=Herndon&recurringDetailsResult.details.2.creationDate=2017-08-09T01%3A28%3A55%2B02%3A00&recurringDetailsResult.details.0.creationDate=2017-08-14T19%3A35%3A33%2B02%3A00&recurringDetailsResult.details.1.billingAddress.country=US&recurringDetailsResult.details.1.card.expiryMonth=8&recurringDetailsResult.details.1.creationDate=2017-08-23T18%3A28%3A43%2B02%3A00&recurringDetailsResult.details.1.recurringDetailReference=8315027316008413&recurringDetailsResult.details.2.card.billingAddress.stateOrProvince=AL&recurringDetailsResult.details.0.billingAddress.city=Los+Angeles&recurringDetailsResult.details.0.recurringDetailReference=8415027321334175&recurringDetailsResult.lastKnownShopperEmail=spree%40example.com&recurringDetailsResult.details.1.card.expiryYear=2018&recurringDetailsResult.details.2.alias=M512442788467272
+    http_version: 
+  recorded_at: Wed, 23 Aug 2017 16:28:44 GMT
+recorded_with: VCR 3.0.3
