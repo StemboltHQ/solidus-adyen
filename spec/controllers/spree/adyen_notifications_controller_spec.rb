@@ -60,18 +60,20 @@ describe Spree::AdyenNotificationsController do
     context "request authenticated" do
       before { bypass_auth }
 
-      shared_examples "logs the notification" do
-        include_examples "success"
-        it "creates a notification" do
-          expect{ subject }.to change { AdyenNotification.count }.from(0).to(1)
-        end
-      end
+      include_examples "success"
 
-      include_examples "logs the notification"
+      it "creates a notification" do
+        expect{ subject }.to change { AdyenNotification.count }.from(0).to(1)
+      end
 
       context "when the system can't find a matching payment" do
         let(:payment) { nil }
-        include_examples "logs the notification"
+
+        include_examples "success"
+
+        it "creates a notification" do
+          expect{ subject }.to change { AdyenNotification.count }.from(0).to(1)
+        end
       end
 
       # Regression test
