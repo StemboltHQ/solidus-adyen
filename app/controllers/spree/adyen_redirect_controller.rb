@@ -7,16 +7,25 @@ module Spree
 
     # This is the entry point after an Adyen HPP payment is completed
     def confirm
-      # Reload order as it might have changed since previously loading it
-      # from an auth notification coming in at the same time.
-      # This and the notification processing need to have a lock on the order
-      # as they both decide what to do based on whether or not the order is
-      # complete.
+      # Get a row-level lock on the order and then also get an OrderMutex
+      # lock.
+      # The row-level lock allows us to wait for our turn, but since order
+      # data is spread out over multiple tables it only works safely if every
+      # other possible concurrent code is also operating in a transaction with
+      # a row lock.  OrderMutex covers some additional cases to add safety.
       @order.with_lock do
-        if @order.complete?
-          confirm_order_already_completed
-        else
-          confirm_order_incomplete
+        Spree::OrderMutex.with_lock!(@order) do
+          # Reload order as it might have changed since previously loading it
+          # from an auth notification coming in at the same time.
+          # This and the notification processing need to have a lock on the
+          # order as they both decide what to do based on whether or not the
+          # order is complete.
+          @order.reload
+          if @order.complete?
+            confirm_order_already_completed
+          else
+            confirm_order_incomplete
+          end
         end
       end
     end

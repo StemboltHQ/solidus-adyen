@@ -4,23 +4,24 @@ module Spree
 
     before_action :authenticate
 
-    def notify
-      if notification_exists?(params)
-        accept
-      else
-        notification = AdyenNotification.build(params)
-        notification.save!
+    # Avoid collisions with the user being sent to AdyenRedirectController
+    class_attribute :processing_delay
+    self.processing_delay = 10.seconds
 
-        # Only process the notification if we have an associated order.
-        # We might not in the case of test notifications, reports, etc.
-        notification.order.try!(:with_lock) do
-          Spree::Adyen::NotificationProcessor.new(notification).process!
-        end
-        accept
+    def notify
+      notification = AdyenNotification.build(params)
+      begin
+        notification.save!
+      rescue ActiveRecord::RecordNotUnique
+        # Notification is a duplicate, ignore it.
+      else
+        enqueue_job(notification)
       end
+      accept
     end
 
-    protected
+    private
+
     # Enable HTTP basic authentication
     def authenticate
       authenticate_or_request_with_http_basic do |username, password|
@@ -29,16 +30,14 @@ module Spree
       end
     end
 
-    private
     def accept
       render plain: "[accepted]"
     end
 
-    def notification_exists? params
-      AdyenNotification.exists?(
-        psp_reference: params["pspReference"],
-        event_code: params["eventCode"]
-      )
+    def enqueue_job(notification)
+      Spree::Adyen::NotificationJob.set(
+        wait: processing_delay
+      ).perform_later(notification)
     end
   end
 end

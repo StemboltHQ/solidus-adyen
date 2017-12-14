@@ -91,12 +91,19 @@ RSpec.describe "Notification processing", type: :request do
   describe "full redirect, auth, capture flow", truncation: true do
     it "creates a payment, completes order, captures payment" do
       VCR.use_cassette "adyen capture" do
-        expect { initial_authorization }.
-        to change { order.payments.count }.by(1).
-        and change { order.reload.state}.to("complete").
-        and change { AdyenNotification.count }.by(1)
+        expect {
+          initial_authorization
+        }.to(
+          change { order.payments.count }.by(1).
+          and change { order.reload.state}.to("complete").
+          and change { AdyenNotification.count }.by(1)
+        )
 
-        capture_request
+        expect {
+          capture_notification
+        }.to change {
+          order.payments.last.reload.state
+        }.from("processing").to("completed")
       end
     end
   end
@@ -117,12 +124,20 @@ RSpec.describe "Notification processing", type: :request do
 
       it "adds in psp reference to payment" do
         VCR.use_cassette "adyen capture" do
-          expect { initial_authorization }.
-          to change { order.payments.count }.by(1).
-          and change { order.reload.state}.to("complete").
-          and change { AdyenNotification.count }.by(1)
+          expect {
+            initial_authorization
+          }.to(
+            change { order.payments.count }.by(1).
+            and change { order.reload.state}.to("complete").
+            and change { AdyenNotification.count }.by(1)
+          )
 
-          capture_request
+          expect {
+            capture_notification
+          }.to change {
+            order.payments.last.reload.state
+          }.from("processing").to("completed")
+
           expect(order.payments.first.response_code).to eq "7914483013255061"
         end
       end
@@ -130,39 +145,24 @@ RSpec.describe "Notification processing", type: :request do
   end
 
   def initial_authorization
-    # Each thread needs its own connection or we run into locking issues
-    ActiveRecord::Base.connection.disconnect!
-
-    # these come in at the same time
-    [
-      Thread.new { authorize_request },
-      Thread.new { redirect_request }
-    ].map(&:join)
-
-    ActiveRecord::Base.establish_connection
-    # typically get a duplicate auth notification
-    authorize_request
+    redirect_request
+    authorize_notification
   end
 
-  def authorize_request
-    ActiveRecord::Base.establish_connection
-    post "/adyen/notify", params: auth_params, headers: headers
-    expect(response).to have_http_status :ok
-    expect(response.body).to eq "[accepted]"
+  def authorize_notification
+    notification = AdyenNotification.build(auth_params)
+    notification.save!
+    Spree::Adyen::NotificationJob.perform_now(notification)
   end
 
   def redirect_request
-    ActiveRecord::Base.establish_connection
-    response_code = get "/checkout/payment/adyen", params: checkout_params, headers: headers
-    expect(response_code).to eq 302
+    get "/checkout/payment/adyen", params: checkout_params, headers: headers
+    expect(response.status).to eq(302)
   end
 
-  def capture_request
-    expect do
-      post "/adyen/notify", params: capture_params, headers: headers
-    end.
-    to change { order.payments.last.reload.state }.
-    from("processing").
-    to("completed")
+  def capture_notification
+    notification = AdyenNotification.build(capture_params)
+    notification.save!
+    Spree::Adyen::NotificationJob.perform_now(notification)
   end
 end

@@ -29,6 +29,25 @@ module Spree
       end
 
       def process!
+        return notification if order.nil?
+
+        # Get a row-level lock on the order and then also get an OrderMutex
+        # lock.
+        # The row-level lock allows us to wait for our turn, but since order
+        # data is spread out over multiple tables it only works safely if every
+        # other possible concurrent code is also operating in a transaction with
+        # a row lock.  OrderMutex covers some additional cases to add safety.
+        order.with_lock do
+          Spree::OrderMutex.with_lock!(order) do
+            order.reload
+            process_locked
+          end
+        end
+      end
+
+      private
+
+      def process_locked
         if should_create_payment?
           self.payment = create_missing_payment
         end
