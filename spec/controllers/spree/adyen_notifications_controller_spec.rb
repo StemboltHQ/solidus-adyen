@@ -51,9 +51,11 @@ describe Spree::AdyenNotificationsController do
 
     shared_examples "success" do
       it "acknowledges the request" do
-        subject
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to eq("[accepted]")
+        expect {
+          subject
+          expect(response.status).to eq(200)
+          expect(response.body).to eq("[accepted]")
+        }.to have_enqueued_job(Spree::Adyen::NotificationJob)
       end
     end
 
@@ -73,34 +75,6 @@ describe Spree::AdyenNotificationsController do
 
         it "creates a notification" do
           expect{ subject }.to change { AdyenNotification.count }.from(0).to(1)
-        end
-      end
-
-      # Regression test
-      # In the event that a notification cannot be processed we need to still
-      # save the notification and acknoweldge it - otherwise Adyen will
-      # continue to notify us about the event and it will continue to error it.
-      #
-      # We cannot use an `ensure` in the controller action because the render
-      # actually completes after the action. Doing so still results in a 500.
-      #
-      # For this reason we need to save the notification on the first attempt,
-      # let the controller error, and then on the second attempt from Adyen
-      # return 200 [accepted], as the notification has already been saved.
-      context "an error occurs during processing" do
-        before { payment.void! }
-        before { params["success"] = false }
-
-        it "errors and creates a notification" do
-          expect {
-            expect { post(:notify, params: params) }.
-            to raise_error(StateMachines::InvalidTransition)
-
-            expect(post(:notify, params: params)).
-              to have_http_status(:ok).
-              and have_attributes(body: "[accepted]")
-          }.
-          to change { AdyenNotification.count }.by(1)
         end
       end
     end

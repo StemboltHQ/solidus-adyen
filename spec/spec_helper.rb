@@ -74,10 +74,14 @@ RSpec.configure do |config|
   end
 
   config.around(:each) do |example|
+    ActiveJob::Base.queue_adapter = :test
+
     DatabaseCleaner.strategy =
       example.metadata[:truncation] ? :truncation : :transaction
     DatabaseCleaner.start
+
     example.run
+
     DatabaseCleaner.clean
   end
 end
