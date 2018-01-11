@@ -104,7 +104,7 @@ module Spree
     end
 
     def check_signature
-      unless ::Adyen::HPP::Signature.verify(response_params, @payment_method.shared_secret)
+      unless ::Adyen::HPP::Signature.verify(response_params.to_h, @payment_method.shared_secret)
         raise "Payment Method not found."
       end
     end
