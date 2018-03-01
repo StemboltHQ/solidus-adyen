@@ -26,7 +26,7 @@ end
 
 group :test do
   gem "database_cleaner"
-  gem "factory_girl"
+  gem "factory_bot"
   gem "timecop"
   gem "vcr"
   gem "webmock", "~> 1.24"

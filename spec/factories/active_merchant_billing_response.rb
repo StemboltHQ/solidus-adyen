@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory(
     :active_merchant_billing_response,
     aliases: ["am_response"],

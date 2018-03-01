@@ -202,7 +202,7 @@ in the view.
 $ DB=postgres bundle exec rake test_app
 $ rspec
 $ cd spec/dummy
-$ rake solidus-adyen:factory_girl:lint
+$ rake solidus-adyen:factory_bot:lint
 ```
 
 # Development
