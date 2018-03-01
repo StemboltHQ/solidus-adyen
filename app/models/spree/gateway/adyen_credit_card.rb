@@ -13,7 +13,7 @@ module Spree
     end
 
     include Spree::Gateway::AdyenGateway
-    preference :cse_library_location, :string
+    preference :cse_library_location, :string, default: ''
 
     def cse_library_location
       ENV["ADYEN_CSE_LIBRARY_LOCATION"] || preferred_cse_library_location

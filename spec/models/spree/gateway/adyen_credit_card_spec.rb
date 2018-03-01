@@ -27,7 +27,7 @@ describe Spree::Gateway::AdyenCreditCard do
     context "with no preference set" do
       before { ENV["ADYEN_CSE_LIBRARY_LOCATION"] = nil }
 
-      it { is_expected.to eq(nil) }
+      it { is_expected.to eq('') }
 
       context "with an environment key set" do
         before { ENV["ADYEN_CSE_LIBRARY_LOCATION"] = "SUPERTOKEN" }
