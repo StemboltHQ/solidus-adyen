@@ -18,6 +18,7 @@ end
 group :development, :test do
   gem "solidus", github: 'solidusio/solidus', branch: branch
   gem "solidus_auth_devise"
+  gem "deface"
 
   gem "pg"
   gem "mysql2"
