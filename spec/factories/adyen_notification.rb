@@ -1,5 +1,5 @@
 # https://docs.adyen.com/display/TD/Notification+fields
-FactoryGirl.define do
+FactoryBot.define do
   factory :adyen_notification, aliases: [:notification] do
      live false
      psp_reference { SecureRandom.hex }
