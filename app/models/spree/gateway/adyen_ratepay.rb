@@ -1,5 +1,5 @@
 module Spree
-  class Gateway::AdyenRatepay < Spree::Gateway
+  class Gateway::AdyenRatepay < Spree::PaymentMethod
     class InvoiceRejectedError < Spree::Core::GatewayError; end
 
     class MissingDateOfBirthError < Spree::Core::GatewayError
@@ -16,7 +16,7 @@ module Spree
       ENV["RATEPAY_DEVICE_SID"] || preferred_device_sid
     end
 
-    def method_type
+    def partial_name
       "adyen_ratepay"
     end
 

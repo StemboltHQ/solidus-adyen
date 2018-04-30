@@ -28,7 +28,7 @@ module Spree
       )
     end
 
-    def provider_class
+    def gateway_class
       ::Adyen::REST
     end
 

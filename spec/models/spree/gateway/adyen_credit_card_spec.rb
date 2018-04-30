@@ -3,14 +3,14 @@ require 'spec_helper'
 describe Spree::Gateway::AdyenCreditCard do
   it { is_expected.to be_a(Spree::Gateway) }
 
-  describe 'provider_class' do
-    subject { described_class.new.provider_class }
+  describe 'gateway_class' do
+    subject { described_class.new.gateway_class }
 
     it { is_expected.to eq(Adyen::REST) }
   end
 
-  describe 'method_type' do
-    subject { described_class.new.method_type }
+  describe 'partial_name' do
+    subject { described_class.new.partial_name }
 
     it { is_expected.to eq("adyen_encrypted_cc") }
   end
