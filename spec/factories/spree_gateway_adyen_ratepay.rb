@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :spree_gateway_adyen_ratepay, aliases: [:ratepay_gateway],
     class: "Spree::Gateway::AdyenRatepay" do
     name "Ratepay"

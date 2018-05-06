@@ -35,8 +35,8 @@ require "spree/testing_support/authorization_helpers"
 # in spec/support/ and its subdirectories.
 Dir[File.join(File.dirname(__FILE__), "support/**/*.rb")].each {|f| require f }
 
-FactoryGirl.definition_file_paths = %w{./spec/factories}
-FactoryGirl.find_definitions
+FactoryBot.definition_file_paths = %w{./spec/factories}
+FactoryBot.find_definitions
 
 Capybara.javascript_driver = :poltergeist
 Capybara.register_driver :chrome do |app|
@@ -53,9 +53,9 @@ RSpec.configure do |config|
   config.example_status_persistence_file_path = "./spec/examples.txt"
 
   config.include ControllerHelpers, type: :controller
-  config.include Devise::TestHelpers, type: :controller
+  config.include Devise::Test::ControllerHelpers, type: :controller
   config.include Spree::TestingSupport::ControllerRequests, type: :controller
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.include Spree::TestingSupport::ControllerRequests, type: :controller
   config.include Spree::TestingSupport::UrlHelpers
 

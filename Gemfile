@@ -18,6 +18,7 @@ end
 group :development, :test do
   gem "solidus", github: 'solidusio/solidus', branch: branch
   gem "solidus_auth_devise"
+  gem "deface"
 
   gem "pg"
   gem "mysql2"
@@ -26,7 +27,8 @@ end
 
 group :test do
   gem "database_cleaner"
-  gem "factory_girl"
+  gem "factory_bot"
+  gem "ffaker"
   gem "timecop"
   gem "vcr"
   gem "webmock", "~> 1.24"

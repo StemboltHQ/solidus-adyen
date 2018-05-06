@@ -3,9 +3,9 @@ require 'spec_helper'
 describe Spree::Gateway::AdyenRatepay do
   let(:ratepay) { build_stubbed :ratepay_gateway }
 
-  describe "#method_type" do
+  describe "#partial_name" do
     it "is always 'adyen_ratepay'" do
-      expect(ratepay.method_type).to eq "adyen_ratepay"
+      expect(ratepay.partial_name).to eq "adyen_ratepay"
     end
   end
 

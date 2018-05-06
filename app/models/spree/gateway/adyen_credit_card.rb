@@ -1,5 +1,5 @@
 module Spree
-  class Gateway::AdyenCreditCard < Gateway
+  class Gateway::AdyenCreditCard < PaymentMethod::CreditCard
     class MissingTokenError < Spree::Core::GatewayError
       def message
         I18n.t(:missing_token_error, scope: 'solidus-adyen')
@@ -19,7 +19,7 @@ module Spree
       ENV["ADYEN_CSE_LIBRARY_LOCATION"] || preferred_cse_library_location
     end
 
-    def method_type
+    def partial_name
       "adyen_encrypted_cc"
     end
 

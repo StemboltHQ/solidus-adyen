@@ -98,18 +98,18 @@ $timestamp-fade: 0.25;
 }
 
 .adyen-comm-icon {
-  @include display(flex);
-  @include flex-direction(column);
-  @include justify-content(space-between);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   font-size: 30px;
 }
 
 .adyen-comm-body {
-  @include display(flex);
-  @include align-items(center);
+  display: flex;
+  align-items: center;
 
   .adyen-comm-sent & {
-    @include flex-direction(row-reverse);
+    flex-direction: row-reverse;
   }
 }
 
