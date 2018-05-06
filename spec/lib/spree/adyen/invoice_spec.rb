@@ -5,8 +5,13 @@ describe Spree::Adyen::Invoice do
     let(:address) { create(:address) }
     let(:tax_rate_country) { address.country }
     let(:tax_category) { create(:tax_category) }
-    let!(:zone) { create(:zone, name: "Country Zone", default_tax: true, countries: [tax_rate_country]) }
-    let!(:rate) { create(:tax_rate, tax_category: tax_category, amount: 0.19, included_in_price: true, zone: zone) }
+    if SolidusSupport.solidus_gem_version >= Gem::Version.new("2.3.0")
+      let!(:zone) { create(:zone, name: "Country Zone", countries: [tax_rate_country]) }
+      let!(:rate) { create(:tax_rate, tax_categories: [tax_category], amount: 0.19, included_in_price: true, zone: zone) }
+    else
+      let!(:zone) { create(:zone, name: "Country Zone", default_tax: true, countries: [tax_rate_country]) }
+      let!(:rate) { create(:tax_rate, tax_category: tax_category, amount: 0.19, included_in_price: true, zone: zone) }
+    end
     let(:order) do
       create(
         :order_with_line_items,
