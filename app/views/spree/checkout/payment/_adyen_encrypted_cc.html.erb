@@ -1,5 +1,3 @@
-<%= image_tag 'credit_cards/credit_card.gif', :id => 'credit-card-image' %>
-
 <% content_for :head do %>
   <%= javascript_include_tag payment_method.cse_library_location %>
   <%= javascript_include_tag "spree/checkout/payment/adyen_encrypted_credit_card" %>
